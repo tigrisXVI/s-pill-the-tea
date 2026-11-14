@@ -1,0 +1,135 @@
+{
+ "vibrazione": {
+  "hz": 50.0,
+  "mm": 0.6,
+  "s": 3.0
+ },
+ "seme": 7007,
+ "attrito": 0.35,
+ "gioco": 0.25,
+ "pendenza": 8.0,
+ "scivolo_gradi": 40.0,
+ "scosse": 0,
+ "carico": "mini",
+ "dose_completa": true,
+ "vicini_al_loro_posto": true,
+ "pillole": [
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    138.6,
+    -10.8,
+    -16.0
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    138.6,
+    -2.8,
+    -16.0
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 2x2",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    139.0,
+    0.4,
+    -16.6
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 2x2",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    139.0,
+    2.7,
+    -16.6
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 2x2",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    138.7,
+    -6.6,
+    -16.5
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "compressa tonda 9x3,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    73.0,
+    -18.4,
+    12.4
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    59.5,
+    -17.4,
+    13.7
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    64.2,
+    11.1,
+    13.3
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 2x2",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    66.5,
+    10.2,
+    12.8
+   ]
+  }
+ ]
+}

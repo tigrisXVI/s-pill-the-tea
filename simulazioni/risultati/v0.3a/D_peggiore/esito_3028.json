@@ -1,0 +1,109 @@
+{
+ "vibrazione": {
+  "hz": 50.0,
+  "mm": 0.6,
+  "s": 3.0
+ },
+ "seme": 3028,
+ "attrito": 0.5,
+ "gioco": 0.5,
+ "pendenza": 8.0,
+ "scivolo_gradi": 40.0,
+ "scosse": 0,
+ "carico": "misto",
+ "dose_completa": true,
+ "vicini_al_loro_posto": true,
+ "pillole": [
+  {
+   "ruolo": "dose",
+   "pillola": "Augmentin 22x10,5x7,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    136.1,
+    4.9,
+    -11.5
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "compressa tonda 9x3,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    115.8,
+    0.9,
+    -9.7
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    138.5,
+    -10.5,
+    -16.0
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    74.3,
+    -22.3,
+    11.4
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "compressa 5x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    76.2,
+    12.8,
+    11.7
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    53.3,
+    15.7,
+    14.2
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    72.5,
+    11.3,
+    12.2
+   ]
+  }
+ ]
+}

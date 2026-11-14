@@ -1,0 +1,148 @@
+{
+ "vibrazione": {
+  "hz": 50.0,
+  "mm": 0.6,
+  "s": 3.0
+ },
+ "seme": 2031,
+ "attrito": 0.35,
+ "gioco": 0.25,
+ "pendenza": 8.0,
+ "scivolo_gradi": 40.0,
+ "scosse": 0,
+ "carico": "mini",
+ "dose_completa": true,
+ "vicini_al_loro_posto": true,
+ "pillole": [
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    135.5,
+    -4.2,
+    -15.4
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    138.6,
+    -4.3,
+    -16.0
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 2x2",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    139.0,
+    4.7,
+    -16.6
+   ]
+  },
+  {
+   "ruolo": "dose",
+   "pillola": "minicompressa 2x2",
+   "ok": true,
+   "in_fondo_al_bordino": true,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    138.7,
+    -11.9,
+    -16.5
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "Augmentin 22x10,5x7,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    67.0,
+    -16.6,
+    15.5
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "Augmentin 22x10,5x7,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    67.4,
+    -15.5,
+    23.5
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    55.7,
+    -16.4,
+    14.2
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "Augmentin 22x10,5x7,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    67.6,
+    13.1,
+    15.4
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "compressa 5x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": false,
+   "fine": [
+    54.3,
+    11.6,
+    14.5
+   ]
+  },
+  {
+   "ruolo": "vicino",
+   "pillola": "minicompressa 3x2,5",
+   "ok": true,
+   "in_fondo_al_bordino": false,
+   "motivo": "",
+   "arrivata_sul_ripiano": true,
+   "fine": [
+    57.0,
+    8.4,
+    14.5
+   ]
+  }
+ ]
+}

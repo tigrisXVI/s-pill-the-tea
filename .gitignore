@@ -1,0 +1,4 @@
+# Le tue impostazioni con le password: non vanno mai pubblicate
+firmware/scatoletta_blistra/config.h
+__pycache__/
+*.blend1
