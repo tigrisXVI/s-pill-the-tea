@@ -4,6 +4,10 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 ![La scatoletta aperta](docs/immagini/v3_aperta.png)
 
+**Modello 3D interattivo:** https://tigrisxvi.github.io/scatoletta-blistra/ (in inglese e in italiano)
+
+**App Blistra:** https://tigrisxvi.github.io/blistra/ (si prova senza account con la modalità demo)
+
 **Stato: prototipo v0.3, progettato e verificato solo al computer. Non è ancora stato stampato né provato su una scheda vera.**
 
 > ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
@@ -28,7 +32,7 @@ Misure: Ø 166 × 56 mm (62 con la cerniera), 225 mm di profondità con lo scivo
 | `stl/assieme/` | Pezzi nella posizione di montaggio |
 | `firmware/` | Programma ESP32 (Arduino IDE) e istruzioni di taratura |
 | `simulazioni/` | Simulazione fisica in Blender delle pillole che scendono, con i risultati |
-| `docs/` | Schede tecniche in PDF (misure, sensori, schema) e immagini |
+| `docs/` | Schede tecniche in PDF (misure, sensori, schema), immagini e il visore 3D (`docs/modello-3d/`, three.js con licenza MIT) |
 
 ## Simulazioni
 
