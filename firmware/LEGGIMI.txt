@@ -1,9 +1,10 @@
-SCATOLETTA BLISTRA v0.3 - PROGRAMMA PER ESP32
+SCATOLETTA BLISTRA v0.4 - PROGRAMMA PER ESP32
 (prototipo: controllato solo al computer, mai provato su una scheda vera)
 
 1. Arduino IDE 2 -> Gestore schede: "esp32" di Espressif (versione 3.x) -> scheda "ESP32 Dev Module".
-2. Gestore librerie: "ArduinoJson" di Benoit Blanchon (versione 7). Non servono altre librerie:
-   la cella di carico (HX711) e' letta direttamente dal programma.
+2. Gestore librerie: "ArduinoJson" di Benoit Blanchon (versione 7), "U8g2" (display), "Adafruit NeoPixel" (luci),
+   "ESP32Servo" (sportello). La cella di carico (HX711) e' letta direttamente dal programma.
+   Senza display, luci o servo: metti a 0 USA_DISPLAY, USA_LUCI o USA_SERVO in config.h.
 3. Copia scatoletta_blistra/config.example.h in scatoletta_blistra/config.h, aprilo e scrivi Wi-Fi, orari (fino a 4) e, se vuoi Blistra, i dati della cerchia.
    NON pubblicare config.h dopo averci scritto le password.
 4. Carica il programma e apri il Monitor seriale a 115200.
@@ -15,13 +16,19 @@ Prima taratura (una volta sola, con il coperchio tolto):
   - comando c7.5   : appoggia sul ripiano una moneta da 1 euro (7,5 g) e scrivi c7.5. Salva la scala.
   - comando s      : controlla che il peso letto sia giusto.
   - comando v      : prova la vibrazione.
+  - comandi o / x  : apre e chiude lo sportello con il servo. Regola SERVO_CHIUSO e SERVO_APERTO in config.h:
+                     a riposo la leva deve stare appena sotto la mensola dello sportello, senza toccarla.
   Consiglio: sul modulino HX711 metti il ponticello RATE a 80 campioni al secondo (piu' veloce).
 
 Uso:
-  - All'ora della dose suona e lampeggia. Si apre lo sportello: il ripiano vibra e le pillole scendono nella vaschetta.
-  - Pressione breve del pulsante durante l'attesa: silenzio per 30 secondi.
+  - All'ora della dose suona, la barra di luci lampeggia gialla e il display scrive "E' ora".
+  - Pressione breve del tasto grande: il servo alza lo sportello, il ripiano vibra e le pillole scendono nella vaschetta.
+    Dopo 20 secondi (o a un altro tocco del tasto) la leva scende e lo sportello si richiude da solo.
+  - Lo sportello si puo' anche alzare a mano: la scatoletta eroga lo stesso.
+  - Pressione lunga durante l'attesa: silenzio per 30 secondi.
   - Pressione lunga a riposo: verifica del carico (pesa i 28 scomparti uno a uno, sportello chiuso, circa 2 minuti).
   - Il carosello non gira mai con lo sportello aperto.
+  - Alimentazione: presa USB-C da pannello -> interruttore -> piedino 5V dell'ESP32. Il servo va alimentato dai 5 V, non dai 3,3 V.
 
 Scomparti: 1-4 lunedi' (dose 1, 2, 3, 4), 5-8 martedi', ... 25-28 domenica. Lo scomparto 0 e' il riposo e resta vuoto.
 

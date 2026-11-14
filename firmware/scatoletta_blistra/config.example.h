@@ -43,8 +43,23 @@
 #define PIN_HALL_ZERO   25        // sensore di Hall sotto il mozzo
 #define PIN_HALL_SPORT  26        // sensore di Hall dello sportello
 #define PIN_CICALINO    27
-#define PIN_LED         23
+#define PIN_LUCI        23        // dato della barra di 8 LED WS2812
+#define PIN_SERVO       4         // segnale del micro servo dello sportello
+#define PIN_DISPLAY_SDA 33        // display OLED I2C
+#define PIN_DISPLAY_SCL 14
 #define PIN_PULSANTE    32
+
+// ---- Display, luci, sportello motorizzato (metti 0 per farne a meno) ---------------
+#define USA_DISPLAY      1        // OLED 128x64 I2C da 1,3"
+#define DISPLAY_SSD1306  0        // 0 = SH1106 (quasi tutti gli 1,3"), 1 = SSD1306 (gli 0,96")
+#define USA_LUCI         1
+#define NUMERO_LUCI      8
+#define LUMINOSITA_LUCI  60       // 0-255
+#define USA_SERVO        1
+#define SERVO_CHIUSO     20       // gradi a riposo: la leva appena sotto la mensola, senza toccarla
+#define SERVO_APERTO     101      // SERVO_CHIUSO + 81 gradi = sportello alzato di 70 (se va al contrario: 160 e 79)
+#define SERVO_MS_PER_GRADO 12     // lentezza del movimento
+#define SECONDI_APERTO   20       // quanto resta aperto dopo aver erogato (un tocco del tasto lo chiude prima)
 
 // ---- Meccanica -------------------------------------------------------------------
 #define SPICCHI          29       // 28 scomparti + 1 di riposo

@@ -1,20 +1,25 @@
 /*
-  Scatoletta Blistra - programma per ESP32 (prototipo v0.3)
+  Scatoletta Blistra - programma per ESP32 (prototipo v0.4)
 
   Cosa fa
   - Fino a 4 dosi al giorno, 28 scomparti (7 giorni x 4) + 1 di riposo.
   - All'ora della dose gira il carosello: le palette spingono le pillole su per la rampa
     fino al ripiano pesato. Pesa la dose e la confronta con quella attesa.
-  - Suona e lampeggia. Quando lo sportello si apre, fa vibrare il ripiano: le pillole
-    scendono dallo scivolo nella vaschetta. Ripesa: se il ripiano e' vuoto la dose e' "erogata".
+  - Suona, accende le luci gialle e scrive sul display che e' ora. Chi prende le pillole preme il
+    TASTO GRANDE: un piccolo servo alza lo sportello, il ripiano vibra e le pillole scendono dallo
+    scivolo nella vaschetta. Ripesa: se il ripiano e' vuoto la dose e' "erogata".
+    Poi il servo abbassa la leva e lo sportello si richiude da solo, per gravita'.
+  - Lo sportello si puo' sempre alzare anche a mano: funziona lo stesso.
   - Il carosello gira SOLO a sportello chiuso.
-  - Pressione lunga del pulsante: verifica del carico (pesa uno a uno tutti i 28 scomparti).
+  - Pressione lunga del tasto a riposo: verifica del carico (pesa uno a uno tutti i 28 scomparti).
 
-  Librerie: "ArduinoJson" (versione 7). Scheda: "ESP32 Dev Module" (core ESP32 3.x).
+  Librerie: "ArduinoJson" (versione 7); "U8g2" (display), "Adafruit NeoPixel" (luci), "ESP32Servo" (sportello).
+  Display, luci e servo si possono spegnere uno a uno in config.h (USA_DISPLAY, USA_LUCI, USA_SERVO).
+  Scheda: "ESP32 Dev Module" (core ESP32 3.x).
   Monitor seriale a 115200:
     z = zero   a = avanti di uno   s = sensori   p = prova una dose (scomparto 1)
     t = tara della bilancia   c = taratura con un peso noto (scrivi i grammi, es. c7.5)   v = prova vibrazione
-    k = verifica del carico
+    k = verifica del carico   o = apri lo sportello   x = chiudi lo sportello
 */
 
 #include <WiFi.h>
@@ -24,8 +29,25 @@
 #include <ArduinoJson.h>
 #include <time.h>
 #include "config.h"
+#if USA_DISPLAY
+  #include <Wire.h>
+  #include <U8g2lib.h>
+  #if DISPLAY_SSD1306
+    U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE);
+  #else
+    U8G2_SH1106_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE);
+  #endif
+#endif
+#if USA_LUCI
+  #include <Adafruit_NeoPixel.h>
+  Adafruit_NeoPixel barra(NUMERO_LUCI, PIN_LUCI, NEO_GRB + NEO_KHZ800);
+#endif
+#if USA_SERVO
+  #include <ESP32Servo.h>
+  Servo servo;
+#endif
 
-#define VERSIONE "0.3"
+#define VERSIONE "0.4"
 
 enum Stato { RIPOSO, IN_ATTESA, VERIFICA, ERRORE };
 Stato stato = RIPOSO;
@@ -82,6 +104,7 @@ bool avanza(long passi) {
 }
 
 void errore(const char* perche);
+int leggiPulsante();
 
 // Lo zero si cerca sempre girando nello stesso verso (le palette salgono la rampa solo in quel verso).
 bool cercaZero() {
@@ -146,6 +169,49 @@ void vibra(int ms) {
   delay(700);           // la piastra si ferma prima di pesare
 }
 
+// Luci: un colore per ogni situazione. Il display e i suoni dicono sempre la stessa cosa,
+// cosi' chi distingue male i colori non perde niente.
+enum Colore { SPENTO, GIALLO, VERDE, ROSSO, BLU, BIANCO };
+void luci(Colore c, bool lampeggia = false) {
+#if USA_LUCI
+  static const uint8_t RGB[6][3] = { {0,0,0}, {255,150,0}, {0,220,60}, {255,0,0}, {0,60,255}, {120,120,120} };
+  bool acceso = !lampeggia || (millis() / 400) % 2;
+  for (int i = 0; i < NUMERO_LUCI; i++) barra.setPixelColor(i, acceso ? barra.Color(RGB[c][0], RGB[c][1], RGB[c][2]) : 0);
+  barra.show();
+#endif
+}
+
+// Display: due righe, la prima grande. Ridisegna solo se il testo cambia.
+void schermo(const String& grande, const String& piccola = "") {
+#if USA_DISPLAY
+  static String ultimo = "";
+  if (grande + "|" + piccola == ultimo) return;
+  ultimo = grande + "|" + piccola;
+  display.clearBuffer();
+  display.setFont(grande.length() <= 5 ? u8g2_font_logisoso32_tf : u8g2_font_helvB18_tf);
+  display.drawStr((128 - display.getStrWidth(grande.c_str())) / 2, grande.length() <= 5 ? 38 : 30, grande.c_str());
+  display.setFont(u8g2_font_helvB10_tf);
+  display.drawStr((128 - display.getStrWidth(piccola.c_str())) / 2, 60, piccola.c_str());
+  display.sendBuffer();
+#endif
+}
+
+// Sportello: il servo alza una leva che spinge sotto la mensola dello sportello. Per chiudere la leva
+// torna giu' e lo sportello scende per il suo peso: non spinge mai verso il basso, quindi non schiaccia.
+int angoloServo = SERVO_CHIUSO;
+void muoviServo(int verso) {
+#if USA_SERVO
+  if (!servo.attached()) servo.attach(PIN_SERVO, 500, 2400);
+  while (angoloServo != verso) { angoloServo += verso > angoloServo ? 1 : -1; servo.write(angoloServo); delay(SERVO_MS_PER_GRADO); }
+#endif
+}
+void apriSportello()   { muoviServo(SERVO_APERTO); }
+void chiudiSportello() {
+#if USA_SERVO
+  muoviServo(SERVO_CHIUSO); delay(400); servo.detach();     // a riposo il servo e' spento: niente ronzio
+#endif
+}
+
 void bip(int frequenza, int ms) { tone(PIN_CICALINO, frequenza, ms); delay(ms + 30); noTone(PIN_CICALINO); }
 void melodiaDose()   { bip(880, 180); bip(1175, 180); bip(1568, 320); }
 void melodiaOk()     { bip(1568, 120); bip(2093, 220); }
@@ -154,7 +220,7 @@ void melodiaErrore() { bip(300, 400); bip(220, 600); }
 void errore(const char* perche) {
   Serial.printf("ERRORE: %s\n", perche);
   ultimoEvento = String("errore: ") + perche;
-  stato = ERRORE; motoreSpento(); ledcWrite(PIN_VIBRO, 0); melodiaErrore();
+  stato = ERRORE; motoreSpento(); ledcWrite(PIN_VIBRO, 0); luci(ROSSO); schermo("Errore", "premi il tasto"); melodiaErrore();
 }
 
 void stampaSensori() {
@@ -355,25 +421,29 @@ void iniziaDose(long numero, int giorno, int dose) {
 void chiudiDose(const char* come) {
   ultimaDoseFatta = doseInCorso;
   memoria.putLong("ultima", ultimaDoseFatta);
-  digitalWrite(PIN_LED, LOW);
+  chiudiSportello();                                            // la leva scende, lo sportello si richiude da solo
   esito = come;
   struct tm adesso; bool ora = oraValida(&adesso);
   if (esito == "all" || esito == "partial") {
     if (ora) farmaciDellaDose(giornoInCorso, doseNumInCorso, true, &adesso);
     ultimoEvento = esito == "all" ? "dose erogata" : "dose erogata a meta'";
-    if (esito == "all") melodiaOk(); else melodiaErrore();
-  } else ultimoEvento = "dose non presa";
+    if (esito == "all") { luci(VERDE); schermo("Presa", "brava, bravo!"); melodiaOk(); }
+    else { luci(ROSSO); schermo("Controlla", "ne manca qualcuna"); melodiaErrore(); }
+    delay(2500);
+  } else { ultimoEvento = "dose non presa"; luci(ROSSO); schermo("Saltata", "dose non presa"); delay(1500); }
   statoDettaglio = esito == "partial" ? "partial" : "";
   Serial.println(ultimoEvento);
   // torna a riposo solo a sportello chiuso (avanza() aspetta da sola)
+  if (!sportelloChiuso()) schermo("Chiudi", "lo sportello");
   vaiARiposo();
-  if (stato != ERRORE) stato = RIPOSO;
+  if (stato != ERRORE) { stato = RIPOSO; luci(SPENTO); }
   doseInCorso = -1;
   mandaStato();
 }
 
 // Sportello aperto: vibra finche' il ripiano e' vuoto (al massimo TENTATIVI_VIBRA volte).
 void eroga() {
+  luci(BIANCO); schermo("Prendi", "le pillole");
   int prima = pesoMg(), dopo = prima;
   for (int i = 0; i < TENTATIVI_VIBRA; i++) {
     vibra(VIBRA_MS);
@@ -382,6 +452,10 @@ void eroga() {
     if (dopo <= SOGLIA_VUOTA_MG) break;
     if (sportelloChiuso()) break;                                 // l'hanno richiuso: non insistere
   }
+  if (dopo <= SOGLIA_VUOTA_MG || dopo < prima - SOGLIA_VUOTA_MG) {
+    // lascia il tempo di prendere le pillole dalla vaschetta prima di richiudere
+    for (unsigned long da = millis(); millis() - da < (unsigned long)SECONDI_APERTO * 1000UL; ) { if (leggiPulsante()) break; delay(50); }
+  }
   if (dopo <= SOGLIA_VUOTA_MG) chiudiDose("all");
   else if (dopo < prima - SOGLIA_VUOTA_MG) chiudiDose("partial");
   else { ultimoEvento = "le pillole non scendono: prendile dall'alto"; statoDettaglio = "partial"; mandaStato(); }
@@ -389,12 +463,23 @@ void eroga() {
 
 void seguiAttesa() {
   unsigned long ora = millis();
-  digitalWrite(PIN_LED, (ora / 400) % 2);
+  luci(GIALLO, true); schermo("E' ora", "premi il tasto");
   if (ultimoBip == 0 || ora - ultimoBip > 30000UL) { melodiaDose(); ultimoBip = millis(); }
   if (!sportelloChiuso()) { delay(300); eroga(); return; }
   // pillole prese dall'alto senza vibrare: il ripiano si e' svuotato da solo
   if (pesoArrivatoMg > SOGLIA_VUOTA_MG && (ora / 1000) % 5 == 0 && pesoMg() <= SOGLIA_VUOTA_MG) { chiudiDose("all"); return; }
   if (ora - inizioAttesa > (unsigned long)MINUTI_DI_ATTESA * 60000UL) chiudiDose("untouched");
+}
+
+// A riposo il display mostra l'ora e la prossima dose.
+void schermoRiposo() {
+  struct tm t;
+  if (!oraValida(&t)) { schermo("--:--", WiFi.status() == WL_CONNECTED ? "cerco l'ora..." : "senza Wi-Fi"); return; }
+  char ora[6]; snprintf(ora, sizeof ora, "%02d:%02d", t.tm_hour, t.tm_min);
+  int adesso = t.tm_hour * 60 + t.tm_min, prossima = -1;
+  for (int d = 0; d < 4; d++) { int m = minutiDi(orari[d]); if (m > adesso && (prossima < 0 || m < minutiDi(orari[prossima]))) prossima = d; }
+  if (prossima < 0) for (int d = 0; d < 4; d++) { int m = minutiDi(orari[d]); if (m >= 0 && (prossima < 0 || m < minutiDi(orari[prossima]))) prossima = d; }
+  schermo(ora, prossima < 0 ? String("nessuna dose") : String("prossima ") + orari[prossima]);
 }
 
 void controllaOrari() {
@@ -413,7 +498,7 @@ void controllaOrari() {
 // Porta uno a uno gli scomparti sul ripiano, li pesa e li confronta con la dose attesa (sportello chiuso).
 void verificaCarico() {
   if (!sportelloChiuso()) { bip(300, 300); Serial.println("Chiudi lo sportello prima della verifica."); return; }
-  stato = VERIFICA; ultimoEvento = "verifica del carico"; digitalWrite(PIN_LED, HIGH); mandaStato();
+  stato = VERIFICA; ultimoEvento = "verifica del carico"; luci(BLU); schermo("Verifica", "circa 2 minuti"); mandaStato();
   vaiARiposo(); faiTara();
   int sbagliati = 0;
   for (int k = 1; k < SPICCHI && stato != ERRORE; k++) {
@@ -426,13 +511,14 @@ void verificaCarico() {
     if (!ok) sbagliati++;
     Serial.printf("scomparto %2d: %5d mg (atteso %d) %s\n", k, mg, atteso, ok ? "ok" : "DA CONTROLLARE");
   }
-  digitalWrite(PIN_LED, LOW);
   vaiARiposo();
   if (stato != ERRORE) stato = RIPOSO;
+  luci(sbagliati ? ROSSO : VERDE);
   statoDettaglio = sbagliati ? "misload" : "";
   ultimoEvento = sbagliati ? String(sbagliati) + " scomparti da controllare" : "carico giusto";
+  schermo(sbagliati ? "Controlla" : "Tutto ok", ultimoEvento);
   if (sbagliati) melodiaErrore(); else melodiaOk();
-  mandaStato();
+  mandaStato(); delay(3000); luci(SPENTO);
 }
 
 // ---------------------------------------------------------------- pulsante, avvio, ciclo
@@ -462,6 +548,8 @@ void comandoSeriale() {
   if (c == 't') { faiTara(); Serial.println("tara fatta"); }
   if (c == 'v') { vibra(VIBRA_MS); stampaSensori(); }
   if (c == 'k' && stato == RIPOSO) verificaCarico();
+  if (c == 'o') { apriSportello(); stampaSensori(); }
+  if (c == 'x') { chiudiSportello(); stampaSensori(); }
   if (c == 'p' && stato == RIPOSO) iniziaDose(ultimaDoseFatta, 0, 0);
   if (c == 'c') {                                   // es. "c7.5" con una moneta da 1 euro (7,5 g) sul ripiano
     delay(50); String g = "";
@@ -476,7 +564,14 @@ void setup() {
   for (int i = 0; i < 4; i++) pinMode(PIN_MOTORE[i], OUTPUT);
   motoreSpento();
   pinMode(PIN_HALL_ZERO, INPUT_PULLUP); pinMode(PIN_HALL_SPORT, INPUT_PULLUP); pinMode(PIN_PULSANTE, INPUT_PULLUP);
-  pinMode(PIN_LED, OUTPUT); pinMode(PIN_CICALINO, OUTPUT);
+  pinMode(PIN_CICALINO, OUTPUT);
+#if USA_LUCI
+  barra.begin(); barra.setBrightness(LUMINOSITA_LUCI); luci(BLU);
+#endif
+#if USA_DISPLAY
+  Wire.begin(PIN_DISPLAY_SDA, PIN_DISPLAY_SCL); display.begin(); schermo("Blistra", "avvio...");
+#endif
+  chiudiSportello();
   pinMode(PIN_HX711_DOUT, INPUT); pinMode(PIN_HX711_SCK, OUTPUT); digitalWrite(PIN_HX711_SCK, LOW);
   ledcAttach(PIN_VIBRO, 20000, 8); ledcWrite(PIN_VIBRO, 0);
 
@@ -494,6 +589,7 @@ void setup() {
   leggiImpostazioni();
   mandaStato();
   stampaSensori();
+  luci(SPENTO);
 }
 
 void loop() {
@@ -502,12 +598,15 @@ void loop() {
   if (stato == RIPOSO) {
     if (tasto == 2) verificaCarico();
     else if (tasto == 1) { bip(1568, 100); stampaSensori(); }
-    else controllaOrari();
+    else { schermoRiposo(); controllaOrari(); }
   } else if (stato == IN_ATTESA) {
-    if (tasto == 1) ultimoBip = millis();             // pressione breve: zittisce per 30 secondi
-    seguiAttesa();
+    if (tasto == 1) {                                 // il tasto grande: "ci sono", apri lo sportello
+      bip(1568, 100); schermo("Apro", "lo sportello"); apriSportello();
+      if (sportelloChiuso()) { delay(300); eroga(); }   // senza servo (o se il sensore non lo vede aperto) eroga lo stesso
+    } else if (tasto == 2) ultimoBip = millis();        // pressione lunga: zittisce per 30 secondi
+    if (stato == IN_ATTESA) seguiAttesa();
   } else if (stato == ERRORE) {
-    digitalWrite(PIN_LED, (millis() / 150) % 2);
+    luci(ROSSO, true);
     if (tasto) { stato = RIPOSO; statoDettaglio = ""; vaiARiposo(); }
   }
   if (millis() - ultimoContatto > 60000UL) {
