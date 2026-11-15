@@ -309,6 +309,7 @@ function passo(h) {   // un passo di fisica: muove i pezzi cinematici solo se ca
   for (const L of lati) {
     const g0 = L.giro, f0 = L.fuori;
     L.giro = verso(L.giro, L.meta, 36 * h); L.fuori = verso(L.fuori, L.fuoriMeta, 1.2 * h);
+    if (L.fuori !== f0 || L.giro !== g0) for (const p of pillole) if (p.stato !== 'tolta' && p.b.translation().y * L.s > 0 && p.b.translation().z / S > P.Z_A - P.R_CASS - 3) { p.b.wakeUp(); p.calma = 0; }
     if (L.fuori !== f0 || L.primo) { const yc = L.s * L.fuori * 80; L.cB.setNextKinematicTranslation({ x: 0, y: yc * S, z: 0 }); L.wB.setNextKinematicTranslation({ x: 0, y: yc * S, z: P.Z_A * S }); }
     if (L.giro !== g0 || L.primo) { qY.setFromAxisAngle(asseY, L.giro * rad); L.wB.setNextKinematicRotation({ x: qY.x, y: qY.y, z: qY.z, w: qY.w }); }
     L.primo = false;
@@ -316,10 +317,17 @@ function passo(h) {   // un passo di fisica: muove i pezzi cinematici solo se ca
   const a0 = apre, c0 = cup;
   apre = verso(apre, apreMeta, 90 * h); if (apre !== a0 || primo) { qX.setFromAxisAngle(asseY, -apre * rad); trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w }); }
   cup = verso(cup, cupMeta, 1.4 * h); if (cup !== c0 || primo) cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
+  if (apre !== a0 || cup !== c0) for (const p of pillole) if (p.stato !== 'tolta' && p.b.translation().z / S < P.Z_PIATTO + 20) { p.b.wakeUp(); p.calma = 0; }
   primo = false;
   world.step();
+  if (++contaPassi % 20 === 0) for (const p of pillole) {   // le pillole ferme da mezzo secondo vanno a dormire: la fisica resta veloce
+    if (p.stato === 'tolta' || p.b.isSleeping()) continue;
+    const v = p.b.linvel(), w = p.b.angvel();
+    p.calma = Math.hypot(v.x, v.y, v.z) < .3 && Math.hypot(w.x, w.y, w.z) < .6 ? (p.calma || 0) + 20 * h : 0;
+    if (p.calma > .5) p.b.sleep();
+  }
 }
-let primo = true;
+let primo = true, contaPassi = 0;
 
 function logica(dt) {
   const vive = pillole.filter(p => p.stato !== 'tolta'), dosePill = vive.filter(p => p.d === dose);
