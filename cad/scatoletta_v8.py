@@ -331,9 +331,13 @@ class Modello:
                   - v5.rett_arrotondato(x0 + 0.4, x1 - 0.4, y0 + 0.4, y1 - 0.4, R_SPIG - 0.4, z - 1, z + 2))
             z += 2.4
         # nicchia aperta davanti e di lato (come una macchina del caffe')
-        m -= scatola(self.CUP["x0"] - 3, x1 + 1, y0 - 1, y1 + 1, self.Z_PIEDE - 0.5, self.Z_NICCHIA)
-        m += scatola(self.CUP["x0"] - 5, self.CUP["x0"] - 3, y0 + 0.01, y1 - 0.01, self.Z_PIEDE, self.Z_NICCHIA + 0.01)   # fondo della nicchia
-        m += scatola(self.CUP["x0"] - 5, x1, y0 + 0.01, y1 - 0.01, self.Z_NICCHIA, self.Z_NICCHIA + PARETE) - scatola(-14, 16, -13, 13, self.Z_NICCHIA - 1, self.Z_NICCHIA + 3)   # tetto della nicchia, con il passaggio
+        m -= scatola(self.CUP["x0"] - 0.6, x1 + 1, y0 - 1, y1 + 1, self.Z_PIEDE - 0.5, self.Z_NICCHIA)
+        m += scatola(self.CUP["x0"] - 2.6, self.CUP["x0"] - 0.6, y0 + 0.01, y1 - 0.01, self.Z_PIEDE, self.Z_NICCHIA + 0.01)   # fondo della nicchia: a 0,6 mm dal bicchierino
+        # scivolo a 45 gradi sopra il bicchierino: le pillole che sbattono sulla parete tornano dentro (6 mm sopra il bordo: il bicchierino si solleva e si sfila)
+        za = self.Z_CUP + self.CUP["alt"] + 6.0; xa = self.CUP["x0"] - 0.6
+        scivolo = CrossSection([ccw([(xa - 0.01, za), (self.CUP["x0"] + 3.5, za), (xa - 0.01, za + 4.1)])])
+        m += Manifold.extrude(scivolo, 2 * self.CUP["y"]).translate([0, 0, -self.CUP["y"]]).transform([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0]])
+        m += scatola(self.CUP["x0"] - 2.6, x1, y0 + 0.01, y1 - 0.01, self.Z_NICCHIA, self.Z_NICCHIA + PARETE) - scatola(-14, 16, -13, 13, self.Z_NICCHIA - 1, self.Z_NICCHIA + 3)   # tetto della nicchia, con il passaggio
         # sedi delle cassette
         if self.ruote == 2:
             for s in (-1, 1):
@@ -365,7 +369,7 @@ class Modello:
         zb = self.Z_PIATTO - 1.0 + Z_ESP
         m -= scatola(-self.X_HALF - 1, -self.X_HALF + PARETE + 1, -4.8, 4.8, zb + 0.4, zb + 4.6)
         # sensore di Hall nella parete dietro la nicchia, all'altezza del magnete del bicchierino
-        m -= cil_x(2.4, self.CUP["x0"] - 5.5, self.CUP["x0"] - 3.6, 0, self.Z_CUP + 6.0)
+        m -= cil_x(2.4, self.CUP["x0"] - 3.1, self.CUP["x0"] - 1.2, 0, self.Z_CUP + 6.0)
         xa = x1 - PARETE
         m += cil_x(11.4, xa - 4.0, xa + 0.01, 0, self.Z_SUONO) - cil_x(10.25, xa - 5, xa + 1, 0, self.Z_SUONO)   # anello che tiene l'altoparlante
         for dy, dz in [(0, 0)] + [(5.5 * math.cos(math.radians(a)), 5.5 * math.sin(math.radians(a))) for a in range(0, 360, 60)]:
@@ -440,7 +444,7 @@ class Modello:
             ("amplificatore", "#8e44ad", 1.1, [(25.4, 6.0, 49.3), (20.0, 20.4, 50.6), (-29.0, 20.4, 51.0), (-31.8, 8.0, ze + 2.2)], ["amplificatore", "schede"]),
             ("altoparlante", "#7f8c8d", 0.7, [(46.6, 5.0, 60.0), (44.8, 5.0, 52.0), (42.5, 5.0, 51.4)], ["altoparlante", "amplificatore"]),
             ("cella di carico", "#16a085", 1.0, [(-32.6, -17.9, 51.6), (-35.5, -12.0, 55.0), (-36.0, -8.6, zd + 1.5)], ["cella", "schede"]),
-            ("sensore del bicchiere", "#34495e", 0.8, [(-28.2, 0, self.Z_CUP + 6.0), (-40.0, 0, self.Z_CUP + 12.0), (-40.0, 0, zd - 1.0)], ["sensore_bicchiere", "schede"]),
+            ("sensore del bicchiere", "#34495e", 0.8, [(self.CUP["x0"] - 3.8, 0, self.Z_CUP + 6.0), (-40.0, 0, self.Z_CUP + 12.0), (-40.0, 0, zd - 1.0)], ["sensore_bicchiere", "schede"]),
             ("alimentazione USB-C", "#1b1b1b", 1.75, [(-self.X_HALF - 17.0, 0, ze + 2.5), (-self.X_HALF - 32.0, 0, ze + 2.5), (-self.X_HALF - 44.0, 0, ze - 14.0), (-self.X_HALF - 50.0, 0, 1.75)], ["spina_usb"]),
         ]
         return L
@@ -459,7 +463,7 @@ class Modello:
 
     def sensore_bicchiere(self):
         """Sensore di Hall (DRV5032) nella parete dietro la nicchia: vede il magnete del bicchierino a 3-4 mm."""
-        return cil_x(2.0, self.CUP["x0"] - 5.4, self.CUP["x0"] - 3.7, 0, self.Z_CUP + 6.0)
+        return cil_x(2.0, self.CUP["x0"] - 3.0, self.CUP["x0"] - 1.3, 0, self.Z_CUP + 6.0)
 
     # ---------------- tutto
     def pezzi(self):
