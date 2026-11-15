@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Scatoletta Blistra v0.7: due ruote in piedi da 14 dosi, ognuna con il suo motorino, in cassette che si sfilano di lato. 11 × 8 × 17,5 cm. Modello 3D interattivo.">
+<title>Scatoletta Blistra v0.7 (due ruote) – modello 3D</title>
+<style>
+  :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141a22; --ink:#eef1f5; --soft:#9aa6b6; --card:#1e2631; --line:#313c4a; --on:#58c9a6; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 12px 14px 32px; }
+  h1 { font-size: 1.15rem; margin: 6px 0 2px; }
+  h2 { font-size: 1rem; margin: 18px 0 6px; }
+  p.sotto { margin: 0 0 10px; color: var(--soft); font-size: .9rem; }
+  #scena { width:100%; height:58vh; min-height:320px; border-radius:14px; overflow:hidden; background:var(--card); border:1px solid var(--line); touch-action:none; position:relative; }
+  #scena canvas { display:block; width:100%; height:100%; }
+  #stato { position:absolute; left:10px; top:8px; right:10px; font-size:.82rem; color:var(--soft); background:color-mix(in srgb, var(--card) 80%, transparent); padding:2px 8px; border-radius:8px; }
+  .comandi { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+  button { font:inherit; padding:12px 10px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
+  button:focus-visible, input:focus-visible { outline:3px solid var(--on); outline-offset:2px; }
+  button.primo { grid-column:1 / -1; background:var(--on); color:#fff; border-color:var(--on); font-weight:600; }
+  @media (prefers-color-scheme: dark) { button.primo { color:#0c1512; } }
+  button[aria-pressed="true"] { border-color:var(--on); box-shadow: inset 0 0 0 1px var(--on); }
+  label.esploso { grid-column:1 / -1; display:flex; align-items:center; gap:10px; padding:6px 2px; color:var(--soft); font-size:.92rem; }
+  label.esploso input { flex:1; accent-color: var(--on); }
+  ul.pezzi { list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; font-size:.88rem; }
+  ul.pezzi i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid var(--line); }
+  .nota { margin-top:18px; font-size:.85rem; color:var(--soft); border-top:1px solid var(--line); padding-top:10px; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Scatoletta Blistra v0.7 – due ruote</h1>
+  <p class="sotto"><a href="it.html">v0.5</a> · <a href="v6.html">v0.6 a due piani</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a></p>
+  <p class="sotto">Due ruote in piedi da 14 dosi, una per lato, ognuna con il suo motorino. Lo scomparto che arriva in basso si svuota da solo e le pillole scendono nel bicchierino. 11 × 8 × 17,5 cm: un terzo della v0.5. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
+  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D…</div></div>
+  <div class="comandi">
+    <button class="primo" id="tasto">Premi il tasto grande</button>
+    <button id="sx" aria-pressed="false">Sfila la ruota di sinistra</button>
+    <button id="dx" aria-pressed="false">Sfila la ruota di destra</button>
+    <button id="cup" aria-pressed="false">Sfila il bicchierino</button>
+    <button id="dentro" aria-pressed="false">Guarda dentro</button>
+    <button id="pillole" aria-pressed="true">Nascondi le pillole</button>
+    <button id="ricarica">Ricarica la settimana</button>
+    <label class="esploso">Smonta <input id="esploso" type="range" min="0" max="100" value="0" aria-label="Smonta i pezzi"></label>
+  </div>
+
+  <h2>Come funziona</h2>
+  <ol>
+    <li>Ogni ruota ha 15 scomparti: 14 dosi e uno chiuso. A riposo lo scomparto chiuso sta in basso, sopra l'uscita.</li>
+    <li>Le dosi si alternano: lunedì mattina dalla ruota di sinistra, lunedì mezzogiorno da quella di destra, e così via. Ogni ruota ha il suo motorino 28BYJ-48 e gira solo quando tocca a lei.</li>
+    <li>All'ora giusta la scatola suona e lampeggia. La persona preme il tasto grande: la ruota avanza di uno scomparto, quello che arriva in basso si svuota da solo e le pillole scivolano nell'imbuto, poi nel bicchierino.</li>
+    <li>Il bicchierino sta su una bilancia: pesa quello che è arrivato davvero. Ha il manico come una tazza e il bordo che rientra.</li>
+    <li>Ricarica: la scatola rimette le ruote a riposo, si sfila una cassetta di lato, la si appoggia sul tavolo, si toglie il coperchio trasparente e si riempiono i 14 scomparti.</li>
+  </ol>
+  <h2>I pezzi</h2>
+  <ul class="pezzi" id="legenda"></ul>
+  <p class="nota">Prova al computer: i pezzi non si toccano neanche mentre le ruote girano e le cassette si sfilano (controlli in <code>cad/controlli_v7.py</code>), ma non è ancora stampata né simulata. Qui le pillole seguono un percorso disegnato, non la fisica. Non ancora pronti: viti, cavi, sensori della posizione di riposo, chiusura a scatto del coperchio.</p>
+</main>
+
+<script type="module">
+import * as THREE from './three.js';
+import { PAR, PEZZI } from './modello_v7.js';
+
+const COLORI = {
+  '1_telaio': ['Guscio', '#eef0ef'], '2_imbuto': ['Imbuto', '#a9cbe6'], '3_cassetta_sx': ['Cassette', '#2f7a6a'], '6_cassetta_dx': ['Cassette', '#2f7a6a'],
+  '4_ruota_sx': ['Ruote da 14 dosi', '#f2f1ec'], '7_ruota_dx': ['Ruote da 14 dosi', '#f2f1ec'], '5_coperchio_sx': ['Coperchi trasparenti', '#bfe3ff'], '8_coperchio_dx': ['Coperchi trasparenti', '#bfe3ff'],
+  '9_bicchierino': ['Bicchierino', '#ffffff'], '10_piatto_bilancia': ['Piatto della bilancia', '#f0a030'], 'motore_sx': ['Due motori 28BYJ-48', '#b7bcc4'], 'motore_dx': ['Due motori 28BYJ-48', '#b7bcc4'],
+  'cella': ['Cella di carico', '#d6dade'], 'display': ['Display', '#101216'], 'tasto': ['Tasto grande', '#d93a2b'], 'schede': ['ESP32-S3, 2 × DRV8833, HX711, cicalino', '#2e7d4f'] };
+
+const box = document.getElementById('scena');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+catch (e) { box.innerHTML = '<p style="padding:12px">Il tuo browser non riesce a mostrare il 3D (WebGL spento).</p>'; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); box.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 5, 3000); camera.up.set(0, 0, 1);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a93a0, 1.6));
+const sole = new THREE.DirectionalLight(0xffffff, 1.9); sole.position.set(220, -160, 320); scene.add(sole);
+const rad = Math.PI / 180;
+
+function geometria(d) {
+  const bin = s => Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(Float32Array.from(new Int16Array(bin(d.v)), x => x * PAR.Q), 3));
+  g.setIndex(new THREE.BufferAttribute(new Uint16Array(bin(d.i)), 1));
+  const p = g.toNonIndexed(); p.computeVertexNormals(); return p;
+}
+const G = {};
+for (const n in COLORI) G[n] = new THREE.Mesh(geometria(PEZZI[n]), new THREE.MeshStandardMaterial({ color: COLORI[n][1], roughness: .55, side: THREE.DoubleSide, transparent: true }));
+for (const n of ['5_coperchio_sx', '8_coperchio_dx']) { G[n].material.opacity = .28; G[n].material.depthWrite = false; G[n].material.roughness = .1; }
+
+// cassette: gruppo che si sfila (cassetta + ruota che gira + coperchio + pillole)
+const lati = [-1, 1].map(s => {
+  const cas = new THREE.Group(), gira = new THREE.Group();
+  gira.position.z = PAR.Z_A; cas.add(gira); scene.add(cas);
+  const k = s < 0 ? ['3_cassetta_sx', '4_ruota_sx', '5_coperchio_sx'] : ['6_cassetta_dx', '7_ruota_dx', '8_coperchio_dx'];
+  cas.add(G[k[0]]); gira.add(G[k[1]]); cas.add(G[k[2]]);
+  return { s, cas, gira, giro: 0, meta: 0, fuori: 0, fuoriMeta: 0, nomi: k };
+});
+const cupG = new THREE.Group(); cupG.add(G['9_bicchierino']); scene.add(cupG);
+for (const n in G) if (!G[n].parent) scene.add(G[n]);
+
+// display sul tetto, si legge da davanti
+const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128; const penna = tela.getContext('2d');
+const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
+const schermo = new THREE.Mesh(new THREE.PlaneGeometry(29, 15), new THREE.MeshBasicMaterial({ map: trama }));
+schermo.rotation.z = Math.PI / 2; schermo.position.set(PAR.DISPLAY.x, 0, PAR.H + 0.05); scene.add(schermo);
+let scritto = '';
+function scrivi(a, b) { if (a + b === scritto) return; scritto = a + b;
+  penna.fillStyle = '#05070a'; penna.fillRect(0, 0, 256, 128); penna.fillStyle = '#e8f4ff'; penna.textAlign = 'center';
+  penna.font = 'bold 58px system-ui, sans-serif'; penna.fillText(a, 128, 64); penna.font = 'bold 26px system-ui, sans-serif'; penna.fillText(b, 128, 106); trama.needsUpdate = true; }
+
+// ---- pillole: dose d (1..28): dispari = sinistra, pari = destra; scomparto k = ceil(d/2)
+const forme = {
+  grande: [() => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 6, 16); g.rotateZ(Math.PI / 2); g.scale(1, 1, .72); return g; }, 3.75, 1150],
+  tonda: [() => { const g = new THREE.CylinderGeometry(4.5, 4.5, 3.5, 24); g.rotateX(Math.PI / 2); return g; }, 1.75, 250],
+  piccola: [() => { const g = new THREE.CylinderGeometry(2.5, 2.5, 2.5, 18); g.rotateX(Math.PI / 2); return g; }, 1.25, 90],
+  capsula: [() => { const g = new THREE.CapsuleGeometry(3.4, 12.6, 6, 16); g.rotateZ(Math.PI / 2); return g; }, 3.4, 480] };
+const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'], momenti = ['mattina', 'mezzogiorno', 'pomeriggio', 'sera'];
+const ricetta = d => { const m = (d - 1) % 4; return m === 0 ? [['grande', '#ffffff'], ['piccola', '#f4d35e']] : m === 1 ? [['tonda', '#e8505b']] : m === 2 ? [['capsula', '#f4d35e']] : [['piccola', '#ffffff'], ['tonda', '#7fb7e6']]; };
+const pillole = [];
+function riempi() {
+  pillole.forEach(p => p.m.parent && p.m.parent.remove(p.m)); pillole.length = 0;
+  for (let d = 1; d <= 28; d++) {
+    const lato = d % 2 ? lati[0] : lati[1], k = Math.ceil(d / 2), phi = (PAR.ANG_CHIUSO + k * PAR.PASSO) * rad;
+    ricetta(d).forEach(([f, c], i) => {
+      const [geo, h, mg] = forme[f];
+      const m = new THREE.Mesh(geo(), new THREE.MeshStandardMaterial({ color: c, roughness: .4 }));
+      const r = PAR.R_I + 6 + i * 9, y = lato.s * (PAR.Y_RUOTA + PAR.FONDO + h + .3);
+      m.position.set(r * Math.cos(phi), y, r * Math.sin(phi));
+      m.rotation.set(Math.PI / 2, -phi, 0, 'YXZ');
+      lato.gira.add(m);
+      pillole.push({ m, d, lato, h, mg, cade: 0, i });
+    });
+  }
+}
+riempi();
+
+// ---- stato
+let dose = 0, esploso = 0, trasparente = false, vediPillole = true, cup = 0, cupMeta = 0;
+const stato = document.getElementById('stato');
+function aggiorna() {
+  for (const L of lati) {
+    L.gira.rotation.y = L.giro * rad;
+    L.cas.position.y = L.s * (L.fuori * 75 + esploso * 45);
+    G[L.nomi[2]].position.y = L.s * esploso * 25;
+  }
+  cupG.position.x = cup * 60 + esploso * 40;
+  G['10_piatto_bilancia'].position.x = esploso * 40; G['2_imbuto'].position.z = -esploso * 0;
+  for (const n of ['1_telaio']) { G[n].material.opacity = trasparente ? .14 : Math.max(.14, 1 - esploso * 1.6); G[n].material.depthWrite = G[n].material.opacity > .99; }
+  for (const n of ['3_cassetta_sx', '6_cassetta_dx']) { G[n].material.opacity = trasparente ? .35 : 1; G[n].material.depthWrite = !trasparente; }
+  schermo.visible = esploso < .02;
+  let nel = 0, peso = 0;
+  pillole.forEach(p => {
+    p.m.visible = vediPillole;
+    if (p.cade <= 0) return;
+    const u = Math.min(1, p.cade), s = p.lato.s, yr = s * (PAR.Y_RUOTA + 6), zc = PAR.Z_CUP + 2.2 + p.h;
+    const cx = -8 + ((p.d * 7 + p.i * 11) % 26), cy = ((p.d * 5 + p.i * 13) % 22) - 11;
+    let x, y, z;
+    if (u < .25) { const v = u / .25; x = 0; y = yr; z = PAR.Z_A - PAR.R_O + 6 - (PAR.Z_A - PAR.R_O + 6 - PAR.Z_IMB0 - p.h) * v * v; }
+    else if (u < .7) { const v = (u - .25) / .45; x = 0; y = yr + (s * PAR.Y_BOCCA - yr) * v; z = PAR.Z_IMB0 + p.h + (PAR.Z_IMB1 - PAR.Z_IMB0) * v; }
+    else { const v = (u - .7) / .3; x = cx * v; y = s * PAR.Y_BOCCA + (cy - s * PAR.Y_BOCCA) * v; z = PAR.Z_IMB1 + p.h + (zc - PAR.Z_IMB1 - p.h) * v * v; }
+    p.m.position.set(x + cupG.position.x * (u >= 1 ? 1 : 0), y, z);
+    if (u >= 1) { nel++; peso += p.mg; }
+  });
+  const prossima = dose + 1, lato = prossima % 2 ? 'sinistra' : 'destra';
+  scrivi(dose === 0 ? "E' ora" : nel ? 'Prendi' : "E' ora", dose === 0 ? 'premi il tasto' : nel ? 'le pillole' : 'premi il tasto');
+  stato.textContent = (dose ? 'Uscita: ' + giorni[Math.floor((dose - 1) / 4)] + ' ' + momenti[(dose - 1) % 4] + ' · ' : '')
+    + (prossima <= 28 ? 'prossima: ' + giorni[Math.floor((prossima - 1) / 4)] + ' ' + momenti[(prossima - 1) % 4] + ' (ruota di ' + lato + ')' : 'settimana finita')
+    + ' · bilancia ' + (peso / 1000).toLocaleString('it-IT', { minimumFractionDigits: 2 }) + ' g';
+}
+
+// ---- camera
+let az = -0.7, el = 0.38, dist = 470; const centro = new THREE.Vector3(10, 0, 85);
+function posaCamera() { const dd = dist * (1 + .5 * esploso);
+  camera.position.set(centro.x + dd * Math.cos(el) * Math.cos(az), dd * Math.cos(el) * Math.sin(az), centro.z + dd * Math.sin(el)); camera.lookAt(centro); }
+const punt = new Map(); let pizzico = 0; const cv = renderer.domElement;
+cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); punt.set(e.pointerId, [e.clientX, e.clientY]); pizzico = 0; });
+cv.addEventListener('pointermove', e => { if (!punt.has(e.pointerId)) return; const p = punt.get(e.pointerId);
+  if (punt.size === 1) { az -= (e.clientX - p[0]) * .008; el = Math.min(1.5, Math.max(-.2, el + (e.clientY - p[1]) * .008)); }
+  punt.set(e.pointerId, [e.clientX, e.clientY]);
+  if (punt.size === 2) { const [a, b] = [...punt.values()], dd = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pizzico) dist = Math.min(1000, Math.max(110, dist * pizzico / dd)); pizzico = dd; } });
+const via = e => { punt.delete(e.pointerId); pizzico = 0; }; cv.addEventListener('pointerup', via); cv.addEventListener('pointercancel', via);
+cv.addEventListener('wheel', e => { e.preventDefault(); dist = Math.min(1000, Math.max(110, dist * (1 + e.deltaY * .001))); }, { passive: false });
+function misura() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(misura).observe(box); misura();
+
+// ---- comandi
+const $ = id => document.getElementById(id);
+const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
+$('tasto').onclick = () => {
+  if (dose >= 28 || lati.some(L => L.fuoriMeta || Math.abs(L.giro - L.meta) > .01)) return;
+  dose++; const L = dose % 2 ? lati[0] : lati[1]; L.meta = Math.ceil(dose / 2) * PAR.PASSO;
+};
+for (const [id, L, testo] of [['sx', lati[0], 'sinistra'], ['dx', lati[1], 'destra']])
+  $(id).onclick = () => { L.fuoriMeta = L.fuoriMeta ? 0 : 1; premi($(id), !!L.fuoriMeta, 'Rimetti la ruota di ' + testo, 'Sfila la ruota di ' + testo); };
+$('cup').onclick = () => { cupMeta = cupMeta ? 0 : 1; premi($('cup'), !!cupMeta, 'Rimetti il bicchierino', 'Sfila il bicchierino'); };
+$('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro'); };
+$('pillole').onclick = () => { vediPillole = !vediPillole; premi($('pillole'), vediPillole, 'Nascondi le pillole', 'Mostra le pillole'); };
+$('ricarica').onclick = () => { dose = 0; for (const L of lati) { L.giro = L.meta = 0; } riempi(); };
+$('esploso').oninput = e => { esploso = e.target.value / 100; };
+const visti = new Set();
+$('legenda').innerHTML = Object.values(COLORI).filter(([n]) => !visti.has(n) && visti.add(n)).map(([n, c]) => `<li><i style="background:${c}"></i>${n}</li>`).join('');
+
+let prima = performance.now();
+const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
+function ciclo(ora) {
+  const dt = Math.min(.05, (ora - prima) / 1000); prima = ora;
+  for (const L of lati) { L.giro = verso(L.giro, L.meta, 30 * dt); L.fuori = verso(L.fuori, L.fuoriMeta, 1.4 * dt); }
+  cup = verso(cup, cupMeta, 1.6 * dt);
+  // lo scomparto che arriva in basso si svuota: le pillole lasciano la ruota e cadono
+  pillole.forEach(p => {
+    if (p.cade > 0) { p.cade = Math.min(1, p.cade + dt / 1.4); return; }
+    const L = p.lato, k = Math.ceil(p.d / 2);
+    if (L.fuori < .01 && L.giro >= k * PAR.PASSO - .5 && p.m.parent === L.gira) { scene.attach(p.m); p.m.rotation.set(Math.PI / 2, 0, 0); p.cade = .001; }
+  });
+  aggiorna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+}
+requestAnimationFrame(ciclo);
+</script>
+</body>
+</html>
