@@ -90,6 +90,36 @@ def controlla(k):
     vol = s8.PROF * (math.pi * (M.R_O ** 2 - M.R_I ** 2) / s8.N - s8.SP_DIV * s8.L_TASCA) / 1000
     print(f"   scomparto: {s8.L_TASCA:.0f} mm lungo, {vol:.1f} cm3 (largo {largh:.1f} mm dove la compressa grande e' larga 10,4)")
     ok &= largh >= 10.6
+    print("8) cavi, alimentazione e Wi-Fi")
+    if M.ruote == 2:
+        nastro = M.nastro()
+        for n in P:
+            v = inter(nastro, P[n])
+            if v > 0.05: male("nastro dei cavi contro", n, round(v, 2))
+        for nome, col, r, pts, attacchi in M.cavi():
+            t = M.tubo(pts, r)
+            for n in P:
+                v = inter(t, P[n]); lim = 1.5 if (n == "1_guscio" and nome in ("sensore del bicchiere",)) else 0.05
+                if v > lim: male("cavo", nome, "contro", n, round(v, 2))
+            for c2 in C:
+                v = inter(t, C[c2]); lim = 14.0 if c2 in attacchi else 0.05   # il capo del cavo entra nel connettore
+                if v > lim: male("cavo", nome, "contro", c2, round(v, 2))
+            for g in (20, 40, 60):
+                if inter(t, M.piattino(g)) > 0.05: male("cavo", nome, "contro il piattino aperto a", g)
+            for lato, nomi in (("sx", [n for n in P if n.endswith("_sx")]), ("dx", [n for n in P if n.endswith("_dx")])):
+                sgn = -1 if lato == "sx" else 1
+                g0 = sum((P[n] for n in nomi), s8.Manifold())
+                for dy in (10, 40, 80):
+                    if inter(t, g0.translate([0, sgn * dy, 0])) > 0.05: male("cavo", nome, "contro la cassetta", lato, "che si sfila")
+        ant = M.antenna().bounding_box()
+        def dist(b):
+            d = [max(0, b[i] - ant[i + 3], ant[i] - b[i + 3]) for i in range(3)]
+            return math.sqrt(sum(x * x for x in d))
+        metalli = [n for n in C if n.startswith(("motore", "cella", "piastra", "altoparlante", "servo"))]
+        dm = min((dist(C[n].bounding_box()), n) for n in metalli)
+        print(f"   antenna Wi-Fi: il metallo piu' vicino e' {dm[1]} a {dm[0]:.0f} mm")
+        if dm[0] < 10: male("antenna troppo vicina a", dm[1])
+        print("   cavi:", ", ".join(c[0] for c in M.cavi()))
     print("7) stabilita'")
     rho = 1.24 * 0.6
     masse = [(m.volume() * rho / 1000, m) for n, m in P.items()]

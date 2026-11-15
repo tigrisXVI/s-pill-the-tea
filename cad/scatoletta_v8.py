@@ -27,17 +27,29 @@ import scatoletta_v5 as v5
 
 N = 15; PASSO = 360.0 / N
 R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
+Z_ESP = 12.0     # l'ESP32 sta 12 mm sopra la scheda dei driver: antenna lontana dalla cella di carico
 R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
 L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.4; PARETE = 1.2
 PAR_CAS = 1.0    # pareti e fondo della cassetta
 MOD = 0.8; Z_PIGNONE = 26; R_PIGNONE = Z_PIGNONE * MOD / 2   # pignone grande (26 denti): cosi' il motorino sta fuori dalle cassette
 N20 = dict(lato_a=12.0, lato_b=10.0, lungo=24.3 + 1.5, albero=3.0)   # motoriduttore N20 (senza encoder) + contatti
-ANG_MOT = {"2m": (118.0, 140.0), "1m": (135.0,)}        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
+ANG_MOT = {"2m": (62.0, 118.0), "1m": (135.0,)}   # motorino della ruota sinistra davanti in alto, della destra dietro in alto        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
 
 MODELLI = {
     "2m": dict(nome="Due ruote, due motorini", R_I=23.0, ruote=2, labbri=False),
     "1m": dict(nome="Una ruota doppia, un motorino", R_I=38.0, ruote=1, labbri=True),
 }
+
+def ingranaggio(Z, m, fase=0.0):
+    """Sezione di una ruota dentata (denti trapezoidali, modulo m): primitivo Z*m/2, piede -1,25 m, testa +m."""
+    R = Z * m / 2; rr, rt = R - 1.25 * m, R + m; p = 360.0 / Z
+    hr, ht = p / 4 * 1.69, p / 4 * 0.45
+    pts = []
+    for k in range(Z):
+        c = fase + k * p
+        for a, r in ((c - hr, rr), (c - ht, rt), (c + ht, rt), (c + hr, rr)):
+            pts.append((r * math.cos(math.radians(a)), r * math.sin(math.radians(a))))
+    return CrossSection([ccw(pts)])
 
 def settore(r0, r1, a0, a1, z0, z1, n=24):
     pts = [(r0 * math.cos(math.radians(a0 + (a1 - a0) * i / n)), r0 * math.sin(math.radians(a0 + (a1 - a0) * i / n))) for i in range(n + 1)]
@@ -48,7 +60,7 @@ class Modello:
     def __init__(self, chiave):
         p = MODELLI[chiave]; self.k = chiave; self.nome = p["nome"]
         self.R_I = p["R_I"]; self.R_O = self.R_I + L_TASCA; self.ruote = p["ruote"]; self.labbri = p["labbri"]
-        self.R_GP = self.R_O + 1.6                       # raggio primitivo della corona
+        self.Z_CORONA = round(2 * (self.R_O + 1.6) / MOD); self.R_GP = self.Z_CORONA * MOD / 2   # corona dentata: denti e raggio primitivo
         self.R_GT = self.R_GP + MOD                      # punta dei denti
         self.R_AN_T = self.R_O + G; self.R_AN_G = self.R_GT + G   # dentro dell'anello: zona tasche / zona corona
         self.R_CASS = self.R_AN_G + PAR_CAS
@@ -61,7 +73,7 @@ class Modello:
         self.Z_COP = (self.TH + 0.2, self.TH + 1.4); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)
         # in Y
         if self.ruote == 2:
-            self.Y0 = 0.6 + 1.4                          # parete centrale (|y|<0,6) + fondo della cassetta
+            self.Y0 = 0.95 + 1.4 + 0.3                   # parete centrale con il canale dei cavi (|y|<0,95) + fondo della cassetta + gioco
             self.Y_PIGN = self.Y0 + sum(self.Z_COR) / 2
             self.Y_DX = -self.Y_PIGN + 1.3 + N20["lungo"] + PARETE + 0.4; self.Y_SX = -self.Y_DX
         else:
@@ -92,7 +104,7 @@ class Modello:
     def ruota_locale(self, faccia_offset=0.0):
         m = Manifold()
         z0, z1 = self.Z_COR
-        m += cil(self.R_GT, z0, z1)                       # corona (i denti sono disegnati come anello pieno)
+        m += Manifold.extrude(ingranaggio(self.Z_CORONA, MOD), z1 - z0).translate([0, 0, z0])   # corona dentata
         zs = [(self.Z_TAS[0], self.Z_TAS[1], 0.0)]
         if self.ruote == 1: zs.append((-self.Z_TAS[1], -self.Z_TAS[0], PASSO / 2))
         for a0, a1, off in zs:
@@ -161,8 +173,22 @@ class Modello:
                 yp = 0.0; faccia = 2.0; y0, y1 = 2.0, 2.0 + N20["lungo"]
             corpo = ruota(scatola(r - N20["lato_b"] / 2, r + N20["lato_b"] / 2, -N20["lato_a"] / 2, N20["lato_a"] / 2, 0, 1), 0)
             corpo = scatola(-N20["lato_b"] / 2, N20["lato_b"] / 2, y0, y1, -N20["lato_a"] / 2, N20["lato_a"] / 2).rotate([0, -a, 0]).translate([x, 0, z])
-            pign = cil_y(R_PIGNONE + MOD, yp - 1.0, yp + 1.0, x, z) + cil_y(N20["albero"] / 2, min(yp, faccia), max(yp, faccia), x, z)
-            out.append(corpo + pign)
+            out.append(corpo + cil_y(N20["albero"] / 2, min(yp - 0.9, faccia), max(yp + 0.9, faccia), x, z))
+        return out
+
+    def pignoni(self):
+        """Pignoni da 26 denti, in fase con la corona; ritorna (pezzo, centro x, y, z)."""
+        out = []
+        pc, pp = 360.0 / self.Z_CORONA, 360.0 / Z_PIGNONE
+        for i, a in enumerate(ANG_MOT[self.k]):
+            s = -1 if i == 0 else 1; yp = s * self.Y_PIGN if self.ruote == 2 else 0.0
+            r = self.R_GP + R_PIGNONE; cx, cz = r * math.cos(math.radians(a)), r * math.sin(math.radians(a))
+            t = round(a / pc) * pc; px, pz = self.R_GP * math.cos(math.radians(t)), self.R_GP * math.sin(math.radians(t))
+            beta = math.degrees(math.atan2(pz - cz, px - cx))
+            sez = ingranaggio(Z_PIGNONE, MOD, beta + pp / 2)
+            m = Manifold.extrude(sez, 2.0).translate([0, 0, -1.0]).transform([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0]])
+            m = (m + cil_y(3.5, -1.0, 1.0, 0, 0)) - cil_y(N20["albero"] / 2 + 0.05, -3, 3, 0, 0)
+            out.append((m.translate([cx, yp, self.Z_A + cz]), cx, yp, self.Z_A + cz))
         return out
 
     def supporti_motori(self):
@@ -170,7 +196,7 @@ class Modello:
         r = self.R_GP + R_PIGNONE
         for i, a in enumerate(ANG_MOT[self.k]):
             if self.ruote == 2:
-                s = -1 if i == 0 else 1; y0, y1 = sorted((s * self.Y_PIGN - s * 3.0, s * self.Y_PIGN - s * 1.3 - s * N20["lungo"]))
+                s = -1 if i == 0 else 1; y0, y1 = sorted((s * self.Y_PIGN - s * 3.0, s * self.Y_PIGN - s * 1.3 - s * (N20["lungo"] - 4.5)))
             else: y0, y1 = 4.0, 2.0 + N20["lungo"]
             fascia = scatola(r + N20["lato_b"] / 2, r + N20["lato_b"] / 2 + 1.6, y0, y1, -N20["lato_a"] / 2 - 1.6, N20["lato_a"] / 2 + 1.6)
             fascia += scatola(r - N20["lato_b"] / 2 - 0.01, r + N20["lato_b"] / 2 + 1.6, y0, y1, N20["lato_a"] / 2, N20["lato_a"] / 2 + 1.6)
@@ -212,7 +238,7 @@ class Modello:
 
     def cella(self):
         p = self.PIATTO; z = self.Z_PIATTO; s = self.lato_cerniera()
-        y = sorted((s * (p["y"] + 0.9), s * (p["y"] + 12.9)))
+        y = sorted((s * (p["y"] + 0.7), s * (p["y"] + 12.7)))
         return scatola(p["x1"] + 2.0 - 47.0, p["x1"] + 2.0, y[0], y[1], z - 8.8, z - 2.8)
 
     def servo(self):
@@ -232,7 +258,7 @@ class Modello:
         giro = [(c["x1"] - 3, z + c["alt"] - 5), (c["x1"] + 12, z + c["alt"] - 3), (c["x1"] + 21, z + c["alt"] - 9), (c["x1"] + 22, z + 11), (c["x1"] + 15, z + 6), (c["x1"] - 3, z + 6)]
         for (xa, za), (xb, zb) in zip(giro, giro[1:]): m += Manifold.batch_hull([sf(xa, za), sf(xb, zb)])
         m -= v5.rett_arrotondato(c["x0"] + c["parete"], c["x1"] - c["parete"], -c["y"] + c["parete"], c["y"] - c["parete"], c["r"] - c["parete"], z + 2.2, z + c["alt"] - 1.6)
-        m -= cil(3.1, z - 1, z + 1.6, 0, 0)                                                     # magnete 6 x 1,5 nella base
+        m -= cil_x(3.1, c["x0"] - 1, c["x0"] + 1.6, 0, z + 6.0)                                 # magnete 6 x 1,5 nella parete dietro, in basso
         return m
 
     def piede(self):
@@ -241,16 +267,15 @@ class Modello:
         m = Manifold.batch_hull([v5.rett_arrotondato(p["x0"], p["x1"], -p["y"], p["y"], 18, 0, 1.0),
                                  v5.rett_arrotondato(p["x0"] + 4, p["x1"] - 4, -p["y"] + 4, p["y"] - 4, 14, p["h"] - 0.01, p["h"])])
         m -= self._zavorra(0.3)                                                                 # tasca chiusa per la zavorra (si inserisce in pausa di stampa)
-        m -= cil(3.0, 0.3, p["h"] + 1, 0, 0)                                                    # sensore di Hall sotto il bicchierino
         return m
 
-    ZAVORRA = dict(lungo=104.0, largo=76.0, spess=6.0)    # piastra di ferro 104 x 76 x 6 mm, foro da 8 mm (~370 g)
+    ZAVORRA = dict(lungo=104.0, largo=76.0, spess=6.0)    # piastra di ferro 104 x 76 x 6 mm (~370 g)
     def _zavorra(self, g=0.0):
         z = self.ZAVORRA; xc = (self.PIEDE["x0"] + self.PIEDE["x1"]) / 2
         return scatola(xc - z["lungo"] / 2 - g, xc + z["lungo"] / 2 + g, -z["largo"] / 2 - g, z["largo"] / 2 + g, 1.2 - g, 1.2 + z["spess"] + g)
 
     def piastra_acciaio(self):
-        return self._zavorra() - cil(4.0, 0, 9, 0, 0)
+        return self._zavorra()
 
     def _profilo(self, g):
         """Vista di fianco: rettangolo con gli spigoli in alto arrotondati (raggio R_TOP), rientrato di g."""
@@ -297,7 +322,7 @@ class Modello:
                 m -= cil_y(self.R_CASS + 0.4, ys[0], ys[1], 0, self.Z_A) - (scatola(-100, 100, -1.0, 1.0, 0, 300) if False else Manifold())
                 ys2 = sorted((s * (self.Y0 + self.Z_FL[0] - 0.01), s * 40))
                 m -= cil_y(self.R_CASS + 1.4, ys2[0], ys2[1], 0, self.Z_A)
-            m += (scatola(-self.X_HALF + 1, self.X_HALF - 8.0, -0.6, 0.6, self.Z_IMB0 + 2.2, self.H - 1.0) ^ self._profilo(PARETE - 0.5)) - cil_y(6.0, -2, 2, 0, self.Z_A) \
+            m += (scatola(-self.X_HALF + 1, self.X_HALF - 8.0, -0.95, 0.95, self.Z_IMB0 + 2.2, self.H - 1.0) ^ self._profilo(PARETE - 0.5)) - cil_y(6.0, -2, 2, 0, self.Z_A) \
                  - scatola(self.X_TASTO - 10.5, self.X_TASTO + 10.5, -2, 2, self.H - PARETE - 11.5, self.H) \
                  - scatola(self.X_TASTO - 13.6, self.X_TASTO + 13.6, -2, 2, self.H - PARETE - 2.0, self.H)
         else:
@@ -312,8 +337,16 @@ class Modello:
         m += scatola(cb[0], cb[0] + 15.0, cb[1], cb[4], self.Z_NICCHIA + PARETE - 0.01, cb[2])   # appoggio della cella (lato fisso)
         # display davanti in alto, luce, USB-C, griglia del cicalino
         m -= scatola(x1 - PARETE - 1, x1 + 1, self.Y_MID - 12, self.Y_MID + 12, self.Z_DISP[0] + 6, self.Z_DISP[1] - 6)
-        m -= scatola(-self.X_HALF - 1, -self.X_HALF + PARETE + 1, -4.5, 4.5, self.Z_NICCHIA + 4, self.Z_NICCHIA + 8)
+        m += self.supporti_motori()                                                            # fascette dei motorini, attaccate alla parete centrale
         m -= cil(self.R_TASTO + 0.4, self.H - 7, self.H + 1, self.X_TASTO, 0)                    # foro del tasto
+        if self.ruote == 2:   # canale dei cavi dentro la parete centrale (fili da 0,5 mm in fila), aperto in basso e in alto
+            m -= scatola(self.X_CANALE - 4, self.X_CANALE + 4, -0.5, 0.5, self.Z_IMB0, self.H - PARETE - 0.5)
+            m -= scatola(self.X_CANALE - 4, self.X_CANALE + 4, -2, 2, self.Z_A + 38, self.H - PARETE - 0.5)
+        # presa USB-C dietro, all'altezza della scheda ESP32
+        zb = self.Z_PIATTO - 1.0 + Z_ESP
+        m -= scatola(-self.X_HALF - 1, -self.X_HALF + PARETE + 1, -4.8, 4.8, zb + 0.4, zb + 4.6)
+        # sensore di Hall nella parete dietro la nicchia, all'altezza del magnete del bicchierino
+        m -= cil_x(2.4, self.CUP["x0"] - 5.5, self.CUP["x0"] - 3.6, 0, self.Z_CUP + 6.0)
         xa = x1 - PARETE
         m += cil_x(11.4, xa - 4.0, xa + 0.01, 0, self.Z_SUONO) - cil_x(10.25, xa - 5, xa + 1, 0, self.Z_SUONO)   # anello che tiene l'altoparlante
         for dy, dz in [(0, 0)] + [(5.5 * math.cos(math.radians(a)), 5.5 * math.sin(math.radians(a))) for a in range(0, 360, 60)]:
@@ -321,7 +354,7 @@ class Modello:
         self._corpo = m
         return m
 
-    X_TASTO = 26.0; R_TASTO = 10.5      # tasto tondo da 21 mm sul tetto, davanti (dove la ruota curva e lascia spazio)
+    X_TASTO = 0.0;  X_CANALE = -42.0; R_TASTO = 10.5      # tasto tondo da 21 mm sul tetto, davanti (dove la ruota curva e lascia spazio)
     def tasto(self):
         """Il tasto stampato: cupoletta che sporge 3 mm, bordino sotto il tetto che lo trattiene, perno che preme l'interruttore."""
         hr = self.H - PARETE
@@ -341,10 +374,15 @@ class Modello:
         return scatola(x1 - PARETE - 4.2, x1 - PARETE - 0.2, self.Y_MID - 17.7, self.Y_MID + 17.7, self.Z_DISP[0], self.Z_DISP[1] - 1.5)
 
     def schede(self):
-        """ESP32-S3 SuperMini, DRV8833, HX711: dietro, sopra il tetto della nicchia."""
+        """Sotto: scheda con 2 x DRV8833 e HX711. Sopra: ESP32-S3 SuperMini, USB-C verso dietro e antenna verso il vuoto davanti."""
         z = self.Z_PIATTO - 1.0
         xb = -self.X_HALF + PARETE + 0.5
-        return scatola(xb, xb + 18.0, -11.25, 11.25, z, z + 4.5) + scatola(xb, xb + 18.5, -8, 8, z + 5, z + 9)
+        return scatola(xb, xb + 18.5, -8, 8, z, z + 4) + scatola(xb, xb + 18.0, -11.25, 11.25, z + Z_ESP, z + Z_ESP + 4.5)
+
+    def antenna(self):
+        """Zona dell'antenna dell'ESP32 (ultimi 4 mm della scheda): niente metallo entro 10 mm."""
+        z = self.Z_PIATTO - 1.0 + Z_ESP; xb = -self.X_HALF + PARETE + 0.5
+        return scatola(xb + 14.0, xb + 18.0, -6, 6, z, z + 4.5)
 
     Z_SUONO = 68.0
     def altoparlante(self):
@@ -357,14 +395,58 @@ class Modello:
         z = self.Z_NICCHIA + PARETE + 0.1
         return scatola(26.0, 44.0, -9.0, 9.0, z, z + 3.0)
 
+    # ---------------- cavi (fili siliconati da 0,5 mm, a mazzetti) e alimentazione
+    def spina_usb(self):
+        z = self.Z_PIATTO - 1.0 + Z_ESP + 2.5
+        return scatola(-self.X_HALF - 17.0, -self.X_HALF - 0.3, -5.5, 5.5, z - 3.5, z + 3.5)
+
+    def cavi(self):
+        """Percorsi dei cavi: (nome, colore, raggio del mazzetto, punti, componenti a cui si attacca)."""
+        H = self.H; zc = H - PARETE - 1.7                 # i cavi di sopra corrono sotto il tetto, sopra i motorini
+        ze = self.Z_PIATTO - 1.0 + Z_ESP                  # fondo dell'ESP32
+        zd = self.Z_PIATTO - 1.0                          # fondo della scheda dei driver
+        xc = self.X_CANALE
+        mot = lambda a: (lambda r: (r * math.cos(math.radians(a)), self.Z_A + r * math.sin(math.radians(a))))
+        m1, m1e = mot(ANG_MOT[self.k][0])(self.R_GP + R_PIGNONE), mot(ANG_MOT[self.k][0])(self.R_GP + R_PIGNONE + 8.4)
+        m2, m2e = mot(ANG_MOT[self.k][1])(self.R_GP + R_PIGNONE), mot(ANG_MOT[self.k][1])(self.R_GP + R_PIGNONE + 8.4)
+        yw = self.Y_DX - PARETE - 2.6                   # i fili partono dai contatti del motorino (ultimi 4 mm, senza fascetta)
+        m1, m2 = mot(ANG_MOT[self.k][0])(self.R_GP + R_PIGNONE + 5.9), mot(ANG_MOT[self.k][1])(self.R_GP + R_PIGNONE + 5.9)
+        zf = self.Z_A + 50.0                            # i fili entrano nel canale da qui
+        L = [
+            ("motorino davanti", "#c0392b", 0.8, [(m1[0], yw, m1[1]), (m1e[0], yw, m1e[1]), (m1e[0], 16, zc), (xc + 1, 16, zc), (xc - 1.5, 0.9, zf)], ["motore_1"]),
+            ("motorino dietro", "#c0392b", 0.8, [(m2[0], -yw, m2[1]), (m2e[0], -yw, m2e[1]), (m2e[0], -19.5, zc), (xc + 1, -19.5, zc), (xc - 2.5, -0.9, zf)], ["motore_2"]),
+            ("display", "#2f6fd0", 1.0, [(48.8, 0, 192.4), (48.8, -14.6, 193.2), (40, -14.6, zc - 1.5), (xc + 1, -14.6, zc), (xc + 0.5, -0.9, zf)], ["display"]),
+            ("tasto", "#e0b400", 0.8, [(-10.5, 6, self.H - PARETE - 10.7), (-14, 7.4, self.H - PARETE - 7), (xc + 1, 7.4, zc), (xc + 2.5, 0.9, zf)], ["interruttore"]),
+            ("servo", "#e67e22", 0.9, [(19.2, 10.8, 53.0), (19.2, 17.5, 53.0), (-29.5, 17.5, 53.0), (-31.6, 5.0, zd + 2.0)], ["servo", "schede"]),
+            ("amplificatore", "#8e44ad", 1.1, [(25.4, 6.0, 49.3), (20.0, 20.4, 50.6), (-29.0, 20.4, 51.0), (-31.8, 8.0, ze + 2.2)], ["amplificatore", "schede"]),
+            ("altoparlante", "#7f8c8d", 0.7, [(46.6, 5.0, 60.0), (44.8, 5.0, 52.0), (42.5, 5.0, 51.4)], ["altoparlante", "amplificatore"]),
+            ("cella di carico", "#16a085", 1.0, [(-32.6, -17.9, 51.6), (-35.5, -12.0, 55.0), (-36.0, -8.6, zd + 1.5)], ["cella", "schede"]),
+            ("sensore del bicchiere", "#34495e", 0.8, [(-28.2, 0, self.Z_CUP + 6.0), (-40.0, 0, self.Z_CUP + 12.0), (-40.0, 0, zd - 1.0)], ["sensore_bicchiere", "schede"]),
+            ("alimentazione USB-C", "#1b1b1b", 1.75, [(-self.X_HALF - 17.0, 0, ze + 2.5), (-self.X_HALF - 32.0, 0, ze + 2.5), (-self.X_HALF - 44.0, 0, ze - 14.0), (-self.X_HALF - 50.0, 0, 1.75)], ["spina_usb"]),
+        ]
+        return L
+
+    def nastro(self):
+        """I fili di sopra scendono in fila dentro il canale della parete centrale fino all'ESP32 e ai driver."""
+        ze = self.Z_PIATTO - 1.0 + Z_ESP
+        return scatola(self.X_CANALE - 3.0, self.X_CANALE + 3.0, -0.4, 0.4, ze + 4.6, self.Z_A + 50.0)
+
+    @staticmethod
+    def tubo(punti, r):
+        m = Manifold()
+        sf = [Manifold.sphere(r, 16).translate(list(p)) for p in punti]
+        for a, b in zip(sf, sf[1:]): m += Manifold.batch_hull([a, b])
+        return m
+
     def sensore_bicchiere(self):
-        return cil(2.0, 0.6, 2.2, 0, 0)
+        """Sensore di Hall (DRV5032) nella parete dietro la nicchia: vede il magnete del bicchierino a 3-4 mm."""
+        return cil_x(2.0, self.CUP["x0"] - 5.4, self.CUP["x0"] - 3.7, 0, self.Z_CUP + 6.0)
 
     # ---------------- tutto
     def pezzi(self):
         P = {"1_guscio": self.guscio(), "2_cappello": self.cappello(), "3_piede": self.piede(), "4_imbuto": self.imbuto(),
              "5_piattino": self.piattino(), "6_staffa_cella": self.staffa_cella(), "7_bicchierino": self.bicchierino(),
-             "8_supporti_motori": self.supporti_motori(), "12_tasto": self.tasto()}
+             "12_tasto": self.tasto()}
         if self.ruote == 2:
             for s, n in ((-1, "sx"), (1, "dx")):
                 P["9_cassetta_" + n] = self.metti(self.cassetta_locale(), s)
@@ -379,8 +461,9 @@ class Modello:
 
     def componenti(self):
         C = {"cella": self.cella(), "servo": self.servo(), "display": self.display(), "schede": self.schede(),
-             "piastra_acciaio": self.piastra_acciaio(), "sensore_bicchiere": self.sensore_bicchiere(), "interruttore": self.interruttore(), "altoparlante": self.altoparlante(), "amplificatore": self.amplificatore()}
+             "piastra_acciaio": self.piastra_acciaio(), "sensore_bicchiere": self.sensore_bicchiere(), "interruttore": self.interruttore(), "altoparlante": self.altoparlante(), "amplificatore": self.amplificatore(), "spina_usb": self.spina_usb()}
         for i, m in enumerate(self.motori()): C["motore_" + str(i + 1)] = m
+        for i, (m, *_c) in enumerate(self.pignoni()): C["motore_" + str(i + 1) + "_pignone"] = m
         return C
 
     def misure(self):

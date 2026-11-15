@@ -13,7 +13,7 @@ def dati(m):
     return {"v": base64.b64encode(np.round(v / Q).astype(np.int16).tobytes()).decode(), "i": base64.b64encode(i.astype(np.uint16).tobytes()).decode()}
 
 # dai controlli (cad/controlli_v8.py): angolo a cui si ribalta, con e senza piastra; capacita' di uno scomparto
-STAB = {"2m": dict(lato=47, lato_senza=26, avanti=53, dietro=50, tasca=4.3, peso=643, zavorra=370, cg=47)}
+STAB = {"2m": dict(lato=44, lato_senza=24, avanti=50, dietro=47, tasca=4.3, peso=682, zavorra=372, cg=52)}
 
 tutto = {}
 for k in ("2m",):
@@ -23,7 +23,11 @@ for k in ("2m",):
     for n, m in P.items():
         if n.startswith("10_"): m = m.translate([0, 0, -M.Z_A])            # le ruote girano attorno al loro asse
         pezzi[n] = dati(m)
+    piv = {}
+    for i, (m, cx, cy, cz) in enumerate(M.pignoni()):
+        C["motore_" + str(i + 1) + "_pignone"] = m.translate([-cx, -cy, -cz]); piv["c_motore_" + str(i + 1) + "_pignone"] = [cx, cy, cz]
     for n, m in C.items(): pezzi["c_" + n] = dati(m)
+    pezzi["nastro_cavi"] = dati(M.nastro())
     if M.ruote == 2:
         facce = [dict(lato=-1, y=-(M.Y0 + M.Z_TAS[0]), off=0.0), dict(lato=1, y=M.Y0 + M.Z_TAS[0], off=0.0)]
     else:
@@ -32,7 +36,9 @@ for k in ("2m",):
     tutto[k] = dict(PAR=dict(nome=s.MODELLI[k]["nome"], ruote=M.ruote, R_I=M.R_I, R_O=M.R_O, Z_A=M.Z_A, H=H, L=L, W=W, X_HALF=M.X_HALF, Y_SX=M.Y_SX, Y_DX=M.Y_DX,
                                 Z_IMB0=M.Z_IMB0, Z_IMBB=M.Z_PIATTO + 7.0, Z_PIATTO=M.Z_PIATTO, PIATTO=M.PIATTO, CERNIERA=M.lato_cerniera(), Z_CUP=M.Z_CUP, CUP=M.CUP,
                                 Z_DISP=M.Z_DISP, Y_MID=M.Y_MID, PIEDE=M.PIEDE, PROF=s.PROF, facce=facce, STAB=STAB[k],
-                                litri=round(L * W * H / 1e6, 2), ruota_d=round(2 * M.R_CASS)),
+                                litri=round(L * W * H / 1e6, 2), ruota_d=round(2 * M.R_CASS),
+                                Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,
+                                CAVI=[dict(nome=n, colore=c, r=r, punti=p, attacchi=a) for n, c, r, p, a in M.cavi()]),
                     PEZZI=pezzi)
     print(k, "pezzi", len(pezzi))
 open(out, "w").write("export const PASSO=" + json.dumps(s.PASSO) + ", Q=" + json.dumps(Q) + ";\nexport const MODELLI=" + json.dumps(tutto) + ";\n")

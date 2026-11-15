@@ -3,19 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Scatoletta Blistra v0.8: la più compatta. Due ruote e due motorini, piede zavorrato, piattino pesato che si apre solo se il peso è giusto, bicchierino come in una macchina del caffè. Modello 3D interattivo.">
-<title>Scatoletta Blistra v0.8 (la più compatta) – modello 3D</title>
+<meta name="description" content="Scatoletta Blistra v0.8: due ruote dentate e due motorini, piede zavorrato, piattino pesato, bicchierino come in una macchina del caffè. Modello 3D con simulazione fisica delle pillole.">
+<title>Scatoletta Blistra v0.8 – modello 3D con fisica</title>
 <style>
-  :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; --no:#b3261e; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141a22; --ink:#eef1f5; --soft:#9aa6b6; --card:#1e2631; --line:#313c4a; --on:#58c9a6; --no:#f2948c; } }
+  :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#f7f5f1; --line:#d5dae1; --on:#1f6f5c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141a22; --ink:#eef1f5; --soft:#9aa6b6; --card:#1b222c; --line:#313c4a; --on:#58c9a6; } }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 760px; margin: 0 auto; padding: 12px 14px 32px; }
+  main { max-width: 820px; margin: 0 auto; padding: 12px 14px 32px; }
   h1 { font-size: 1.15rem; margin: 6px 0 2px; }
   h2 { font-size: 1rem; margin: 18px 0 6px; }
   p.sotto { margin: 0 0 10px; color: var(--soft); font-size: .9rem; }
-  .scelta { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0 10px; }
-  #scena { width:100%; height:58vh; min-height:320px; border-radius:14px; overflow:hidden; background:var(--card); border:1px solid var(--line); touch-action:none; position:relative; }
+  #scena { width:100%; height:62vh; min-height:340px; border-radius:14px; overflow:hidden; background:radial-gradient(120% 90% at 50% 35%, var(--card), var(--bg)); border:1px solid var(--line); touch-action:none; position:relative; }
   #scena canvas { display:block; width:100%; height:100%; }
   #stato { position:absolute; left:10px; top:8px; right:10px; font-size:.82rem; color:var(--soft); background:color-mix(in srgb, var(--card) 80%, transparent); padding:2px 8px; border-radius:8px; }
   .comandi { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
@@ -24,11 +23,10 @@
   button.primo { grid-column:1 / -1; background:var(--on); color:#fff; border-color:var(--on); font-weight:600; }
   @media (prefers-color-scheme: dark) { button.primo { color:#0c1512; } }
   button[aria-pressed="true"] { border-color:var(--on); box-shadow: inset 0 0 0 1px var(--on); }
-  button[hidden] { display:none; }
+  button:disabled { opacity:.5; cursor:default; }
   table { border-collapse: collapse; width:100%; font-size:.9rem; }
   th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
-  th { color:var(--soft); font-weight:500; }
-  td.su { outline:2px solid var(--on); outline-offset:-2px; border-radius:4px; }
+  th { color:var(--soft); font-weight:500; width:38%; }
   ul.pezzi { list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; font-size:.88rem; }
   ul.pezzi i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid var(--line); }
   .nota { margin-top:18px; font-size:.85rem; color:var(--soft); border-top:1px solid var(--line); padding-top:10px; }
@@ -37,219 +35,337 @@
 </head>
 <body>
 <main>
-  <h1>Scatoletta Blistra v0.8 – la più compatta</h1>
+  <h1>Scatoletta Blistra v0.8 – con la fisica vera</h1>
   <p class="sotto"><a href="it.html">v0.5</a> · <a href="v6.html">v0.6</a> · <a href="v7.html">v0.7</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a></p>
-  <p class="sotto">Due ruote, due motorini. Le dosi cadono su un piattino pesato, che si apre solo se il peso è quello impostato nell'app, e le pillole finiscono nel bicchierino, che sta sotto come in una macchina del caffè. Corpo scuro, cappello colorato a righine, tasto tondo sopra. Quasi tutto il peso è nel piede. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
-  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D…</div></div>
+  <p class="sotto">Due ruote dentate, due motorini. Le pillole qui sono corpi rigidi simulati: cadono, rotolano e si appoggiano con la gravità e l'attrito, come farebbero davvero. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
+  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D e il motore fisico…</div></div>
   <div class="comandi">
-    <button class="primo" id="tasto">Premi il tasto</button>
+    <button class="primo" id="tasto" disabled>Premi il tasto</button>
     <button id="cup" aria-pressed="false">Prendi il bicchierino</button>
     <button id="sbaglia">Prova: togli una pillola dalla prossima dose</button>
     <button id="sx" aria-pressed="false">Sfila la cassetta di sinistra</button>
     <button id="dx" aria-pressed="false">Sfila la cassetta di destra</button>
-    <button id="dentro" aria-pressed="false">Guarda dentro</button>
+    <button id="dentro" aria-pressed="false">Guarda dentro (cavi e schede)</button>
     <button id="ricarica">Ricarica la settimana</button>
     <button id="suona">Fai suonare la sveglia</button>
+    <button id="foto">Salva una foto</button>
   </div>
 
   <h2>Misure e stabilità</h2>
-  <table>
-    <tbody id="tabella"></tbody>
-  </table>
+  <table><tbody id="tabella"></tbody></table>
 
   <h2>Come funziona</h2>
   <ol>
-    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Le muove un motorino N20 con un ingranaggio sul bordo della ruota, sistemato nell'angolo dietro in alto, dove la ruota tonda lascia spazio libero.</li>
-    <li>All'ora giusta l'altoparlante davanti suona (e può dire «È ora delle pillole») e il display si accende. La persona preme il tasto tondo sul cappello. Lo scomparto che arriva in basso si svuota nell'imbuto e le pillole cadono sul piattino.</li>
-    <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, un micro servo lo apre e le pillole scendono nel bicchierino. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
-    <li>Il bicchierino ha un magnete nella base: un sensore sotto il piede sa se è al suo posto. Il piattino si apre solo con il bicchierino sotto, e quando lo togli la dose risulta presa.</li>
-    <li>Stabilità: il piede è largo 10 cm (il corpo 5) e dentro c'è una piastra di ferro da 6 mm, circa 370 g su 640 in tutto. Il baricentro sta a 4,6 cm da terra: per farla cadere di lato bisogna inclinarla di 47 gradi. Sotto vanno quattro piedini di gomma antiscivolo.</li>
+    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Il bordo di ogni ruota è una corona dentata da 122 denti; la muove il pignone da 26 denti di un motorino N20, nell'angolo in alto dove la ruota tonda lascia spazio (uno davanti, uno dietro).</li>
+    <li>All'ora giusta l'altoparlante davanti suona e il display si accende. La persona preme il tasto tondo sul cappello. La ruota avanza di uno scomparto: quello che arriva in basso si apre sull'uscita, le pillole cadono nell'imbuto e poi sul piattino.</li>
+    <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, un micro servo lo apre e le pillole scivolano nel bicchierino. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
+    <li>Il bicchierino ha un magnete nella parete dietro: un sensore nella nicchia sa se è al suo posto. Quando lo togli la dose risulta presa.</li>
+    <li>Cavi: i fili dei motorini, del display e del tasto corrono sotto il tetto e scendono in un canale dentro la parete centrale fino alle schede, dietro in basso. Corrente da una presa USB-C dietro (5 V).</li>
+    <li>Internet: l'ESP32-S3 si collega al Wi-Fi di casa. La sua antenna sta in cima alla pila delle schede, a 15 mm dal metallo più vicino. Se il Wi-Fi manca, la scatola continua con gli orari salvati e manda tutto quando torna la rete.</li>
   </ol>
   <h2>I pezzi</h2>
   <ul class="pezzi" id="legenda"></ul>
-  <p class="nota">Prova al computer: i pezzi non si toccano neanche mentre le ruote girano, le cassette si sfilano e il piattino si apre (controlli in <code>cad/controlli_v8.py</code>), ma non è ancora stampata. Qui le pillole seguono un percorso disegnato, non la fisica. Le pillole sotto i 20 mg la bilancia non le vede bene: l'app avvisa quando una dose ne contiene.</p>
+  <p class="nota">Prova al computer: i pezzi non si toccano neanche mentre le ruote girano, le cassette si sfilano e il piattino si apre, e i cavi stanno lontani dalle parti che si muovono (controlli in <code>cad/controlli_v8.py</code>). Non è ancora stampata. Fisica: <a href="https://rapier.rs">Rapier</a> (licenza Apache 2.0); i pesi sul display sono quelli impostati nell'app.</p>
 </main>
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.4';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.5';
 
-const COLORI = [
-  [/^1_guscio/, 'Corpo', '#30353c'], [/^2_cappello/, 'Cappello colorato', '#a8dcc8'], [/^12_tasto/, 'Tasto tondo', '#f7f7f4'], [/^c_interruttore/, 'Interruttore del tasto', '#2e7d4f'], [/^3_piede/, 'Piede largo', '#262a30'], [/^4_imbuto/, 'Imbuto', '#a9cbe6'],
-  [/^5_piattino/, 'Piattino pesato', '#f0a030'], [/^6_staffa/, 'Staffa della cella', '#8f99a6'], [/^7_bicchierino/, 'Bicchierino', '#ffffff'], [/^8_supporti/, 'Supporti dei motorini', '#8f99a6'],
-  [/^9_cassetta/, 'Cassette', '#2f7a6a'], [/^10_ruota/, 'Ruote', '#f2f1ec'], [/^11_coperchio/, 'Coperchi trasparenti', '#bfe3ff'],
-  [/^c_motore/, 'Motorini N20 con pignone', '#b7bcc4'], [/^c_cella/, 'Cella di carico 100 g', '#d6dade'], [/^c_servo/, 'Micro servo', '#3b6fd6'],
-  [/^c_display/, 'Display', '#101216'], [/^c_schede/, 'ESP32-S3, driver, HX711', '#2e7d4f'], [/^c_piastra/, 'Piastra di ferro (zavorra)', '#5d636b'], [/^c_sensore/, 'Sensore di Hall', '#222'], [/^c_altoparlante/, 'Altoparlante 20 mm', '#c8a24a'], [/^c_amplificatore/, 'Amplificatore MAX98357A', '#1f5fae']];
-const colore = n => COLORI.find(c => c[0].test(n)) || [null, n, '#cccccc'];
-
+const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
+const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
 const box = document.getElementById('scena'), stato = document.getElementById('stato');
-let renderer;
-try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
-catch (e) { box.innerHTML = '<p style="padding:12px">Il tuo browser non riesce a mostrare il 3D (WebGL spento).</p>'; throw e; }
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); box.appendChild(renderer.domElement);
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(35, 1, 5, 3000); camera.up.set(0, 0, 1);
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8a93a0, 1.6));
-const sole = new THREE.DirectionalLight(0xffffff, 1.9); sole.position.set(220, -160, 320); scene.add(sole);
-const rad = Math.PI / 180;
+const $ = id => document.getElementById(id);
 
-function geometria(d) {
+// ---------------- materiali
+const MAT = {
+  corpo: () => new THREE.MeshPhysicalMaterial({ color: '#2d3137', roughness: .42, clearcoat: .35, clearcoatRoughness: .35 }),
+  cappello: () => new THREE.MeshPhysicalMaterial({ color: '#a9d6c4', roughness: .5, clearcoat: .2, clearcoatRoughness: .5, sheen: .3, sheenColor: '#ffffff' }),
+  piede: () => new THREE.MeshPhysicalMaterial({ color: '#22252a', roughness: .62 }),
+  bianco: () => new THREE.MeshPhysicalMaterial({ color: '#f4f2ec', roughness: .32, clearcoat: .2 }),
+  vetro: () => new THREE.MeshPhysicalMaterial({ color: '#ffffff', transmission: 1, thickness: 1.6, roughness: .05, ior: 1.52, attenuationColor: '#d4eef2', attenuationDistance: 60, specularIntensity: 1, transparent: true }),
+  ceramica: () => new THREE.MeshPhysicalMaterial({ color: '#fbfbf8', roughness: .18, clearcoat: 1, clearcoatRoughness: .08 }),
+  imbuto: () => new THREE.MeshPhysicalMaterial({ color: '#e8eef2', roughness: .25, transmission: .6, thickness: 1.2, transparent: true }),
+  arancio: () => new THREE.MeshPhysicalMaterial({ color: '#e99a2c', roughness: .4 }),
+  grigio: () => new THREE.MeshPhysicalMaterial({ color: '#8f99a6', roughness: .45 }),
+  metallo: () => new THREE.MeshPhysicalMaterial({ color: '#c9ccd1', metalness: 1, roughness: .32 }),
+  ottone: () => new THREE.MeshPhysicalMaterial({ color: '#c8a24a', metalness: 1, roughness: .35 }),
+  ferro: () => new THREE.MeshPhysicalMaterial({ color: '#5b6068', metalness: .9, roughness: .55 }),
+  pcb: () => new THREE.MeshPhysicalMaterial({ color: '#1f6b3a', roughness: .5, clearcoat: .4 }),
+  pcbBlu: () => new THREE.MeshPhysicalMaterial({ color: '#1f4fa8', roughness: .5, clearcoat: .4 }),
+  nero: () => new THREE.MeshPhysicalMaterial({ color: '#111316', roughness: .3, clearcoat: .6 }),
+  servo: () => new THREE.MeshPhysicalMaterial({ color: '#2f63c9', roughness: .5 }),
+  alluminio: () => new THREE.MeshPhysicalMaterial({ color: '#cfd3d8', metalness: 1, roughness: .45 }),
+  nastro: () => new THREE.MeshPhysicalMaterial({ color: '#9aa3ad', roughness: .6 }) };
+const PEZZI = [
+  [/^1_guscio/, 'Corpo', 'corpo'], [/^2_cappello/, 'Cappello colorato', 'cappello'], [/^3_piede/, 'Piede con zavorra', 'piede'], [/^4_imbuto/, 'Imbuto', 'imbuto'],
+  [/^5_piattino/, 'Piattino pesato', 'arancio'], [/^6_staffa/, 'Staffa della cella', 'grigio'], [/^7_bicchierino/, 'Bicchierino', 'ceramica'], [/^12_tasto/, 'Tasto tondo', 'bianco'],
+  [/^9_cassetta/, 'Cassette trasparenti', 'vetro'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^11_coperchio/, 'Coperchi trasparenti', 'vetro'],
+  [/^c_motore_\d_pignone/, 'Pignoni da 26 denti', 'ottone'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
+  [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi), driver, HX711', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
+  [/^c_altoparlante/, 'Altoparlante 20 mm', 'ferro'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'pcbBlu'], [/^c_interruttore/, 'Interruttore del tasto', 'pcb'], [/^c_spina_usb/, 'Spina USB-C', 'nero'],
+  [/^nastro_cavi/, 'Fili nel canale della parete', 'nastro']];
+const tipo = n => PEZZI.find(c => c[0].test(n)) || [null, n, 'grigio'];
+
+// ---------------- geometrie: dati compressi -> normali morbide (spigoli vivi sopra i 35 gradi)
+function decodifica(d) {
   const bin = s => Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(Float32Array.from(new Int16Array(bin(d.v)), x => x * Q), 3));
-  g.setIndex(new THREE.BufferAttribute(new Uint16Array(bin(d.i)), 1));
-  const p = g.toNonIndexed(); p.computeVertexNormals(); return p;
+  return { v: Float32Array.from(new Int16Array(bin(d.v)), x => x * Q), i: new Uint16Array(bin(d.i)) };
+}
+function morbida({ v, i }, gradi = 35) {
+  const nt = i.length / 3, fn = new Float32Array(nt * 3), cosT = Math.cos(gradi * rad), quale = new Map(), id = new Int32Array(v.length / 3);
+  for (let k = 0; k < v.length / 3; k++) { const key = v[3 * k] + ',' + v[3 * k + 1] + ',' + v[3 * k + 2]; if (!quale.has(key)) quale.set(key, quale.size); id[k] = quale.get(key); }
+  const lista = Array.from({ length: quale.size }, () => []);
+  for (let t = 0; t < nt; t++) {
+    const a = i[3 * t] * 3, b = i[3 * t + 1] * 3, c = i[3 * t + 2] * 3;
+    const ux = v[b] - v[a], uy = v[b + 1] - v[a + 1], uz = v[b + 2] - v[a + 2], wx = v[c] - v[a], wy = v[c + 1] - v[a + 1], wz = v[c + 2] - v[a + 2];
+    fn[3 * t] = uy * wz - uz * wy; fn[3 * t + 1] = uz * wx - ux * wz; fn[3 * t + 2] = ux * wy - uy * wx;
+    for (let j = 0; j < 3; j++) lista[id[i[3 * t + j]]].push(t);
+  }
+  const pos = new Float32Array(nt * 9), nor = new Float32Array(nt * 9);
+  for (let t = 0; t < nt; t++) {
+    const l0 = Math.hypot(fn[3 * t], fn[3 * t + 1], fn[3 * t + 2]) || 1;
+    for (let j = 0; j < 3; j++) {
+      const vi = i[3 * t + j]; let sx = 0, sy = 0, sz = 0;
+      for (const u of lista[id[vi]]) {
+        const l = Math.hypot(fn[3 * u], fn[3 * u + 1], fn[3 * u + 2]) || 1;
+        if ((fn[3 * t] * fn[3 * u] + fn[3 * t + 1] * fn[3 * u + 1] + fn[3 * t + 2] * fn[3 * u + 2]) / (l0 * l) > cosT) { sx += fn[3 * u]; sy += fn[3 * u + 1]; sz += fn[3 * u + 2]; }
+      }
+      const l = Math.hypot(sx, sy, sz) || 1, o = 9 * t + 3 * j;
+      pos[o] = v[3 * vi]; pos[o + 1] = v[3 * vi + 1]; pos[o + 2] = v[3 * vi + 2]; nor[o] = sx / l; nor[o + 1] = sy / l; nor[o + 2] = sz / l;
+    }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); return g;
 }
 
-// ---- pillole (stessi pesi del modellino v0.5)
+// ---------------- scena
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); }
+catch (e) { box.innerHTML = '<p style="padding:12px">Il tuo browser non riesce a mostrare il 3D (WebGL spento).</p>'; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+box.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, 10, 4000); camera.up.set(0, 0, 1);
+
+// ambiente da studio fotografico (pannelli luminosi), per riflessi credibili
+(function studio() {
+  const env = new THREE.Scene();
+  env.add(new THREE.Mesh(new THREE.BoxGeometry(20, 20, 20), new THREE.MeshStandardMaterial({ color: '#7d8186', side: THREE.BackSide })));
+  const pannello = (w, h, x, y, z, rx, ry, k) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.set(rx, ry, 0); env.add(m); };
+  pannello(10, 10, 0, 0, 9.5, 0, 0, 6);                  // soffitto (z in alto)
+  pannello(6, 8, -9.5, 0, 2, 0, Math.PI / 2, 3);          // dietro
+  pannello(6, 8, 0, -9.5, 2, Math.PI / 2, 0, 2.2);        // sinistra
+  pannello(8, 4, 9.5, 2, 1, 0, Math.PI / 2, 1.6);         // davanti
+  env.add(new THREE.AmbientLight(0xffffff, .6));
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(env, .03).texture;
+})();
+scene.add(new THREE.HemisphereLight(0xffffff, 0x6d6257, .35));
+const sole = new THREE.DirectionalLight(0xfff4e6, 2.4); sole.position.set(260, -200, 420); sole.castShadow = true;
+Object.assign(sole.shadow.camera, { left: -170, right: 170, top: 170, bottom: -170, near: 100, far: 1100 }); sole.shadow.mapSize.set(2048, 2048);
+sole.shadow.bias = -0.0004; sole.shadow.normalBias = .6; sole.shadow.radius = 5; scene.add(sole);
+(function tavolo() {   // tavolo chiaro che sfuma ai bordi
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const r = g.createRadialGradient(128, 128, 20, 128, 128, 128); r.addColorStop(0, '#fff'); r.addColorStop(.75, '#888'); r.addColorStop(1, '#000');
+  g.fillStyle = r; g.fillRect(0, 0, 256, 256);
+  const t = new THREE.Mesh(new THREE.CircleGeometry(420, 96), new THREE.MeshStandardMaterial({ color: '#d9d2c8', roughness: .82, alphaMap: new THREE.CanvasTexture(c), transparent: true }));
+  t.position.set(10, 0, -.05); t.receiveShadow = true; scene.add(t);
+})();
+
+// ---------------- pezzi
+const G = {}, GEO = {};
+for (const n in PZ) {
+  GEO[n] = decodifica(PZ[n]);
+  const t = tipo(n), m = new THREE.Mesh(morbida(GEO[n]), MAT[t[2]]());
+  m.castShadow = t[2] !== 'vetro' && t[2] !== 'imbuto'; m.receiveShadow = true; G[n] = m;
+}
+const radice = new THREE.Group(); scene.add(radice);
+const lati = [['sx', -1], ['dx', 1]].map(([s, sg]) => {
+  const cas = new THREE.Group(), gira = new THREE.Group(); gira.position.z = P.Z_A; cas.add(gira); radice.add(cas);
+  cas.add(G['9_cassetta_' + s]); cas.add(G['11_coperchio_' + s]); gira.add(G['10_ruota_' + s]);
+  return { s: sg, nome: s, cas, gira, giro: 0, meta: 0, fuori: 0, fuoriMeta: 0 };
+});
+for (const L of lati) {   // numeri delle dosi sul mozzo di ogni ruota (girano con la ruota)
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = '#f4f2ec'; g.beginPath(); g.arc(256, 256, 256, 0, 7); g.fill();
+  g.fillStyle = '#1f6f5c'; g.beginPath(); g.arc(256, 256, 70, 0, 7); g.fill();
+  g.font = 'bold 50px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (let k = 0; k <= 14; k++) {
+    const a = (-90 + k * PASSO) * (L.s < 0 ? 1 : -1) * rad, x = 256 + 190 * Math.cos(a), y = 256 - 190 * Math.sin(a);
+    g.fillStyle = k ? '#1c2430' : '#e8590c'; g.fillText(k ? String(L.s < 0 ? 2 * k - 1 : 2 * k) : '●', x, y);
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  const d = new THREE.Mesh(new THREE.CircleGeometry(P.R_I - 0.6, 64), new THREE.MeshPhysicalMaterial({ map: tex, roughness: .35 }));
+  d.rotation.x = L.s < 0 ? Math.PI / 2 : -Math.PI / 2; d.position.y = L.s * (P.Y0 + P.Z_TAS[1] + 0.06); L.gira.add(d);
+}
+const yh = P.CERNIERA * (P.PIATTO.y + 1), zh = P.Z_PIATTO + .6;
+const perno = new THREE.Group(); perno.position.set(0, yh, zh); G['5_piattino'].position.set(0, -yh, -zh); perno.add(G['5_piattino']); radice.add(perno);
+const cupG = new THREE.Group(); cupG.add(G['7_bicchierino']); radice.add(cupG);
+const pignoni = [1, 2].map(i => { const n = 'c_motore_' + i + '_pignone', g = new THREE.Group(); g.position.set(...P.PIGNONI[n]); g.add(G[n]); radice.add(g); return g; });
+for (const n in G) if (!G[n].parent) radice.add(G[n]);
+const cavi = new THREE.Group(); radice.add(cavi);
+for (const c of P.CAVI) {
+  const curva = new THREE.CatmullRomCurve3(c.punti.map(p => new THREE.Vector3(...p)), false, 'centripetal', .2);
+  const m = new THREE.Mesh(new THREE.TubeGeometry(curva, c.punti.length * 28, c.r, 12, false), new THREE.MeshPhysicalMaterial({ color: c.colore, roughness: .55, clearcoat: .2 }));
+  m.castShadow = true; cavi.add(m);
+}
+const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128;
+const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
+const schermo = new THREE.Mesh(new THREE.PlaneGeometry(23, 11.5), new THREE.MeshBasicMaterial({ map: trama, toneMapped: false }));
+schermo.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)));
+schermo.position.set(P.X_HALF - 1.15, P.Y_MID, (P.Z_DISP[0] + P.Z_DISP[1]) / 2); radice.add(schermo);
+let scritto = '';
+function scrivi(a, b) { if (a + b === scritto) return; scritto = a + b; const p = tela.getContext('2d');
+  p.fillStyle = '#020304'; p.fillRect(0, 0, 256, 128); p.fillStyle = '#d8ecff'; p.textAlign = 'center';
+  p.font = 'bold 44px system-ui, sans-serif'; p.fillText(a, 128, 58); p.font = 'bold 24px system-ui, sans-serif'; p.fillText(b, 128, 100); trama.needsUpdate = true; }
+
+// ---------------- pillole (forme vere: compresse con lo spigolo arrotondato, ovali, capsule bicolori)
+function compressa(R, T) {
+  const e = Math.min(T * .42, R * .35), pts = [new THREE.Vector2(0, -T / 2)];
+  for (let k = 0; k <= 8; k++) { const a = -Math.PI / 2 + k / 8 * Math.PI / 2; pts.push(new THREE.Vector2(R - e + e * Math.cos(a), -T / 2 + e + e * Math.sin(a))); }
+  for (let k = 0; k <= 8; k++) { const a = k / 8 * Math.PI / 2; pts.push(new THREE.Vector2(R - e + e * Math.cos(a), T / 2 - e + e * Math.sin(a))); }
+  pts.push(new THREE.Vector2(0, T / 2));
+  return new THREE.LatheGeometry(pts, 36);
+}
+function bicolore(g, a, b) { const p = g.attributes.position, col = new Float32Array(p.count * 3), A = new THREE.Color(a), B = new THREE.Color(b);
+  for (let k = 0; k < p.count; k++) { const c = p.getX(k) > 0 ? A : B; col.set([c.r, c.g, c.b], 3 * k); } g.setAttribute('color', new THREE.BufferAttribute(col, 3)); return g; }
 const FORME = {
-  grande: [() => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 6, 16); g.rotateZ(Math.PI / 2); g.scale(1, .72, 1); return g; }, 3.75, 1150],
-  capsula: [() => { const g = new THREE.CapsuleGeometry(3.4, 12.6, 6, 16); g.rotateZ(Math.PI / 2); return g; }, 3.4, 480],
-  tonda: [() => new THREE.CylinderGeometry(4.5, 4.5, 3.5, 24), 1.75, 250],
-  piccola: [() => new THREE.CylinderGeometry(2.5, 2.5, 2.5, 18), 1.25, 90] };
-const ricetta = d => { const m = (d - 1) % 4; return m === 0 ? [['grande', '#ffffff'], ['piccola', '#f4d35e']] : m === 1 ? [['tonda', '#e8505b']] : m === 2 ? [['capsula', '#f4d35e'], ['tonda', '#ffffff']] : [['piccola', '#ffffff'], ['tonda', '#7fb7e6']]; };
-const pesoGiusto = d => ricetta(d).reduce((t, [f]) => t + FORME[f][2], 0);
+  grande: { geo: () => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 8, 24); g.rotateZ(Math.PI / 2); g.scale(1, .72, 1); return g; }, h: 3.75, mg: 1150 },
+  capsula: { geo: () => { const g = new THREE.CapsuleGeometry(3.4, 12.6, 8, 24); g.rotateZ(Math.PI / 2); return g; }, h: 3.4, mg: 480 },
+  tonda: { geo: () => compressa(4.5, 3.5), h: 1.75, mg: 250 },
+  piccola: { geo: () => compressa(2.5, 2.5), h: 1.25, mg: 90 } };
+const ricetta = d => { const m = (d - 1) % 4; return m === 0 ? [['grande', '#ffffff'], ['piccola', '#f4d35e']] : m === 1 ? [['tonda', '#e8505b']] : m === 2 ? [['capsula', '#f4d35e', '#e8505b'], ['tonda', '#ffffff']] : [['piccola', '#ffffff'], ['tonda', '#7fb7e6']]; };
+const pesoGiusto = d => ricetta(d).reduce((t, [f]) => t + FORME[f].mg, 0);
 const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'], momenti = ['mattina', 'mezzogiorno', 'pomeriggio', 'sera'];
 const nomeDose = d => giorni[Math.floor((d - 1) / 4)] + ' ' + momenti[(d - 1) % 4];
 
-// ---- costruisce un modello
-function costruisci(k) {
-  const { PAR, PEZZI } = MODELLI[k], radice = new THREE.Group(), G = {};
-  for (const n in PEZZI) {
-    const c = colore(n);
-    G[n] = new THREE.Mesh(geometria(PEZZI[n]), new THREE.MeshStandardMaterial({ color: c[2], roughness: .55, side: THREE.DoubleSide, transparent: true }));
-    if (/^11_/.test(n)) { G[n].material.opacity = .28; G[n].material.depthWrite = false; G[n].material.roughness = .1; }
-  }
-  // cassette: gruppo che si sfila (cassetta + coperchi + ruota che gira)
-  const due = PAR.ruote === 2;
-  const lati = (due ? [['sx', -1], ['dx', 1]] : [['', -1]]).map(([s, sg]) => {
-    const cas = new THREE.Group(), gira = new THREE.Group(); gira.position.z = PAR.Z_A; cas.add(gira); radice.add(cas);
-    for (const n in G) if (/^(9_|11_)/.test(n) && (due ? n.endsWith('_' + s) : true)) cas.add(G[n]);
-    for (const n in G) if (/^10_/.test(n) && (due ? n.endsWith('_' + s) : true)) gira.add(G[n]);
-    return { s: sg, cas, gira, giro: 0, meta: 0, fuori: 0, fuoriMeta: 0 };
-  });
-  // piattino: ruota attorno alla cerniera (asse X)
-  const yh = PAR.CERNIERA * (PAR.PIATTO.y + 1), zh = PAR.Z_PIATTO + .6;
-  const perno = new THREE.Group(); perno.position.set(0, yh, zh); G['5_piattino'].position.set(0, -yh, -zh); perno.add(G['5_piattino']); radice.add(perno);
-  const cupG = new THREE.Group(); cupG.add(G['7_bicchierino']); radice.add(cupG);
-  for (const n in G) if (!G[n].parent) radice.add(G[n]);
-  // schermo del display, dietro la finestra davanti
-  const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128;
-  const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
-  const schermo = new THREE.Mesh(new THREE.PlaneGeometry(23, 11.5), new THREE.MeshBasicMaterial({ map: trama }));
-  schermo.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)));
-  schermo.position.set(PAR.X_HALF - 2.15, PAR.Y_MID, (PAR.Z_DISP[0] + PAR.Z_DISP[1]) / 2); radice.add(schermo);
-  scene.add(radice);
-  return { k, PAR, G, lati, perno, cupG, radice, tela, trama, schermo, scritto: '' };
+// ---------------- fisica (Rapier, in cm)
+stato.textContent = 'Carico il motore fisico…';
+const mod = await import('./rapier.mjs'); const R = mod.default || mod; await R.init();
+const world = new R.World({ x: 0, y: 0, z: -981 });
+world.timestep = 1 / 240; world.integrationParameters.numSolverIterations = 8;
+const FLAG = R.TriMeshFlags ? R.TriMeshFlags.FIX_INTERNAL_EDGES : undefined;
+function trimesh(n, dx = 0, dy = 0, dz = 0) {
+  const { v, i } = GEO[n], w = new Float32Array(v.length);
+  for (let k = 0; k < v.length; k += 3) { w[k] = (v[k] - dx) * S; w[k + 1] = (v[k + 1] - dy) * S; w[k + 2] = (v[k + 2] - dz) * S; }
+  const d = FLAG !== undefined ? R.ColliderDesc.trimesh(w, Uint32Array.from(i), FLAG) : R.ColliderDesc.trimesh(w, Uint32Array.from(i));
+  return d.setFriction(.45).setRestitution(.1);
 }
-const M = { '2m': costruisci('2m') };
-let A = M['2m'];
+const fisso = world.createRigidBody(R.RigidBodyDesc.fixed());
+for (const n of ['1_guscio', '3_piede', '4_imbuto', '6_staffa_cella']) world.createCollider(trimesh(n), fisso);
+world.createCollider(R.ColliderDesc.cuboid(80, 80, 1).setTranslation(0, 0, -1).setFriction(.6), fisso);
+const kin = (x, y, z) => world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(x, y, z));
+for (const L of lati) {
+  L.cB = kin(0, 0, 0); world.createCollider(trimesh('9_cassetta_' + L.nome), L.cB); world.createCollider(trimesh('11_coperchio_' + L.nome), L.cB);
+  L.wB = kin(0, 0, P.Z_A * S); world.createCollider(trimesh('10_ruota_' + L.nome), L.wB);
+}
+const trayB = kin(0, yh * S, zh * S); world.createCollider(trimesh('5_piattino', 0, yh, zh), trayB);
+const cupB = kin(0, 0, 0); world.createCollider(trimesh('7_bicchierino'), cupB);
+const qY = new THREE.Quaternion(), qX = new THREE.Quaternion(), asseY = new THREE.Vector3(0, 1, 0), asseX = new THREE.Vector3(1, 0, 0);
 
-function scrivi(a, b) { if (a + b === A.scritto) return; A.scritto = a + b; const p = A.tela.getContext('2d');
-  p.fillStyle = '#05070a'; p.fillRect(0, 0, 256, 128); p.fillStyle = '#e8f4ff'; p.textAlign = 'center';
-  p.font = 'bold 44px system-ui, sans-serif'; p.fillText(a, 128, 58); p.font = 'bold 24px system-ui, sans-serif'; p.fillText(b, 128, 100); A.trama.needsUpdate = true; }
-
-// ---- stato della simulazione
-let dose = 0, fase = 'pronta', apre = 0, apreMeta = 0, cup = 0, cupMeta = 0, trasparente = false, attesa = 0, sbagliata = 0, prese = 0, avviso = '';
 let pillole = [];
-// dose d: nel modello a 2 ruote dispari = sinistra, pari = destra; in quello a 1 ruota dispari = faccia sx, pari = faccia dx (mezzo scomparto dopo)
-const dove = d => { const f = A.PAR.facce[d % 2 ? 0 : 1], k = Math.ceil(d / 2); return { f, k, lato: A.lati.length === 2 ? A.lati[d % 2 ? 0 : 1] : A.lati[0], giro: f.off + k * PASSO }; };
 function riempi() {
-  pillole.forEach(p => p.m.parent && p.m.parent.remove(p.m)); pillole = [];
-  const P = A.PAR;
+  for (const p of pillole) { if (p.stato !== 'tolta') world.removeRigidBody(p.b); scene.remove(p.m); } pillole = [];
   for (let d = 1; d <= 28; d++) {
-    const { f, k, lato } = dove(d), a = (-90 + f.off + k * PASSO) * rad, rm = (P.R_I + P.R_O) / 2;
+    const L = lati[d % 2 ? 0 : 1], k = Math.ceil(d / 2), a = (-90 + k * PASSO) * rad, r = (P.R_I + P.R_O) / 2;
     let prof = 0;
-    ricetta(d).forEach(([forma, col], i) => {
-      const [geo, h, mg] = FORME[forma];
-      const m = new THREE.Mesh(geo(), new THREE.MeshStandardMaterial({ color: col, roughness: .4 }));
-      const r = forma === 'grande' || forma === 'capsula' ? rm : rm + (i ? 5 : -5);
-      m.position.set(r * Math.cos(a), f.lato * (Math.abs(f.y) + prof + h + .3), r * Math.sin(a));
-      m.rotation.y = -a; prof += 2 * h + .3;
-      lato.gira.add(m);
-      pillole.push({ m, d, lato, h, mg, stato: 'ruota', t: 0, i });
+    ricetta(d).forEach(([forma, c1, c2]) => {
+      const F = FORME[forma], geo = F.geo();
+      if (c2) bicolore(geo, c1, c2);
+      const m = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: c2 ? '#ffffff' : c1, vertexColors: !!c2, roughness: .38, clearcoat: .55, clearcoatRoughness: .25 }));
+      m.castShadow = true; m.receiveShadow = true;
+      const y = L.s * (P.Y0 + P.Z_TAS[0] + prof + F.h + .35); prof += 2 * F.h + .35;
+      const pos = new THREE.Vector3(r * Math.cos(a), y, P.Z_A + r * Math.sin(a)), q = new THREE.Quaternion().setFromAxisAngle(asseY, -a);
+      const punti = Float32Array.from(geo.attributes.position.array, x => x * S);
+      const b = world.createRigidBody(R.RigidBodyDesc.dynamic().setTranslation(pos.x * S, pos.y * S, pos.z * S).setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }).setCcdEnabled(true).setLinearDamping(.05).setAngularDamping(.3));
+      world.createCollider(R.ColliderDesc.convexHull(punti).setDensity(1.2).setFriction(.42).setRestitution(.15), b);
+      m.position.copy(pos); m.quaternion.copy(q);
+      scene.add(m); pillole.push({ m, b, d, L, mg: F.mg, stato: 'ruota' });
     });
   }
 }
-function nuovoModello(k) {
-  A = M[k];
-  for (const x in M) M[x].radice.visible = x === k;
-  dose = 0; fase = 'pronta'; apre = apreMeta = 0; cup = cupMeta = 0; sbagliata = 0; prese = 0; avviso = '';
-  for (const L of A.lati) { L.giro = L.meta = 0; L.fuori = L.fuoriMeta = 0; }
-  riempi(); bottoni();
+
+// ---------------- stato della dose
+let dose = 0, fase = 'pronta', apre = 0, apreMeta = 0, cup = 0, cupMeta = 0, trasparente = false, attesa = 0, prese = 0, avviso = '', calma = 0;
+const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
+function sulPiatto(p) { const t = p.b.translation(), x = t.x / S, y = t.y / S, z = t.z / S;
+  return x > P.PIATTO.x0 - 1 && x < P.PIATTO.x1 + 1 && Math.abs(y) < P.PIATTO.y + 1 && z > P.Z_PIATTO && z < P.Z_PIATTO + 14; }
+function nelBicchiere(p) { const t = p.b.translation(), x = t.x / S - cup * 75, y = t.y / S, z = t.z / S;
+  return x > P.CUP.x0 && x < P.CUP.x1 && Math.abs(y) < P.CUP.y && z > P.Z_CUP && z < P.Z_CUP + P.CUP.alt + 4; }
+const veloce = p => { const v = p.b.linvel(); return Math.hypot(v.x, v.y, v.z) > 1.5; };
+
+function passo(h) {   // un passo di fisica: muove i pezzi cinematici, poi avanza il mondo
+  for (const L of lati) {
+    L.giro = verso(L.giro, L.meta, 36 * h); L.fuori = verso(L.fuori, L.fuoriMeta, 1.2 * h);
+    const yc = L.s * L.fuori * 80;
+    L.cB.setNextKinematicTranslation({ x: 0, y: yc * S, z: 0 });
+    L.wB.setNextKinematicTranslation({ x: 0, y: yc * S, z: P.Z_A * S });
+    qY.setFromAxisAngle(asseY, L.giro * rad); L.wB.setNextKinematicRotation({ x: qY.x, y: qY.y, z: qY.z, w: qY.w });
+  }
+  apre = verso(apre, apreMeta, 90 * h); qX.setFromAxisAngle(asseX, P.CERNIERA * apre * rad);
+  trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w });
+  cup = verso(cup, cupMeta, 1.4 * h); cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
+  world.step();
 }
 
-// ---- percorso di caduta: dallo scomparto all'imbuto, poi sul piattino; poi (se si apre) nel bicchierino
-const lerp = (a, b, u) => a + (b - a) * u;
-function posaPillola(p, dt) {
-  const P = A.PAR, n = pillole.filter(q => q.d === p.d).indexOf(p);
-  const jx = [-5, 5, 0][n % 3], jy = [-4, 3, 0][n % 3];
-  if (p.stato === 'cade') {
-    p.t = Math.min(1, p.t + dt / 1.1); const u = p.t, a = p.da;
-    const fonte = new THREE.Vector3(0, a.y, P.Z_IMB0 + p.h), bocca = new THREE.Vector3(jx * .3, Math.max(-5, Math.min(5, a.y)), P.Z_IMBB + p.h);
-    const piatto = new THREE.Vector3(jx, jy * P.CERNIERA * -.6, P.Z_PIATTO + 1.2 + p.h);
-    if (u < .3) p.m.position.lerpVectors(a, fonte, (u / .3) ** 2);
-    else if (u < .75) p.m.position.lerpVectors(fonte, bocca, (u - .3) / .45);
-    else p.m.position.lerpVectors(bocca, piatto, ((u - .75) / .25) ** 2);
-    if (u >= 1) p.stato = 'piatto';
-  } else if (p.stato === 'scende') {
-    p.t = Math.min(1, p.t + dt / .7); const u = p.t;
-    const giu = new THREE.Vector3(1 + jx * 1.4, jy * 1.6, P.Z_CUP + 2.2 + p.h + n * 1.5);
-    p.m.position.lerpVectors(p.da, giu, u * u);
-    if (u >= 1) { p.stato = 'tazza'; A.cupG.attach(p.m); }
+function logica(dt) {
+  const vive = pillole.filter(p => p.stato !== 'tolta'), dosePill = vive.filter(p => p.d === dose);
+  const fermeRuote = !lati.some(L => Math.abs(L.giro - L.meta) > .01), sotto = cup < .02;
+  if (fase === 'gira' && fermeRuote) { fase = 'cade'; attesa = 7; calma = 0; }
+  if (fase === 'cade') {
+    attesa -= dt; calma = dosePill.every(p => sulPiatto(p) && !veloce(p)) ? calma + dt : 0;
+    if (calma > .5 || attesa <= 0) { fase = 'pesa'; attesa = .6; }
   }
-}
-
-function aggiorna(dt) {
-  const P = A.PAR;
-  for (const L of A.lati) {
-    L.giro = verso(L.giro, L.meta, 30 * dt); L.fuori = verso(L.fuori, L.fuoriMeta, 1.4 * dt);
-    L.gira.rotation.y = L.giro * rad; L.cas.position.y = L.s * L.fuori * 80;
-  }
-  apre = verso(apre, apreMeta, 120 * dt); A.perno.rotation.x = P.CERNIERA * apre * rad;
-  cup = verso(cup, cupMeta, 1.6 * dt); A.cupG.position.x = cup * 75;
-  const sotto = cup < .02;
-  // le pillole lasciano la ruota quando lo scomparto arriva in basso
-  for (const p of pillole) {
-    if (p.stato === 'ruota' && p.d === dose && p.lato.fuori < .01 && Math.abs(p.lato.giro - dove(p.d).giro) < .5) {
-      A.radice.attach(p.m); p.da = p.m.position.clone(); p.m.rotation.set(0, 0, 0); p.stato = 'cade'; p.t = 0;
-    }
-    if (p.stato === 'cade' || p.stato === 'scende') posaPillola(p, dt);
-  }
-  const sulPiatto = pillole.filter(p => p.d === dose && p.stato === 'piatto');
-  const cadono = pillole.some(p => p.d === dose && (p.stato === 'cade' || p.stato === 'ruota'));
-  const peso = sulPiatto.reduce((t, p) => t + p.mg, 0);
-  if (fase === 'gira' && !cadono && !A.lati.some(L => Math.abs(L.giro - L.meta) > .01)) { fase = 'pesa'; attesa = .8; }
+  const peso = vive.filter(sulPiatto).reduce((t, p) => t + p.mg, 0);
   if (fase === 'pesa' && (attesa -= dt) <= 0) {
-    if (Math.abs(peso - pesoGiusto(dose)) <= 20) { fase = 'aspetta_cup'; }
-    else { fase = 'sbagliata'; avviso = 'Peso sbagliato: ' + peso + ' mg invece di ' + pesoGiusto(dose) + ' mg. Il piattino resta chiuso e l\'app avvisa la famiglia.'; }
+    const bloccate = dosePill.filter(p => !sulPiatto(p)).length;
+    if (Math.abs(peso - pesoGiusto(dose)) <= 20) fase = 'aspetta_cup';
+    else { fase = 'sbagliata'; avviso = (bloccate ? bloccate + (bloccate > 1 ? ' pillole non sono arrivate' : ' pillola non è arrivata') + ' sul piattino. ' : '')
+      + 'Peso ' + peso + ' mg invece di ' + pesoGiusto(dose) + ' mg: il piattino resta chiuso e l\'app avvisa la famiglia.'; }
   }
-  if (fase === 'aspetta_cup' && sotto) { fase = 'apre'; apreMeta = 60; attesa = .35; }
-  if (fase === 'apre' && (attesa -= dt) <= 0) { for (const p of sulPiatto) { p.stato = 'scende'; p.t = 0; p.da = p.m.position.clone(); } fase = 'chiude'; attesa = .9; }
-  if (fase === 'chiude' && (attesa -= dt) <= 0) { apreMeta = 0; fase = 'prendi'; }
+  if (fase === 'aspetta_cup' && sotto) { fase = 'apre'; apreMeta = 60; attesa = 1.6; }
+  if (fase === 'apre' && apre >= 59.9 && (attesa -= dt) <= 0) { apreMeta = 0; fase = 'chiude'; }
+  if (fase === 'chiude' && apre <= .01) fase = 'prendi';
   if (fase === 'prendi' && cup > .5) { fase = 'presa'; prese++; }
   if (fase === 'presa' && cupMeta === 0 && sotto) {
-    pillole.filter(p => p.stato === 'tazza').forEach(p => { p.m.parent.remove(p.m); p.stato = 'presa'; });
+    for (const p of vive) if (nelBicchiere(p)) { world.removeRigidBody(p.b); scene.remove(p.m); p.stato = 'tolta'; }
     fase = 'pronta';
   }
-  // display e riga di stato
-  const d = dose;
-  const testi = { pronta: d >= 28 ? ['Fine', 'ricarica'] : ["E' ora", 'premi il tasto'], gira: ['Un attimo', 'preparo la dose'], pesa: ['Peso…', ''],
-    aspetta_cup: ['Metti', 'il bicchierino'], apre: ['Pronto', ''], chiude: ['Pronto', ''], prendi: ['Prendi', 'il bicchierino'], presa: ['Fatto ✓', 'rimettilo giù'], sbagliata: ['Attenzione', 'peso sbagliato'] };
+  const testi = { pronta: dose >= 28 ? ['Fine', 'ricarica'] : ["E' ora", 'premi il tasto'], gira: ['Un attimo', 'preparo la dose'], cade: ['Un attimo', 'preparo la dose'], pesa: ['Peso…', ''],
+    aspetta_cup: ['Metti', 'il bicchierino'], apre: ['Pronto', ''], chiude: ['Pronto', ''], prendi: ['Prendi', 'il bicchierino'], presa: ['Fatto ✓', 'rimettilo giù'], sbagliata: ['Attenzione', 'controlla la dose'] };
   scrivi(...testi[fase]);
   const g = x => (x / 1000).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  stato.textContent = (fase === 'sbagliata' ? avviso : (d ? 'Dose ' + nomeDose(d) + ' · piattino ' + g(peso) + ' g su ' + g(pesoGiusto(d)) + ' g impostati' : 'Pronta: premi il tasto per la prima dose'))
-    + ' · bicchierino ' + (sotto ? 'al suo posto (magnete visto)' : 'tolto') + ' · dosi prese ' + prese;
-  // trasparenza
-  for (const n in A.G) {
-    const m = A.G[n].material;
-    if (/^1_guscio|^2_cappello|^3_piede/.test(n)) { m.opacity = trasparente ? .14 : 1; m.depthWrite = !trasparente; }
-    if (/^9_/.test(n)) { m.opacity = trasparente ? .35 : 1; m.depthWrite = !trasparente; }
-  }
-  A.schermo.visible = !trasparente;
+  stato.textContent = (fase === 'sbagliata' ? avviso : (dose ? 'Dose ' + nomeDose(dose) + ' · piattino ' + g(peso) + ' g su ' + g(pesoGiusto(dose)) + ' g impostati' : 'Pronta: premi il tasto per la prima dose'))
+    + ' · bicchierino ' + (sotto ? 'al suo posto' : 'tolto') + ' · dosi prese ' + prese;
+  $('tasto').disabled = !(fase === 'pronta' && dose < 28 && !lati.some(L => L.fuoriMeta || L.fuori > .01));
 }
 
-// ---- suono (Web Audio): le stesse note che farebbe l'altoparlante
+function disegna() {
+  for (const L of lati) { L.gira.rotation.y = L.giro * rad; L.cas.position.y = L.s * L.fuori * 80; }
+  pignoni.forEach((g, i) => { g.rotation.y = -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; });
+  perno.rotation.x = P.CERNIERA * apre * rad; cupG.position.x = cup * 75;
+  for (const p of pillole) { if (p.stato === 'tolta') continue; const t = p.b.translation(), q = p.b.rotation(); p.m.position.set(t.x / S, t.y / S, t.z / S); p.m.quaternion.set(q.x, q.y, q.z, q.w); }
+  for (const n of ['1_guscio', '2_cappello', '3_piede']) { const m = G[n].material; m.transparent = trasparente; m.opacity = trasparente ? .12 : 1; m.depthWrite = !trasparente; G[n].castShadow = !trasparente; }
+  schermo.visible = !trasparente;
+}
+
+// ---------------- camera
+let az = -0.62, el = 0.26, dist = 640;
+function posaCamera() { const c = new THREE.Vector3(8, 0, P.H * .46);
+  camera.position.set(c.x + dist * Math.cos(el) * Math.cos(az), dist * Math.cos(el) * Math.sin(az), c.z + dist * Math.sin(el)); camera.lookAt(c); }
+const punt = new Map(); let pizzico = 0; const cv = renderer.domElement;
+cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); punt.set(e.pointerId, [e.clientX, e.clientY]); pizzico = 0; });
+cv.addEventListener('pointermove', e => { if (!punt.has(e.pointerId)) return; const p = punt.get(e.pointerId);
+  if (punt.size === 1) { az -= (e.clientX - p[0]) * .008; el = Math.min(1.45, Math.max(-.05, el + (e.clientY - p[1]) * .008)); }
+  punt.set(e.pointerId, [e.clientX, e.clientY]);
+  if (punt.size === 2) { const [a, b] = [...punt.values()], dd = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pizzico) dist = Math.min(1300, Math.max(140, dist * pizzico / dd)); pizzico = dd; } });
+const via = e => { punt.delete(e.pointerId); pizzico = 0; }; cv.addEventListener('pointerup', via); cv.addEventListener('pointercancel', via);
+cv.addEventListener('wheel', e => { e.preventDefault(); dist = Math.min(1300, Math.max(140, dist * (1 + e.deltaY * .001))); }, { passive: false });
+function misura() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(misura).observe(box); misura();
+
+// ---------------- suoni (le stesse note dell'altoparlante)
 let audio;
 function nota(f, t0, dur, vol = .18) {
   audio = audio || new (window.AudioContext || window.webkitAudioContext)();
@@ -258,80 +374,62 @@ function nota(f, t0, dur, vol = .18) {
   o.connect(g).connect(audio.destination); o.start(t); o.stop(t + dur + .05);
 }
 const sveglia = () => [[659, 0], [784, .22], [988, .44], [659, .9], [784, 1.12], [988, 1.34]].forEach(([f, t]) => nota(f, t, .35));
-const pronto = () => [[784, 0], [1047, .16]].forEach(([f, t]) => nota(f, t, .3));
-const errore = () => [[330, 0], [262, .3]].forEach(([f, t]) => nota(f, t, .45, .22));
 let faseSuonata = '';
-function suoni() { if (faseSuonata === fase) return; faseSuonata = fase; try { if (fase === 'prendi') pronto(); if (fase === 'sbagliata') errore(); } catch (e) {} }
+function suoni() { if (faseSuonata === fase) return; faseSuonata = fase;
+  try { if (fase === 'prendi') [[784, 0], [1047, .16]].forEach(([f, t]) => nota(f, t, .3)); if (fase === 'sbagliata') [[330, 0], [262, .3]].forEach(([f, t]) => nota(f, t, .45, .22)); } catch (e) {} }
 
-// ---- camera
-let az = -0.75, el = 0.32, dist = 560;
-function posaCamera() { const c = new THREE.Vector3(5, 0, A.PAR.H / 2);
-  camera.position.set(c.x + dist * Math.cos(el) * Math.cos(az), dist * Math.cos(el) * Math.sin(az), c.z + dist * Math.sin(el)); camera.lookAt(c); }
-const punt = new Map(); let pizzico = 0; const cv = renderer.domElement;
-cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); punt.set(e.pointerId, [e.clientX, e.clientY]); pizzico = 0; });
-cv.addEventListener('pointermove', e => { if (!punt.has(e.pointerId)) return; const p = punt.get(e.pointerId);
-  if (punt.size === 1) { az -= (e.clientX - p[0]) * .008; el = Math.min(1.5, Math.max(-.2, el + (e.clientY - p[1]) * .008)); }
-  punt.set(e.pointerId, [e.clientX, e.clientY]);
-  if (punt.size === 2) { const [a, b] = [...punt.values()], dd = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pizzico) dist = Math.min(1100, Math.max(120, dist * pizzico / dd)); pizzico = dd; } });
-const via = e => { punt.delete(e.pointerId); pizzico = 0; }; cv.addEventListener('pointerup', via); cv.addEventListener('pointercancel', via);
-cv.addEventListener('wheel', e => { e.preventDefault(); dist = Math.min(1100, Math.max(120, dist * (1 + e.deltaY * .001))); }, { passive: false });
-function misura() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-new ResizeObserver(misura).observe(box); misura();
-
-// ---- comandi
-const $ = id => document.getElementById(id);
+// ---------------- comandi
 const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
-function bottoni() {
-  const due = A.lati.length === 2;
-  $('dx').hidden = !due;
-  premi($('sx'), false, '', due ? 'Sfila la cassetta di sinistra' : 'Sfila la cassetta');
-  premi($('dx'), false, '', 'Sfila la cassetta di destra');
-  premi($('cup'), false, 'Rimetti il bicchierino', 'Prendi il bicchierino');
+function ricomincia() {
+  dose = 0; fase = 'pronta'; apre = apreMeta = 0; cup = cupMeta = 0; prese = 0; avviso = '';
+  for (const L of lati) { L.giro = L.meta = 0; L.fuori = L.fuoriMeta = 0; }
+  for (let k = 0; k < 3; k++) passo(world.timestep);
+  riempi();
+  premi($('sx'), false, '', 'Sfila la cassetta di sinistra'); premi($('dx'), false, '', 'Sfila la cassetta di destra'); premi($('cup'), false, '', 'Prendi il bicchierino');
   $('sbaglia').textContent = 'Prova: togli una pillola dalla prossima dose';
-  const P = A.PAR;
-  $('legenda').innerHTML = [...new Set(Object.keys(A.G).map(n => colore(n)[1]))].map(n => `<li><i style="background:${COLORI.find(c => c[1] === n)[2]}"></i>${n}</li>`).join('');
 }
-$('tasto').onclick = () => {
-  if (dose >= 28 || fase !== 'pronta' || A.lati.some(L => L.fuoriMeta || L.fuori > .01)) return;
-  dose++; const w = dove(dose); w.lato.meta = A.lati.length === 2 ? w.giro : w.giro; fase = 'gira';
-};
+$('tasto').onclick = () => { if ($('tasto').disabled) return; dose++; const L = lati[dose % 2 ? 0 : 1]; L.meta = Math.ceil(dose / 2) * PASSO; fase = 'gira'; };
 $('sbaglia').onclick = () => {
-  const d = fase === 'pronta' ? dose + 1 : 0; if (!d || d > 28) return;
+  if (fase !== 'pronta' || dose >= 28) return; const d = dose + 1;
   const p = pillole.find(q => q.d === d && q.stato === 'ruota'); if (!p) return;
-  p.m.parent.remove(p.m); p.stato = 'tolta'; $('sbaglia').textContent = 'Tolta una pillola da ' + nomeDose(d);
+  world.removeRigidBody(p.b); scene.remove(p.m); p.stato = 'tolta'; $('sbaglia').textContent = 'Tolta una pillola da ' + nomeDose(d);
 };
-for (const [id, i] of [['sx', 0], ['dx', 1]]) $(id).onclick = () => {
-  const L = A.lati[i]; if (!L || fase !== 'pronta') return; L.fuoriMeta = L.fuoriMeta ? 0 : 1;
-  const due = A.lati.length === 2, t = due ? (i ? ' di destra' : ' di sinistra') : '';
-  premi($(id), !!L.fuoriMeta, 'Rimetti la cassetta' + t, 'Sfila la cassetta' + t);
+for (const [id, i, t] of [['sx', 0, 'sinistra'], ['dx', 1, 'destra']]) $(id).onclick = () => {
+  if (fase !== 'pronta') return; const L = lati[i]; L.fuoriMeta = L.fuoriMeta ? 0 : 1;
+  premi($(id), !!L.fuoriMeta, 'Rimetti la cassetta di ' + t, 'Sfila la cassetta di ' + t);
 };
 $('cup').onclick = () => { cupMeta = cupMeta ? 0 : 1; premi($('cup'), !!cupMeta, 'Rimetti il bicchierino', 'Prendi il bicchierino'); };
-$('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro'); };
-$('ricarica').onclick = () => nuovoModello(A.k);
+$('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro (cavi e schede)'); };
+$('ricarica').onclick = ricomincia;
 $('suona').onclick = () => { try { sveglia(); } catch (e) {} };
+$('foto').onclick = () => {
+  const w = box.clientWidth, h = box.clientHeight; renderer.setPixelRatio(3); renderer.setSize(w, h, false); renderer.render(scene, camera);
+  const a = document.createElement('a'); a.download = 'scatoletta-blistra-v08.png'; a.href = renderer.domElement.toDataURL('image/png'); a.click();
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); misura();
+};
+const S2 = P.STAB, cm = x => (x / 10).toLocaleString('it-IT', { maximumFractionDigits: 1 });
+$('tabella').innerHTML = [
+  ['Ingombro (corpo)', cm(P.L) + ' × ' + cm(P.W) + ' × ' + cm(P.H) + ' cm (' + P.litri.toLocaleString('it-IT') + ' litri)'],
+  ['Piede', cm(P.PIEDE.x1 - P.PIEDE.x0) + ' × ' + cm(2 * P.PIEDE.y) + ' cm, con dentro ' + S2.zavorra + ' g di ferro'],
+  ['Ruote', '2 da ' + cm(P.ruota_d) + ' cm, corona da ' + P.Z_CORONA + ' denti, pignone da ' + P.Z_PIGNONE + ' (modulo 0,8)'],
+  ['Peso', 'circa ' + S2.peso + ' g, baricentro a ' + cm(S2.cg) + ' cm da terra'],
+  ['Si ribalta se inclinata', 'di lato ' + S2.lato + '°, in avanti ' + S2.avanti + '°, indietro ' + S2.dietro + '°'],
+  ['Uno scomparto', S2.tasca.toLocaleString('it-IT') + ' cm³'],
+  ['Corrente', 'USB-C 5 V dietro (alimentatore da 2 A)'],
+  ['Internet', 'Wi-Fi 2,4 GHz dell\'ESP32-S3; antenna a 15 mm dal metallo più vicino'],
+  ['Cavi', P.CAVI.map(c => c.nome).join(', ')]].map(([t, v]) => `<tr><th>${t}</th><td>${v}</td></tr>`).join('');
+const visti = new Set();
+$('legenda').innerHTML = Object.keys(G).map(tipo).filter(t => !visti.has(t[1]) && visti.add(t[1])).map(t => `<li><i style="background:#${MAT[t[2]]().color.getHexString()}"></i>${t[1]}</li>`).join('');
 
-// tabella di confronto
-const S = k => MODELLI[k].PAR, cm = x => (x / 10).toLocaleString('it-IT', { maximumFractionDigits: 1 });
-const righe = [
-  ['Ingombro (corpo)', k => cm(S(k).L) + ' × ' + cm(S(k).W) + ' × ' + cm(S(k).H) + ' cm'],
-  ['Volume', k => S(k).litri.toLocaleString('it-IT') + ' litri'],
-  ['Piede', k => cm(S(k).PIEDE.x1 - S(k).PIEDE.x0) + ' × ' + cm(2 * S(k).PIEDE.y) + ' cm'],
-  ['Ruote', k => '2 da ' + cm(S(k).ruota_d) + ' cm, 2 motorini N20'],
-  ['Peso', k => 'circa ' + S(k).STAB.peso + ' g, di cui ' + S(k).STAB.zavorra + ' g di zavorra nel piede'],
-  ['Baricentro', k => cm(S(k).STAB.cg * 10 / 10) + ' cm da terra'],
-  ['Uno scomparto', k => S(k).STAB.tasca.toLocaleString('it-IT') + ' cm³'],
-  ['Si ribalta se inclinata di lato', k => S(k).STAB.lato + '° (senza zavorra ' + S(k).STAB.lato_senza + '°)'],
-  ['… in avanti / indietro', k => S(k).STAB.avanti + '° / ' + S(k).STAB.dietro + '°']];
-$('tabella').innerHTML = righe.map(([t, f]) => `<tr><th>${t}</th><td>${f('2m')}</td></tr>`).join('');
-
-let prima = performance.now();
-const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
+ricomincia();
+let prima = performance.now(), resto = 0;
 function ciclo(ora) {
-  const dt = Math.min(.05, (ora - prima) / 1000); prima = ora;
-  aggiorna(dt); suoni(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+  const dt = Math.min(.05, (ora - prima) / 1000); prima = ora; resto += dt;
+  let n = 0; while (resto >= world.timestep && n < 10) { passo(world.timestep); resto -= world.timestep; n++; }
+  if (n === 10) resto = 0;
+  logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
-nuovoModello('2m');
-window.__v8 = { get A() { return A; }, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole };
+window.__v8 = { get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
 requestAnimationFrame(ciclo);
 </script>
 </body>
