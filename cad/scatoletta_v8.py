@@ -26,6 +26,7 @@ from scatoletta_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
 import scatoletta_v5 as v5
 
 N = 15; PASSO = 360.0 / N
+BAIONETTA = (90.0, 210.0, 330.0)   # tacche della baionetta (gradi, lontane dall'uscita in basso)
 R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
 Z_ESP = 12.0     # l'ESP32 sta 12 mm sopra la scheda dei driver: antenna lontana dalla cella di carico
 R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
@@ -70,7 +71,7 @@ class Modello:
         else:
             self.Z_COR = (-1.2, 1.2); self.Z_TAS = (1.2, 1.2 + PROF)      # corona in mezzo, tasche sui due lati
         self.TH = self.Z_TAS[1]
-        self.Z_COP = (self.TH + 0.3, self.TH + 1.5); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)
+        self.Z_COP = (self.TH + 0.3, self.TH + 1.8); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)   # coperchio: plexiglass da 1,5 mm
         # in Y
         if self.ruote == 2:
             self.Y0 = 0.95 + 1.4 + 0.3                   # parete centrale con il canale dei cavi (|y|<0,95) + fondo della cassetta + gioco
@@ -144,7 +145,13 @@ class Modello:
             a0, a1 = (self.Z_TAS[0], self.Z_FL[0]) if s > 0 else (-self.Z_FL[0], -self.Z_TAS[0])
             m += cil(self.R_CASS, a0, a1) - cil(self.R_AN_T, a0 - 1, a1 + 1)                    # anello delle tasche
             fl = (self.Z_FL[0], self.Z_FL[1]) if s > 0 else (-self.Z_FL[1], -self.Z_FL[0])
-            m += cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T - 3.0, fl[0] - 1, fl[1] + 1)
+            if self.ruote == 2:   # baionetta: scanalatura per le linguette sotto la flangia, e tre tacche per farle entrare
+                m -= cil(self.R_AN_T + 1.8, self.Z_COP[0] - 0.05, self.Z_COP[1] + 0.05)
+                fla = cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T + 0.2, fl[0] - 1, fl[1] + 1)
+                for c in BAIONETTA: fla -= settore(self.R_AN_T, self.R_AN_T + 2.0, c - 5.8, c + 5.8, fl[0] - 1, fl[1] + 1)
+                m += fla
+            else:
+                m += cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T - 3.0, fl[0] - 1, fl[1] + 1)
             m -= scatola(-self.APRE, self.APRE, -self.R_CASS - 2, -self.R_AN_T + 1, min(self.Z_TAS[0] * s, self.Z_TAS[1] * s), max(self.Z_TAS[0] * s, self.Z_TAS[1] * s))  # uscita in basso
         for a in ANG_MOT[self.k]:
             m -= ruota(scatola(self.R_AN_G - 2, self.R_CASS + 3, -7.5, 7.5, zc0 - 0.3, zc1 + 0.3), a)   # finestra per il pignone
@@ -154,6 +161,12 @@ class Modello:
 
     def coperchio_locale(self, s=1):
         z0, z1 = self.Z_COP
+        if self.ruote == 2:
+            # disco di plexiglass con tre linguette (baionetta): si infila con le linguette nelle tacche e si gira di 30 gradi
+            m = cil(self.R_AN_T - 0.15, z0, z1)
+            for c in BAIONETTA: m += settore(self.R_AN_T - 0.5, self.R_AN_T + 1.5, c + 30 - 4.8, c + 30 + 4.8, z0, z1)
+            m += cil(6.0, z1 - 0.01, self.Z_FL[1] + 3.0) - cil(2.0, self.Z_FL[1] + 1.0, self.Z_FL[1] + 3.5)   # pomello stampato, incollato: per girare il coperchio e sfilare la cassetta
+            return m
         m = cil(self.R_AN_T - 0.15, z0, z1) + cil(self.R_AN_T - 3.2, z1 - 0.01, self.Z_FL[1] - 0.2)
         if self.ruote == 1: m += cil(3.0, -self.TH + 0.5, z0 + 0.01) if s > 0 else Manifold()    # l'asse sta sul coperchio di un lato
         if self.ruote == 1: m -= cil(3.3, z0 - 1, z1 + 5) if s < 0 else Manifold()
