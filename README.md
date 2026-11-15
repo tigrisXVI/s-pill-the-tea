@@ -12,18 +12,13 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 > ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
 
-## In prova: v0.8, la più compatta (due modelli da scegliere)
+## In prova: v0.8, due ruote e due motorini (la più compatta)
 
-Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Piede largo con una piastra d'acciaio per la stabilità; tutto il tetto è il tasto.
+Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Corpo scuro e cappello colorato a righine con gli spigoli tondi; tasto tondo da 21 mm sul cappello.
 
-| | Due ruote, due motorini | Una ruota doppia, un motorino |
-|---|---|---|
-| Corpo | 10,9 × 5,2 × 20,3 cm (1,15 l) | 13,9 × 4,8 × 21,6 cm (1,44 l) |
-| Piede | 12,3 × 8,8 cm | 15,3 × 10 cm |
-| Uno scomparto | 4,3 cm³ | 6,2 cm³ |
-| Si ribalta se inclinata di lato | 27° | 27° |
+**Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 700). Baricentro a 5,5 cm da terra: si ribalta solo se inclinata di 42° di lato, 50° in avanti, 46° indietro. Sotto, quattro piedini di gomma.
 
-Modello in `cad/scatoletta_v8.py`, controlli in `cad/controlli_v8.py` (nessuna interferenza in tutti e due), pezzi in `v8/2m/` e `v8/1m/`, visore: [modello 3D v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Non ancora stampata.
+Corpo 10,9 × 5,2 × 20,7 cm (1,18 l), piede 12,3 × 10 cm, uno scomparto 4,3 cm³. Modello in `cad/scatoletta_v8.py`, controlli in `cad/controlli_v8.py` (nessuna interferenza), pezzi in `v8/2m/`, visore: [modello 3D v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Non ancora stampata.
 
 ## In prova: v0.7 a due ruote
 

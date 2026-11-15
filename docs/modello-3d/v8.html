@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Scatoletta Blistra v0.8: la più compatta. Due modelli a confronto (due ruote e due motorini, oppure una ruota doppia e un motorino), piattino pesato che si apre solo se il peso è giusto, bicchierino come in una macchina del caffè. Modello 3D interattivo.">
+<meta name="description" content="Scatoletta Blistra v0.8: la più compatta. Due ruote e due motorini, piede zavorrato, piattino pesato che si apre solo se il peso è giusto, bicchierino come in una macchina del caffè. Modello 3D interattivo.">
 <title>Scatoletta Blistra v0.8 (la più compatta) – modello 3D</title>
 <style>
   :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; --no:#b3261e; }
@@ -39,14 +39,10 @@
 <main>
   <h1>Scatoletta Blistra v0.8 – la più compatta</h1>
   <p class="sotto"><a href="it.html">v0.5</a> · <a href="v6.html">v0.6</a> · <a href="v7.html">v0.7</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a></p>
-  <p class="sotto">Due modelli da confrontare, stessa idea: le dosi cadono su un piattino pesato, il piattino si apre solo se il peso è quello impostato nell'app, e le pillole finiscono nel bicchierino, che sta sotto come in una macchina del caffè. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
-  <div class="scelta" role="group" aria-label="Scegli il modello">
-    <button id="m2" aria-pressed="true">Due ruote, due motorini</button>
-    <button id="m1" aria-pressed="false">Una ruota doppia, un motorino</button>
-  </div>
+  <p class="sotto">Due ruote, due motorini. Le dosi cadono su un piattino pesato, che si apre solo se il peso è quello impostato nell'app, e le pillole finiscono nel bicchierino, che sta sotto come in una macchina del caffè. Corpo scuro, cappello colorato a righine, tasto tondo sopra. Quasi tutto il peso è nel piede. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
   <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D…</div></div>
   <div class="comandi">
-    <button class="primo" id="tasto">Premi il tetto (è il tasto)</button>
+    <button class="primo" id="tasto">Premi il tasto</button>
     <button id="cup" aria-pressed="false">Prendi il bicchierino</button>
     <button id="sbaglia">Prova: togli una pillola dalla prossima dose</button>
     <button id="sx" aria-pressed="false">Sfila la cassetta di sinistra</button>
@@ -55,20 +51,18 @@
     <button id="ricarica">Ricarica la settimana</button>
   </div>
 
-  <h2>I due modelli</h2>
+  <h2>Misure e stabilità</h2>
   <table>
-    <thead><tr><th></th><th>Due ruote, due motorini</th><th>Una ruota doppia, un motorino</th></tr></thead>
     <tbody id="tabella"></tbody>
   </table>
 
   <h2>Come funziona</h2>
   <ol>
-    <li>Le ruote stanno in piedi e hanno 15 scomparti per faccia: 14 dosi e uno chiuso. Le muove un motorino N20 con un ingranaggio sul bordo della ruota, sistemato nell'angolo dietro in alto, dove la ruota tonda lascia spazio libero.</li>
-    <li>Nel modello a una ruota le due facce sono sfalsate di mezzo scomparto: ogni mezzo giro di scomparto svuota una faccia o l'altra. Un bordino con l'apertura tiene chiusi gli scomparti dell'altra faccia.</li>
-    <li>All'ora giusta la scatola suona e il display si accende. La persona preme il tetto, che è tutto un tasto. Lo scomparto che arriva in basso si svuota nell'imbuto e le pillole cadono sul piattino.</li>
+    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Le muove un motorino N20 con un ingranaggio sul bordo della ruota, sistemato nell'angolo dietro in alto, dove la ruota tonda lascia spazio libero.</li>
+    <li>All'ora giusta la scatola suona e il display si accende. La persona preme il tasto tondo sul cappello. Lo scomparto che arriva in basso si svuota nell'imbuto e le pillole cadono sul piattino.</li>
     <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, un micro servo lo apre e le pillole scendono nel bicchierino. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
     <li>Il bicchierino ha un magnete nella base: un sensore sotto il piede sa se è al suo posto. Il piattino si apre solo con il bicchierino sotto, e quando lo togli la dose risulta presa.</li>
-    <li>Stabilità: il piede è più largo del corpo e dentro c'è una piastra d'acciaio da circa 100 g, così il peso sta in basso.</li>
+    <li>Stabilità: il piede è largo 10 cm (il corpo 5) e dentro c'è una piastra di ferro da 6 mm, circa 370 g su 700 in tutto. Il baricentro sta a 5,5 cm da terra: per farla cadere di lato bisogna inclinarla di 42 gradi. Sotto vanno quattro piedini di gomma antiscivolo.</li>
   </ol>
   <h2>I pezzi</h2>
   <ul class="pezzi" id="legenda"></ul>
@@ -80,11 +74,11 @@ import * as THREE from './three.js';
 import { PASSO, Q, MODELLI } from './modello_v8.js';
 
 const COLORI = [
-  [/^1_guscio/, 'Guscio', '#eef0ef'], [/^2_tetto/, 'Tetto = tasto grande', '#d93a2b'], [/^3_piede/, 'Piede largo', '#c9ced6'], [/^4_imbuto/, 'Imbuto', '#a9cbe6'],
+  [/^1_guscio/, 'Corpo', '#30353c'], [/^2_cappello/, 'Cappello colorato', '#a8dcc8'], [/^12_tasto/, 'Tasto tondo', '#f7f7f4'], [/^c_interruttore/, 'Interruttore del tasto', '#2e7d4f'], [/^3_piede/, 'Piede largo', '#262a30'], [/^4_imbuto/, 'Imbuto', '#a9cbe6'],
   [/^5_piattino/, 'Piattino pesato', '#f0a030'], [/^6_staffa/, 'Staffa della cella', '#8f99a6'], [/^7_bicchierino/, 'Bicchierino', '#ffffff'], [/^8_supporti/, 'Supporti dei motorini', '#8f99a6'],
   [/^9_cassetta/, 'Cassette', '#2f7a6a'], [/^10_ruota/, 'Ruote', '#f2f1ec'], [/^11_coperchio/, 'Coperchi trasparenti', '#bfe3ff'],
   [/^c_motore/, 'Motorini N20 con pignone', '#b7bcc4'], [/^c_cella/, 'Cella di carico 100 g', '#d6dade'], [/^c_servo/, 'Micro servo', '#3b6fd6'],
-  [/^c_display/, 'Display', '#101216'], [/^c_schede/, 'ESP32-S3, driver, HX711, cicalino', '#2e7d4f'], [/^c_piastra/, "Piastra d'acciaio", '#5d636b'], [/^c_sensore/, 'Sensore di Hall', '#222']];
+  [/^c_display/, 'Display', '#101216'], [/^c_schede/, 'ESP32-S3, driver, HX711, cicalino', '#2e7d4f'], [/^c_piastra/, 'Piastra di ferro (zavorra)', '#5d636b'], [/^c_sensore/, 'Sensore di Hall', '#222']];
 const colore = n => COLORI.find(c => c[0].test(n));
 
 const box = document.getElementById('scena'), stato = document.getElementById('stato');
@@ -147,7 +141,7 @@ function costruisci(k) {
   scene.add(radice);
   return { k, PAR, G, lati, perno, cupG, radice, tela, trama, schermo, scritto: '' };
 }
-const M = { '2m': costruisci('2m'), '1m': costruisci('1m') };
+const M = { '2m': costruisci('2m') };
 let A = M['2m'];
 
 function scrivi(a, b) { if (a + b === A.scritto) return; A.scritto = a + b; const p = A.tela.getContext('2d');
@@ -239,16 +233,16 @@ function aggiorna(dt) {
   }
   // display e riga di stato
   const d = dose;
-  const testi = { pronta: d >= 28 ? ['Fine', 'ricarica'] : ["E' ora", 'premi il tetto'], gira: ['Un attimo', 'preparo la dose'], pesa: ['Peso…', ''],
+  const testi = { pronta: d >= 28 ? ['Fine', 'ricarica'] : ["E' ora", 'premi il tasto'], gira: ['Un attimo', 'preparo la dose'], pesa: ['Peso…', ''],
     aspetta_cup: ['Metti', 'il bicchierino'], apre: ['Pronto', ''], chiude: ['Pronto', ''], prendi: ['Prendi', 'il bicchierino'], presa: ['Fatto ✓', 'rimettilo giù'], sbagliata: ['Attenzione', 'peso sbagliato'] };
   scrivi(...testi[fase]);
   const g = x => (x / 1000).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  stato.textContent = (fase === 'sbagliata' ? avviso : (d ? 'Dose ' + nomeDose(d) + ' · piattino ' + g(peso) + ' g su ' + g(pesoGiusto(d)) + ' g impostati' : 'Pronta: premi il tetto per la prima dose'))
+  stato.textContent = (fase === 'sbagliata' ? avviso : (d ? 'Dose ' + nomeDose(d) + ' · piattino ' + g(peso) + ' g su ' + g(pesoGiusto(d)) + ' g impostati' : 'Pronta: premi il tasto per la prima dose'))
     + ' · bicchierino ' + (sotto ? 'al suo posto (magnete visto)' : 'tolto') + ' · dosi prese ' + prese;
   // trasparenza
   for (const n in A.G) {
     const m = A.G[n].material;
-    if (/^1_guscio|^2_tetto|^3_piede/.test(n)) { m.opacity = trasparente ? .14 : 1; m.depthWrite = !trasparente; }
+    if (/^1_guscio|^2_cappello|^3_piede/.test(n)) { m.opacity = trasparente ? .14 : 1; m.depthWrite = !trasparente; }
     if (/^9_/.test(n)) { m.opacity = trasparente ? .35 : 1; m.depthWrite = !trasparente; }
   }
   A.schermo.visible = !trasparente;
@@ -274,7 +268,6 @@ const $ = id => document.getElementById(id);
 const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
 function bottoni() {
   const due = A.lati.length === 2;
-  premi($('m2'), A.k === '2m', 'Due ruote, due motorini', 'Due ruote, due motorini'); premi($('m1'), A.k === '1m', 'Una ruota doppia, un motorino', 'Una ruota doppia, un motorino');
   $('dx').hidden = !due;
   premi($('sx'), false, '', due ? 'Sfila la cassetta di sinistra' : 'Sfila la cassetta');
   premi($('dx'), false, '', 'Sfila la cassetta di destra');
@@ -282,10 +275,7 @@ function bottoni() {
   $('sbaglia').textContent = 'Prova: togli una pillola dalla prossima dose';
   const P = A.PAR;
   $('legenda').innerHTML = [...new Set(Object.keys(A.G).map(n => colore(n)[1]))].map(n => `<li><i style="background:${COLORI.find(c => c[1] === n)[2]}"></i>${n}</li>`).join('');
-  [...document.querySelectorAll('#tabella td')].forEach(td => td.classList.toggle('su', td.dataset.k === A.k));
 }
-$('m2').onclick = () => nuovoModello('2m');
-$('m1').onclick = () => nuovoModello('1m');
 $('tasto').onclick = () => {
   if (dose >= 28 || fase !== 'pronta' || A.lati.some(L => L.fuoriMeta || L.fuori > .01)) return;
   dose++; const w = dove(dose); w.lato.meta = A.lati.length === 2 ? w.giro : w.giro; fase = 'gira';
@@ -310,12 +300,13 @@ const righe = [
   ['Ingombro (corpo)', k => cm(S(k).L) + ' × ' + cm(S(k).W) + ' × ' + cm(S(k).H) + ' cm'],
   ['Volume', k => S(k).litri.toLocaleString('it-IT') + ' litri'],
   ['Piede', k => cm(S(k).PIEDE.x1 - S(k).PIEDE.x0) + ' × ' + cm(2 * S(k).PIEDE.y) + ' cm'],
-  ['Ruota', k => S(k).ruote === 2 ? '2 ruote da ' + cm(S(k).ruota_d) + ' cm' : '1 ruota da ' + cm(S(k).ruota_d) + ' cm'],
-  ['Motorini', k => S(k).ruote === 2 ? '2 × N20' : '1 × N20'],
+  ['Ruote', k => '2 da ' + cm(S(k).ruota_d) + ' cm, 2 motorini N20'],
+  ['Peso', k => 'circa ' + S(k).STAB.peso + ' g, di cui ' + S(k).STAB.zavorra + ' g di zavorra nel piede'],
+  ['Baricentro', k => cm(S(k).STAB.cg * 10 / 10) + ' cm da terra'],
   ['Uno scomparto', k => S(k).STAB.tasca.toLocaleString('it-IT') + ' cm³'],
-  ['Si ribalta se inclinata di lato', k => S(k).STAB.lato + '° (senza piastra ' + S(k).STAB.lato_senza + '°)'],
+  ['Si ribalta se inclinata di lato', k => S(k).STAB.lato + '° (senza zavorra ' + S(k).STAB.lato_senza + '°)'],
   ['… in avanti / indietro', k => S(k).STAB.avanti + '° / ' + S(k).STAB.dietro + '°']];
-$('tabella').innerHTML = righe.map(([t, f]) => `<tr><th>${t}</th><td data-k="2m">${f('2m')}</td><td data-k="1m">${f('1m')}</td></tr>`).join('');
+$('tabella').innerHTML = righe.map(([t, f]) => `<tr><th>${t}</th><td>${f('2m')}</td></tr>`).join('');
 
 let prima = performance.now();
 const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);

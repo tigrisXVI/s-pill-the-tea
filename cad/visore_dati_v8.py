@@ -13,10 +13,10 @@ def dati(m):
     return {"v": base64.b64encode(np.round(v / Q).astype(np.int16).tobytes()).decode(), "i": base64.b64encode(i.astype(np.uint16).tobytes()).decode()}
 
 # dai controlli (cad/controlli_v8.py): angolo a cui si ribalta, con e senza piastra; capacita' di uno scomparto
-STAB = {"2m": dict(lato=27, lato_senza=21, avanti=39, dietro=32, tasca=4.3), "1m": dict(lato=27, lato_senza=22, avanti=43, dietro=37, tasca=6.2)}
+STAB = {"2m": dict(lato=42, lato_senza=24, avanti=50, dietro=46, tasca=4.3, peso=707, zavorra=370, cg=55)}
 
 tutto = {}
-for k in ("2m", "1m"):
+for k in ("2m",):
     M = s.Modello(k); P = M.pezzi(); C = M.componenti()
     P["5_piattino"] = M.piattino(0)
     pezzi = {}

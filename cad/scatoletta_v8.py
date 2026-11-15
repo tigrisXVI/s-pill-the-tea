@@ -15,7 +15,7 @@ Uguale nei due modelli:
   - sotto ancora il bicchierino, come in una macchina del caffe': in una nicchia aperta, si prende e si appoggia.
     Un magnete nella base del bicchierino e un sensore di Hall dicono se e' al suo posto
   - un PIEDE largo e basso con dentro una piastra d'acciaio tiene la scatola in piedi (stabilita')
-  - tutto il tetto e' il tasto grande (preme un microinterruttore); il display e' davanti, in alto
+  - tasto tondo da 21 mm sul cappello colorato; il display e' davanti, in alto
 
 Assi: X davanti, Y destra-sinistra (asse delle ruote), Z in alto. mm.
 """
@@ -27,6 +27,7 @@ import scatoletta_v5 as v5
 
 N = 15; PASSO = 360.0 / N
 R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
+R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
 L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.4; PARETE = 2.0
 MOD = 0.8; Z_PIGNONE = 26; R_PIGNONE = Z_PIGNONE * MOD / 2   # pignone grande (26 denti): cosi' il motorino sta fuori dalle cassette
 N20 = dict(lato_a=12.0, lato_b=10.0, lungo=24.3 + 1.5, albero=3.0)   # motoriduttore N20 (senza encoder) + contatti
@@ -69,7 +70,7 @@ class Modello:
             self.Y_SX, self.Y_DX = -(ycas + 0.4), 2.0 + N20["lungo"] + PARETE
         # in X e Z
         self.X_HALF = self.R_CASS + 0.4 + PARETE
-        self.Z_PIEDE = 4.0                               # piede con la piastra d'acciaio
+        self.Z_PIEDE = 8.4                               # piede con dentro la zavorra d'acciaio (6 mm)
         self.CUP = dict(x0=-22.0, x1=24.0, y=17.0, alt=26.0, parete=2.0, r=6.0)
         self.Z_CUP = self.Z_PIEDE
         self.Z_NICCHIA = self.Z_CUP + self.CUP["alt"] + 12.0   # il piattino si apre sopra il bicchierino
@@ -80,7 +81,7 @@ class Modello:
         self.Z_DISP = (self.Z_DISP[0], self.Z_DISP[0] + 34.0)
         self.H = max(self.Z_A + self.R_CASS + 0.6, self.Z_A + self._z_motori(), self.Z_DISP[1]) + PARETE + 2.6
         self.Y_MID = min((self.Y_SX + self.Y_DX) / 2, self.Y_DX - R_SPIG - 0.3 - 17.7)   # il display non deve toccare gli spigoli arrotondati
-        self.PIEDE = dict(x0=-self.X_HALF, x1=self.X_HALF + 14.0, y=44.0 if self.ruote == 2 else 50.0, h=self.Z_PIEDE)
+        self.PIEDE = dict(x0=-self.X_HALF, x1=self.X_HALF + 14.0, y=50.0, h=self.Z_PIEDE)
 
     def _z_motori(self):
         r = self.R_GP + R_PIGNONE
@@ -235,18 +236,55 @@ class Modello:
 
     def piede(self):
         p = self.PIEDE
-        m = v5.rett_arrotondato(p["x0"], p["x1"], -p["y"], p["y"], 10, 0, p["h"])
-        m -= scatola(-46, 46, -32, 32, 0.8, 3.4) ^ v5.rett_arrotondato(p["x0"] + 3, p["x1"] - 3, -p["y"] + 3, p["y"] - 3, 7, 0, 5)   # tasca per la piastra d'acciaio
+        # piede largo e basso, con i fianchi inclinati (come la base di una lampada)
+        m = Manifold.batch_hull([v5.rett_arrotondato(p["x0"], p["x1"], -p["y"], p["y"], 18, 0, 1.0),
+                                 v5.rett_arrotondato(p["x0"] + 4, p["x1"] - 4, -p["y"] + 4, p["y"] - 4, 14, p["h"] - 0.01, p["h"])])
+        m -= self._zavorra(0.3)                                                                 # tasca chiusa per la zavorra (si inserisce in pausa di stampa)
         m -= cil(3.0, 0.3, p["h"] + 1, 0, 0)                                                    # sensore di Hall sotto il bicchierino
         return m
 
-    def piastra_acciaio(self):
-        return (scatola(-45.5, 45.5, -31.5, 31.5, 1.0, 3.2) ^ v5.rett_arrotondato(self.PIEDE["x0"] + 3.4, self.PIEDE["x1"] - 3.4, -self.PIEDE["y"] + 3.4, self.PIEDE["y"] - 3.4, 7, 0, 5)) - cil(4.0, 0, 5, 0, 0)
+    ZAVORRA = dict(lungo=104.0, largo=76.0, spess=6.0)    # piastra di ferro 104 x 76 x 6 mm, foro da 8 mm (~370 g)
+    def _zavorra(self, g=0.0):
+        z = self.ZAVORRA; xc = (self.PIEDE["x0"] + self.PIEDE["x1"]) / 2
+        return scatola(xc - z["lungo"] / 2 - g, xc + z["lungo"] / 2 + g, -z["largo"] / 2 - g, z["largo"] / 2 + g, 1.2 - g, 1.2 + z["spess"] + g)
 
-    def guscio(self):
+    def piastra_acciaio(self):
+        return self._zavorra() - cil(4.0, 0, 9, 0, 0)
+
+    def _profilo(self, g):
+        """Vista di fianco: rettangolo con gli spigoli in alto arrotondati (raggio R_TOP), rientrato di g."""
+        xc, zc, r = self.X_HALF - R_TOP, self.H - R_TOP, R_TOP - g
+        return (scatola(-self.X_HALF + g, self.X_HALF - g, -200, 200, -10, zc)
+                + Manifold.batch_hull([cil_y(r, -200, 200, -xc, zc), cil_y(r, -200, 200, xc, zc)]))
+
+    @property
+    def Z_TAGLIO(self): return round(self.Z_DISP[0] - 8.0)      # dove finisce il corpo scuro e comincia il cappello colorato
+
+    def _zona_cappello(self):
+        g0, g1 = PARETE + 0.3, PARETE + 1.9
         x0, x1, y0, y1 = -self.X_HALF, self.X_HALF, self.Y_SX, self.Y_DX
-        m = v5.rett_arrotondato(x0, x1, y0, y1, R_SPIG, self.Z_PIEDE, self.H - 3.0)
-        m -= v5.rett_arrotondato(x0 + PARETE, x1 - PARETE, y0 + PARETE, y1 - PARETE, R_SPIG - PARETE, self.Z_PIEDE + PARETE, self.H)
+        bordino = (v5.rett_arrotondato(x0 + g0, x1 - g0, y0 + g0, y1 - g0, R_SPIG - g0, self.Z_TAGLIO - 3.0, self.Z_TAGLIO + 0.01)
+                   - v5.rett_arrotondato(x0 + g1, x1 - g1, y0 + g1, y1 - g1, 1.0, self.Z_TAGLIO - 4, self.Z_TAGLIO + 1))
+        return scatola(-200, 200, -200, 200, self.Z_TAGLIO, 400) + bordino
+
+    def guscio(self): return self.corpo() - self._zona_cappello()
+    def cappello(self): return self.corpo() ^ self._zona_cappello()
+
+    def corpo(self):
+        if getattr(self, "_corpo", None) is not None: return self._corpo
+        x0, x1, y0, y1 = -self.X_HALF, self.X_HALF, self.Y_SX, self.Y_DX
+        m = v5.rett_arrotondato(x0, x1, y0, y1, R_SPIG, self.Z_PIEDE, self.H) ^ self._profilo(0)
+        m -= v5.rett_arrotondato(x0 + PARETE, x1 - PARETE, y0 + PARETE, y1 - PARETE, R_SPIG - PARETE, self.Z_PIEDE + PARETE, self.H) ^ self._profilo(PARETE)
+        m += self._zona_cappello() - scatola(-200, 200, -200, 200, self.Z_TAGLIO, 400)    # bordino che centra il cappello
+        g1 = PARETE + 1.9
+        m += (v5.rett_arrotondato(x0 + PARETE - 0.1, x1 - PARETE + 0.1, y0 + PARETE - 0.1, y1 - PARETE + 0.1, R_SPIG - PARETE, self.Z_TAGLIO, self.Z_TAGLIO + 1.6)
+              - v5.rett_arrotondato(x0 + g1, x1 - g1, y0 + g1, y1 - g1, 1.0, self.Z_TAGLIO - 1, self.Z_TAGLIO + 2))   # aggancia il bordino al cappello
+        # righine orizzontali sul cappello
+        z = self.Z_TAGLIO + 4.0
+        while z + 1.0 < self.H - R_TOP:
+            m -= (v5.rett_arrotondato(x0 - 1, x1 + 1, y0 - 1, y1 + 1, R_SPIG + 1, z, z + 1.0)
+                  - v5.rett_arrotondato(x0 + 0.4, x1 - 0.4, y0 + 0.4, y1 - 0.4, R_SPIG - 0.4, z - 1, z + 2))
+            z += 2.4
         # nicchia aperta davanti e di lato (come una macchina del caffe')
         m -= scatola(self.CUP["x0"] - 3, x1 + 1, y0 - 1, y1 + 1, self.Z_PIEDE - 0.5, self.Z_NICCHIA)
         m += scatola(self.CUP["x0"] - 5, self.CUP["x0"] - 3, y0 + 0.01, y1 - 0.01, self.Z_PIEDE, self.Z_NICCHIA + 0.01)   # fondo della nicchia
@@ -258,7 +296,9 @@ class Modello:
                 m -= cil_y(self.R_CASS + 0.4, ys[0], ys[1], 0, self.Z_A) - (scatola(-100, 100, -1.0, 1.0, 0, 300) if False else Manifold())
                 ys2 = sorted((s * (self.Y0 + self.Z_FL[0] - 0.01), s * 40))
                 m -= cil_y(self.R_CASS + 1.9, ys2[0], ys2[1], 0, self.Z_A)
-            m += scatola(-self.X_HALF + 1, self.X_HALF - 8.0, -1.0, 1.0, self.Z_IMB0 + 2.2, self.H - 5.0) - cil_y(6.0, -2, 2, 0, self.Z_A)
+            m += (scatola(-self.X_HALF + 1, self.X_HALF - 8.0, -1.0, 1.0, self.Z_IMB0 + 2.2, self.H - 1.0) ^ self._profilo(PARETE - 0.5)) - cil_y(6.0, -2, 2, 0, self.Z_A) \
+                 - scatola(self.X_TASTO - 10.5, self.X_TASTO + 10.5, -2, 2, self.H - PARETE - 11.5, self.H) \
+                 - scatola(self.X_TASTO - 13.6, self.X_TASTO + 13.6, -2, 2, self.H - PARETE - 2.0, self.H)
         else:
             m -= cil_y(self.R_CASS + 1.9, -40, self.Z_FL[1] + 0.4, 0, self.Z_A)
         # culle sotto le cassette (meta' di sotto), con il passaggio dell'uscita
@@ -272,14 +312,24 @@ class Modello:
         # display davanti in alto, luce, USB-C, griglia del cicalino
         m -= scatola(x1 - PARETE - 1, x1 + 1, self.Y_MID - 12, self.Y_MID + 12, self.Z_DISP[0] + 6, self.Z_DISP[1] - 6)
         m -= scatola(-self.X_HALF - 1, -self.X_HALF + PARETE + 1, -4.5, 4.5, self.Z_NICCHIA + 4, self.Z_NICCHIA + 8)
+        m -= cil(self.R_TASTO + 0.4, self.H - 7, self.H + 1, self.X_TASTO, 0)                    # foro del tasto
+        self._corpo = m
         return m
 
-    def tetto(self):
-        """Tutto il tetto e' il tasto: e' appoggiato su un microinterruttore e scende di 1,5 mm."""
-        x0, x1, y0, y1 = -self.X_HALF, self.X_HALF, self.Y_SX, self.Y_DX
-        m = v5.rett_arrotondato(x0 + 0.3, x1 - 0.3, y0 + 0.3, y1 - 0.3, R_SPIG - 0.3, self.H - 2.6, self.H)
-        return m + (v5.rett_arrotondato(x0 + PARETE + 0.4, x1 - PARETE - 0.4, y0 + PARETE + 0.4, y1 - PARETE - 0.4, R_SPIG - PARETE - 0.4, self.H - 4.6, self.H - 2.59)
-                    - v5.rett_arrotondato(x0 + PARETE + 2.0, x1 - PARETE - 2.0, y0 + PARETE + 2.0, y1 - PARETE - 2.0, 1.0, self.H - 6, self.H))
+    X_TASTO = 30.0; R_TASTO = 10.5      # tasto tondo da 21 mm sul tetto, davanti (dove la ruota curva e lascia spazio)
+    def tasto(self):
+        """Il tasto stampato: cupoletta che sporge 3 mm, bordino sotto il tetto che lo trattiene, perno che preme l'interruttore."""
+        hr = self.H - PARETE
+        m = cil(self.R_TASTO, hr - 1.6, self.H + 2.0, self.X_TASTO, 0)
+        m += Manifold.sphere(self.R_TASTO, 48).scale([1, 1, 0.12]).translate([self.X_TASTO, 0, self.H + 2.0])
+        m += cil(self.R_TASTO + 2.5, hr - 1.6, hr - 0.3, self.X_TASTO, 0) + cil(2.0, hr - 4.6, hr - 1.59, self.X_TASTO, 0)
+        return m
+
+    def interruttore(self):
+        """Pulsantino 12 x 12 su una schedina 20 x 20, appoggiata sulla parete centrale."""
+        hr = self.H - PARETE; x = self.X_TASTO
+        return (scatola(x - 6, x + 6, -6, 6, hr - 9.9, hr - 6.4) + cil(1.75, hr - 6.4, hr - 4.9, x, 0)
+                + scatola(x - 10, x + 10, -10, 10, hr - 11.5, hr - 9.9))
 
     def display(self):
         x1 = self.X_HALF
@@ -296,9 +346,9 @@ class Modello:
 
     # ---------------- tutto
     def pezzi(self):
-        P = {"1_guscio": self.guscio(), "2_tetto_tasto": self.tetto(), "3_piede": self.piede(), "4_imbuto": self.imbuto(),
+        P = {"1_guscio": self.guscio(), "2_cappello": self.cappello(), "3_piede": self.piede(), "4_imbuto": self.imbuto(),
              "5_piattino": self.piattino(), "6_staffa_cella": self.staffa_cella(), "7_bicchierino": self.bicchierino(),
-             "8_supporti_motori": self.supporti_motori()}
+             "8_supporti_motori": self.supporti_motori(), "12_tasto": self.tasto()}
         if self.ruote == 2:
             for s, n in ((-1, "sx"), (1, "dx")):
                 P["9_cassetta_" + n] = self.metti(self.cassetta_locale(), s)
@@ -313,7 +363,7 @@ class Modello:
 
     def componenti(self):
         C = {"cella": self.cella(), "servo": self.servo(), "display": self.display(), "schede": self.schede(),
-             "piastra_acciaio": self.piastra_acciaio(), "sensore_bicchiere": self.sensore_bicchiere()}
+             "piastra_acciaio": self.piastra_acciaio(), "sensore_bicchiere": self.sensore_bicchiere(), "interruttore": self.interruttore()}
         for i, m in enumerate(self.motori()): C["motore_" + str(i + 1)] = m
         return C
 
@@ -333,7 +383,7 @@ def genera(chiave, cartella):
 
 if __name__ == "__main__":
     qui = os.path.dirname(os.path.abspath(__file__))
-    for k in ("2m", "1m"):
+    for k in ("2m",):
         M, P, C = genera(k, os.path.join(qui, "..", "v8", k, "stl"))
         x, y, z = M.misure()
         print(f"== {k}: {M.nome}: corpo {x:.0f} x {y:.0f} x {z:.0f} mm = {x * y * z / 1e6:.2f} litri; piede {M.PIEDE['x1'] - M.PIEDE['x0']:.0f} x {2 * M.PIEDE['y']:.0f}; ruota Ø {2 * M.R_CASS:.0f}")

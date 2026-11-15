@@ -16,7 +16,7 @@ def controlla(k):
         v = inter(P[a], P[b])
         if v > (1.5 if (a, b) in tocco or (b, a) in tocco else 0.3): male(a, b, round(v, 1))
     print("2) componenti")
-    sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede")}
+    sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio")}
     for c, m in C.items():
         for n in P:
             v = inter(m, P[n])
@@ -93,7 +93,7 @@ def controlla(k):
     print("7) stabilita'")
     rho = 1.24 * 0.6
     masse = [(m.volume() * rho / 1000, m) for n, m in P.items()]
-    peso_comp = {"cella": 12, "servo": 4, "display": 8, "schede": 15, "sensore_bicchiere": 1}
+    peso_comp = {"interruttore": 2, "cella": 12, "servo": 4, "display": 8, "schede": 15, "sensore_bicchiere": 1}
     for n, m in C.items():
         g = 7.85 * m.volume() / 1000 if n == "piastra_acciaio" else peso_comp.get(n, 10)
         masse.append((g, m))
@@ -107,11 +107,11 @@ def controlla(k):
     lato2 = math.degrees(math.atan2(pd["y"] - abs(cy), cz2))
     print(f"   peso circa {tot:.0f} g (di cui piastra d'acciaio {masse[-1][0] if False else 7.85 * C['piastra_acciaio'].volume() / 1000:.0f} g), baricentro a {cz:.0f} mm d'altezza")
     print(f"   si ribalta di lato solo se inclinata di {lato:.0f} gradi (senza piastra {lato2:.0f}), in avanti {avanti:.0f}, indietro {dietro:.0f}")
-    ok &= min(lato, avanti, dietro) >= 25
+    ok &= min(lato, avanti, dietro) >= 40
     x, y, z = M.misure()
     print(f"   misure: corpo {x:.0f} x {y:.0f} x {z:.0f} mm ({x * y * z / 1e6:.2f} litri), piede {pd['x1'] - pd['x0']:.0f} x {2 * pd['y']:.0f} mm")
     print("RISULTATO", k, ":", "nessuna interferenza" if ok else "DA CORREGGERE")
     return ok
 
 if __name__ == "__main__":
-    for k in (sys.argv[1:] or ["2m", "1m"]): controlla(k)
+    for k in (sys.argv[1:] or ["2m"]): controlla(k)
