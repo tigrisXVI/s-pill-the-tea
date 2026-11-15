@@ -470,7 +470,7 @@ function ciclo(ora) {
   if (n === 16) resto = 0;
   logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
-window.__v8 = { get scosse() { return scosse; }, FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
+window.__v8 = { avanza(sec) { const h = world.timestep; let t = 0, k = 0; while (t < sec) { passo(h); t += h; if (++k % 5 === 0) logica(5 * h); } disegna(); }, get scosse() { return scosse; }, FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
 requestAnimationFrame(ciclo);
 </script>
 </body>
