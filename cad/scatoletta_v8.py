@@ -227,7 +227,6 @@ class Modello:
         m = scatola(p["x0"], p["x1"], -p["y"], p["y"], z, z + 1.2)
         m += scatola(p["x1"] - 1.2, p["x1"], -p["y"], p["y"], z, z + 5)                                   # parete davanti
         for sy in (-1, 1): m += scatola(p["x0"], p["x1"], min(sy * p["y"], sy * (p["y"] - 1.2)), max(sy * p["y"], sy * (p["y"] - 1.2)), z, z + 5)   # pareti di lato
-        m += scatola(p["x0"], p["x0"] + 0.8, -p["y"], p["y"], z, z + 1.8)                                # bordino dietro, basso
         m += cil_y(1.2, -p["y"] - 2.2, p["y"] + 2.2, xh, zh)                                             # perno
         if gradi: m = m.translate([-xh, 0, -zh]).rotate([0, -gradi, 0]).translate([xh, 0, zh])
         return m
