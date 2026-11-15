@@ -15,7 +15,9 @@ vecchio = open(out).read()
 PAR = json.loads(re.search(r"export const PAR=(\{.*?\});", vecchio, re.S).group(1))     # le misure della v0.3 restano
 PAR.update(Q=Q, CERN_X=s.CERN["x"], CERN_Z=s.CERN["z"], SERVO_X=s.SERVO["x"], SERVO_Z=s.SERVO["z"], BRACCIO=s.SERVO["braccio"], APERTO=s.APERTO,
            ANG_CONS=0, CX=s.FX, CZ=s.FZ, INCL=s.INCL, DISPLAY=s.DISPLAY, TASTO=s.TASTO, LUCI=s.LUCI, X_FINE_SC=s.X_FINE_SC,
-           CUP_X=(s.BICCHIERE["x0"] + s.BICCHIERE["x1"]) / 2, CUP_Z=(s.BICCHIERE["fondo_dietro"] + s.BICCHIERE["fondo_davanti"]) / 2, COF_X=s.CERN_C["x"], COF_Z=s.CERN_C["z"])
+           CUP_X=(s.BICCHIERE["x0"] + s.BICCHIERE["x1"]) / 2, CUP_Z=(s.BICCHIERE["fondo_dietro"] + s.BICCHIERE["fondo_davanti"]) / 2, COF_X=s.CERN_C["x"], COF_Z=s.CERN_C["z"],
+           CUP=dict(xm=s.BICCHIERE["x0"], x0=s.BICCHIERE["x0"] + s.BICCHIERE["parete"], x1=s.BICCHIERE["x1"] - s.BICCHIERE["parete"],
+                    y=s.BICCHIERE["y"] - s.BICCHIERE["parete"], zb=s.BICCHIERE["fondo_dietro"], zf=s.BICCHIERE["fondo_davanti"], basso=s.BICCHIERE["basso"]))
 pezzi = {n: dati(f()) for n, f in s.PEZZI.items()}
 # lo sportello e la leva sono salvati con il loro perno nell'origine: il visore li fa ruotare
 pezzi["8_sportello"] = dati(s.sportello().translate([-s.CERN["x"], 0, -s.CERN["z"]]))

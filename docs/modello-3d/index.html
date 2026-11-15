@@ -28,6 +28,8 @@
   button[aria-pressed="true"] { border-color:var(--on); box-shadow: inset 0 0 0 1px var(--on); }
   label.esploso { grid-column:1 / -1; display:flex; align-items:center; gap:10px; padding:6px 2px; color:var(--soft); font-size:.92rem; }
   label.esploso input { flex:1; accent-color: var(--on); }
+  label.scelta { display:flex; flex-direction:column; gap:4px; font-size:.88rem; color:var(--soft); }
+  label.scelta select { font:inherit; font-size:1rem; padding:10px 8px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
   h2 { font-size:1rem; margin:20px 0 6px; }
   ol { margin:0; padding-left:1.2em; } ol li { margin-bottom:6px; }
   ul.pezzi { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; font-size:.92rem; }
@@ -53,6 +55,16 @@
     <label class="esploso">Explode <input id="esploso" type="range" min="0" max="100" value="0" aria-label="Explode the parts"></label>
   </div>
 
+  <h2>Your pills</h2>
+  <p class="sotto">Pick a shape and a compartment and add it. Then bring the compartment to the landing with “Next dose” and press the big button: the scale weighs it, the door lifts, the plate vibrates and the pills slide into the cup.</p>
+  <div class="comandi pillole-box">
+    <label class="scelta">Shape <select id="forma"></select></label>
+    <label class="scelta">Compartment <select id="scomparto"></select></label>
+    <button class="primo" id="aggiungi">Add the pill</button>
+    <button id="svuotaB">Empty the cup</button>
+    <button id="svuotaT">Remove all pills</button>
+  </div>
+
   <h2>How it works</h2>
   <ol>
     <li>The blue floor does not move. Around the circle it rises 10 mm like a spiral ramp, and it tilts toward the outer wall.</li>
@@ -62,17 +74,18 @@
     <li>At dose time the box beeps, the light bar blinks yellow and the display says it is time. The person presses the big button: a small servo lifts the door, whose skirt uncovers the opening in the wall. The plate vibrates and the pills slide down the chute and drop into the cup.</li>
     <li>It weighs again: if the plate is empty, the dose was delivered. The servo lowers its lever and the door closes under its own weight, so it cannot pinch fingers. The carousel only turns with the door closed.</li>
   </ol>
-  <p class="sotto" style="margin-top:8px">Try it: press “Next dose” twice, then “Press the big button”: the pills drop into the cup. “See inside” shows the mechanism, “Show the electronics” the boards, screws and wires, and “Open the lid” is how you refill it.</p>
+  <p class="sotto" style="margin-top:8px">Try it: add a few pills, press “Next dose” until their compartment arrives, then “Press the big button”: the pills slide down and drop into the cup. “See inside” shows the mechanism, “Show the electronics” the boards, screws and wires, and “Open the lid” is how you refill it.</p>
 
   <h2>The parts</h2>
   <ul class="pezzi" id="legenda"></ul>
 
-  <p class="nota">Open-source prototype, so far tested only in software. Pills move in a simplified way here; the real behaviour comes from the physics simulations in the repository.</p>
+  <p class="nota">Open-source prototype, so far tested only in software. Pills fall with simplified physics here (gravity, friction, bounces, pill-to-pill contacts: they slide like discs, they don't roll); the more accurate simulation is the Blender one in the repository.</p>
 </main>
 
 <script type="module">
 import * as THREE from './three.js';
 import { PAR, PEZZI, ELETTRONICA, CAVI } from './modello.js';
+import { creaPillole, FORME } from './pillole.js';
 
 const COLORI = {
   '1_base': ['Base', '#c9ccd1'], '2_fondo_a_rampa': ['Ramp floor (fixed)', '#5aa0cf'], '3_piastra_pesata': ['Weighed vibrating plate', '#f0a030'],
@@ -172,21 +185,14 @@ const zFondo = (th, r) => PAR.Z_BASSO + quota(th) + TAN * (PAR.R_FONDO - r);
 const zScivolo = x => x <= PAR.X1_SC ? PAR.Z0_SC - (x - PAR.X0_SC) * Math.tan(40 * rad) : PAR.Z1_SC - (x - PAR.X1_SC) * Math.tan(15 * rad);
 const D = Math.asin(PAR.SP_PALETTA / 2 / PAR.R_DISCO) / rad;
 
-// ---- pillole: scomparti 1, 2 e 3 (i prossimi ad arrivare). Lo scomparto k a riposo sta a -k passi.
-const forme = {
-  grande: () => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 6, 16); g.rotateZ(Math.PI / 2); g.scale(1, 1, 0.72); return [g, 3.8]; },
-  tonda: () => { const g = new THREE.CylinderGeometry(4.5, 4.5, 3.5, 24); g.rotateX(Math.PI / 2); return [g, 1.75]; },
-  piccola: () => { const g = new THREE.CylinderGeometry(2.5, 2.5, 2.5, 18); g.rotateX(Math.PI / 2); return [g, 1.25]; },
-  mini: () => { const g = new THREE.CylinderGeometry(1.2, 1.2, 2.2, 14); g.rotateX(Math.PI / 2); return [g, 1.1]; } };
-const pillole = [];
-[[1, 0, 64, 'grande', '#ffffff'], [1, -2, 46, 'tonda', '#f4d35e'], [1, 2.5, 52, 'mini', '#7fb7e6'], [2, 0.5, 70, 'tonda', '#e8505b'], [2, -1, 52, 'piccola', '#ffffff'],
- [3, 0, 66, 'grande', '#ffffff'], [3, 1.5, 47, 'piccola', '#f4d35e'], [3, -2.5, 55, 'mini', '#e8505b']]
-  .forEach(([k, da, r, f, c]) => { const [g, h] = forme[f](); const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: c, roughness: .4 }));
-    scene.add(m); pillole.push({ m, k, da, r, h, uscita: 0, y: (da * r * rad) }); });
+// ---- pillole: si aggiungono dai comandi; la fisica e' in pillole.js
+const PIL = creaPillole(THREE, scene, PAR, zFondo);
+[[1, 'grande'], [1, 'tonda'], [1, 'mini'], [2, 'capsula'], [2, 'piccola'], [3, 'grande'], [3, 'piccola'], [3, 'mini']].forEach(([k, f]) => PIL.aggiungi(f, k));
 
 // ---- stato
 let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0, cof = 0, trasparente = false, vediEle = false;
 const stato = document.getElementById('stato');
+const STATO0 = 'On the landing: empty rest compartment', STATO1 = 'On the landing: compartment ';
 const scompartoSulRipiano = () => ((Math.round(theta / PAR.PASSO) % PAR.N) + PAR.N) % PAR.N;
 function aggiorna(ora) {
   carosello.rotation.z = theta * rad;
@@ -212,26 +218,15 @@ function aggiorna(ora) {
   cavi.visible = esploso < .02;
   G['7_coperchio'].visible = cof < .5; perno.visible = cof < .5 || esploso > 0;
   G['servo'].visible = pernoLeva.visible = G['7_coperchio'].visible; schermo.visible = esploso < .02;
-  const sc = scompartoSulRipiano();
-  const aspetta = sc !== 0 && aperto < .02 && Math.abs(theta - meta) < .01;
-  if (aperto > .5) scrivi('Take', 'your pills'); else if (aspetta) scrivi("It's time", 'press the button'); else scrivi('08:00', 'next 13:00');
+  const sc = scompartoSulRipiano(), fermo = Math.abs(theta - meta) < .01 && !continuo, L = PIL.letture({ sc });
+  const aspetta = sc !== 0 && aperto < .02 && fermo;
+  const g = mg => (mg / 1000).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' g';
+  if (aperto > .5) { if (L.sulRipiano || L.inViaggio) scrivi('Weight', g(L.peso)); else if (L.prevista) scrivi('Done', 'dose delivered'); else scrivi('Empty', 'nothing to give'); }
+  else if (aspetta) scrivi("It's time", L.prevista ? g(L.prevista) : 'press the button'); else scrivi('08:00', 'next 13:00');
   striscia.material.color.set(aperto > .5 ? '#ffffff' : aspetta ? (Math.floor(ora / 400) % 2 ? '#ffb000' : '#6b5a2a') : '#e6e8e7'); striscia.visible = schermo.visible;
-  pillole.forEach(p => {
-    p.m.visible = vediPillole && esploso < .02 && !vediEle;
-    if (p.uscita > 0) {                                   // in discesa: ripiano -> scivolo -> bicchierino
-      const u = Math.min(1, p.uscita), XE = PAR.X_FINE_SC, bx = PAR.CUP_X + p.da * 4 + (p.k - 2) * 3, by = (p.r - 56) * .9;
-      let x, y, z, rot = 0;
-      if (u < .25) { x = p.r + (PAR.R_FONDO + 1 - p.r) * u / .25; y = p.y * (1 - u); z = zFondo(0, x); }
-      else if (u < .6) { const v = (u - .25) / .35; x = PAR.R_FONDO + 1 + (XE - PAR.R_FONDO - 1) * v; y = p.y * .75 * (1 - v) + by * .5 * v; z = zScivolo(Math.max(PAR.X0_SC, x)); rot = 40 * rad; }
-      else { const v = (u - .6) / .4; x = XE + (bx - XE) * Math.min(1, v * 1.6); y = by * (.5 + .5 * v); z = zScivolo(XE) + (PAR.CUP_Z - zScivolo(XE)) * v * v; rot = 40 * rad * (1 - v); }
-      p.m.position.set(x, y, z + p.h); p.m.rotation.set(0, rot, 0);
-      return;
-    }
-    const a = -p.k * PAR.PASSO + p.da + theta;
-    p.m.position.set(p.r * Math.cos(a * rad), p.r * Math.sin(a * rad), zFondo(a, p.r) + p.h); p.m.rotation.set(0, 0, a * rad);
-  });
-  stato.textContent = sc === 0 ? 'On the landing: empty rest compartment' : 'On the landing: compartment ' + sc + ' (' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][Math.floor((sc - 1) / 4)] + ', dose ' + ((sc - 1) % 4 + 1) + ')'
-    + (vibra > 0 ? ' · vibrating' : '');
+  stato.textContent = (sc === 0 ? STATO0 : STATO1 + sc + ' (' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][Math.floor((sc - 1) / 4)] + ', dose ' + ((sc - 1) % 4 + 1) + ')')
+    + (sc !== 0 ? ' · scale ' + g(L.peso) + (L.prevista ? ' (expected ' + g(L.prevista) + ')' : '') : '')
+    + (vibra > 0 ? ' · vibrating' : '') + (L.nelBicchiere ? ' · in the cup: ' + L.nelBicchiere : '');
 }
 
 // ---- camera
@@ -265,6 +260,12 @@ $('sportello').onclick = () => {
 };
 $('pillole').onclick = () => { vediPillole = !vediPillole; premi($('pillole'), vediPillole, 'Hide the pills', 'Show the pills'); };
 $('esploso').oninput = e => { esploso = e.target.value / 100; };
+const lingua = document.documentElement.lang, PILLOLE_ON = 'Hide the pills', PILLOLE_OFF = 'Show the pills';
+$('forma').innerHTML = Object.entries(FORME).map(([k, F]) => `<option value="${k}">${F[lingua === 'it' ? 'it' : 'en']} · ${(F.mg / 1000).toLocaleString('en-GB')} g</option>`).join('');
+$('scomparto').innerHTML = Array.from({ length: PAR.N - 1 }, (_, i) => `<option value="${i + 1}">${i + 1} · ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][Math.floor(i / 4)]}, dose ${i % 4 + 1}</option>`).join('');
+$('aggiungi').onclick = () => { if (!PIL.aggiungi($('forma').value, +$('scomparto').value)) stato.textContent = 'That compartment is full: pick another one'; vediPillole = true; premi($('pillole'), true, PILLOLE_ON, PILLOLE_OFF); };
+$('svuotaB').onclick = () => PIL.svuotaBicchiere();
+$('svuotaT').onclick = () => PIL.svuotaTutto();
 const visti = new Set();
 $('legenda').innerHTML = Object.values(COLORI).filter(([n]) => !visti.has(n) && visti.add(n)).map(([n, c]) => `<li><i style="background:${c}"></i>${n}</li>`).join('');
 
@@ -276,9 +277,8 @@ function ciclo(ora) {
   aperto += Math.sign(apertoMeta - aperto) * Math.min(Math.abs(apertoMeta - aperto), 2.2 * dt);
   // sportello aperto e carosello fermo: la piastra vibra e la dose scende
   const sc = scompartoSulRipiano(), fermo = Math.abs(theta - meta) < .01 && !continuo;
-  const daScendere = pillole.filter(p => p.k === sc && p.uscita < 1);
-  if (aperto > .9 && fermo && sc !== 0 && daScendere.length) { vibra = 1; daScendere.forEach(p => p.uscita += dt / 2.2); }
-  else vibra = 0;
+  vibra = aperto > .9 && fermo && sc !== 0 && PIL.letture({ sc }).sulRipiano > 0 ? 1 : 0;
+  PIL.aggiorna({ theta, sc, fermo, aperto, vibra, visibili: vediPillole && esploso < .02 && !vediEle }, dt);
   aggiorna(ora); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
 window.__pronto = true; requestAnimationFrame(ciclo);
