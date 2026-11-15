@@ -71,7 +71,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.2';
 
 const COLORI = [
   [/^1_guscio/, 'Corpo', '#30353c'], [/^2_cappello/, 'Cappello colorato', '#a8dcc8'], [/^12_tasto/, 'Tasto tondo', '#f7f7f4'], [/^c_interruttore/, 'Interruttore del tasto', '#2e7d4f'], [/^3_piede/, 'Piede largo', '#262a30'], [/^4_imbuto/, 'Imbuto', '#a9cbe6'],
@@ -79,7 +79,7 @@ const COLORI = [
   [/^9_cassetta/, 'Cassette', '#2f7a6a'], [/^10_ruota/, 'Ruote', '#f2f1ec'], [/^11_coperchio/, 'Coperchi trasparenti', '#bfe3ff'],
   [/^c_motore/, 'Motorini N20 con pignone', '#b7bcc4'], [/^c_cella/, 'Cella di carico 100 g', '#d6dade'], [/^c_servo/, 'Micro servo', '#3b6fd6'],
   [/^c_display/, 'Display', '#101216'], [/^c_schede/, 'ESP32-S3, driver, HX711, cicalino', '#2e7d4f'], [/^c_piastra/, 'Piastra di ferro (zavorra)', '#5d636b'], [/^c_sensore/, 'Sensore di Hall', '#222']];
-const colore = n => COLORI.find(c => c[0].test(n));
+const colore = n => COLORI.find(c => c[0].test(n)) || [null, n, '#cccccc'];
 
 const box = document.getElementById('scena'), stato = document.getElementById('stato');
 let renderer;
