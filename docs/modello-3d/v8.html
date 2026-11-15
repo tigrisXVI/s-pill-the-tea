@@ -75,7 +75,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.13';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.14';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -211,8 +211,9 @@ const pignoni = [1, 2].map(i => { const n = 'c_motore_' + i + '_pignone', g = ne
 for (const n in G) if (!G[n].parent) radice.add(G[n]);
 const cavi = new THREE.Group(); radice.add(cavi);
 for (const c of P.CAVI) {
-  const curva = new THREE.CatmullRomCurve3(c.punti.map(p => new THREE.Vector3(...p)), false, 'centripetal', .2);
-  const m = new THREE.Mesh(new THREE.TubeGeometry(curva, c.punti.length * 28, c.r, 12, false), new THREE.MeshPhysicalMaterial({ color: c.colore, roughness: .55, clearcoat: .2 }));
+  const curva = new THREE.CurvePath(); const v = c.punti.map(p => new THREE.Vector3(...p));   // tratti diritti, come nei controlli: i fili restano dentro
+  for (let k = 0; k + 1 < v.length; k++) curva.add(new THREE.LineCurve3(v[k], v[k + 1]));
+  const m = new THREE.Mesh(new THREE.TubeGeometry(curva, c.punti.length * 8, c.r, 12, false), new THREE.MeshPhysicalMaterial({ color: c.colore, roughness: .55, clearcoat: .2 }));
   m.castShadow = true; cavi.add(m);
 }
 const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128;
@@ -265,12 +266,46 @@ const fisso = world.createRigidBody(R.RigidBodyDesc.fixed());
 for (const n of ['1_guscio', '3_piede', '4_imbuto', '6_staffa_cella']) world.createCollider(trimesh(n), fisso);
 world.createCollider(R.ColliderDesc.cuboid(80, 80, 1).setTranslation(0, 0, -1).setFriction(.6), fisso);
 const kin = (x, y, z) => world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(x, y, z));
+// ruote, cassette, piattino e bicchierino: blocchi solidi (non superfici sottili), cosi' una pillola non li puo' attraversare
+const qRot = deg => { const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -deg * rad); return { x: q.x, y: q.y, z: q.z, w: q.w }; };
+const solido = d => d.setFriction(.45).setRestitution(.1);
+const blocco = (hx, hy, hz, cx, cy, cz, gradi = 0) => solido(R.ColliderDesc.cuboid(hx * S, hy * S, hz * S).setTranslation(cx * S, cy * S, cz * S).setRotation(qRot(gradi)));
+const cilY = (r, ya, yb, cx = 0, cz = 0) => solido(R.ColliderDesc.cylinder(Math.abs(yb - ya) / 2 * S, r * S).setTranslation(cx * S, (ya + yb) / 2 * S, cz * S));
+const guscioConvesso = pts => solido(R.ColliderDesc.convexHull(Float32Array.from(pts.flat(), v => v * S)));
+const polare = (r, gradi, y, z0 = 0) => [r * Math.cos(gradi * rad), y, z0 + r * Math.sin(gradi * rad)];
 for (const L of lati) {
-  L.cB = kin(0, 0, 0); world.createCollider(trimesh('9_cassetta_' + L.nome), L.cB); world.createCollider(trimesh('11_coperchio_' + L.nome), L.cB);
-  L.wB = kin(0, 0, P.Z_A * S); world.createCollider(trimesh('10_ruota_' + L.nome), L.wB);
+  const s = L.s, Y = z => s * (P.Y0 + z), t0 = P.Z_TAS[0], t1 = P.Z_TAS[1], ym = Y((t0 + t1) / 2), ha = (t1 - t0) / 2;
+  L.wB = kin(0, 0, P.Z_A * S);
+  world.createCollider(cilY(P.R_GT, Y(P.Z_COR[0]), Y(P.Z_COR[1])), L.wB);                       // disco con la corona
+  world.createCollider(cilY(P.R_I, Y(t0), Y(t1)), L.wB);                                          // mozzo
+  for (let k = 0; k < P.N; k++) {                                                                 // divisori e scivoli
+    const a = -90 + PASSO / 2 + k * PASSO, rc = (P.R_I - .5 + P.R_O) / 2;
+    world.createCollider(blocco((P.R_O - P.R_I + .5) / 2, ha, P.SP_DIV / 2, rc * Math.cos(a * rad), ym, rc * Math.sin(a * rad), a), L.wB);
+    const ag = ((P.R_O * 2 * Math.PI / P.N - P.SP_DIV) / 2 - P.APRE + .4 + P.SP_DIV / 2) / P.R_O / rad;
+    world.createCollider(guscioConvesso([Y(t0), Y(t1)].flatMap(y => [polare(P.R_O, a - ag, y), polare(P.R_O, a + ag, y), polare(P.R_O - 5, a, y)])), L.wB);
+  }
+  const chiuso = [];                                                                              // scomparto chiuso
+  for (let j = 0; j <= 6; j++) { const a = -90 - PASSO / 2 + j * PASSO / 6; for (const y of [Y(t0), Y(t1)]) chiuso.push(polare(P.R_I - .5, a, y), polare(P.R_O, a, y)); }
+  world.createCollider(guscioConvesso(chiuso), L.wB);
+  L.cB = kin(0, 0, 0);
+  const apre = Math.asin(P.APRE / P.R_AN_T) / rad;
+  for (let k = 0; k < 144; k++) {                                                                 // anello della cassetta, con l'uscita in basso
+    const c = k * 2.5; if (Math.abs(((c - 270 + 540) % 360) - 180) <= apre + 0.3) continue;
+    const rc = P.R_AN_T + 1.5, ya = Y(P.Z_COR[1]), yb = Y(P.Z_COP[1]);
+    world.createCollider(blocco(1.5, Math.abs(yb - ya) / 2, P.R_AN_T * Math.PI / 144 * 1.15, rc * Math.cos(c * rad), (ya + yb) / 2, P.Z_A + rc * Math.sin(c * rad), c), L.cB);
+  }
+  world.createCollider(cilY(P.R_AN_T + .5, Y(P.Z_COP[0]), Y(P.Z_COP[1]), 0, P.Z_A), L.cB);        // coperchio
 }
-const trayB = kin(xh * S, 0, zh * S); world.createCollider(trimesh('5_piattino', xh, 0, zh), trayB);
-const cupB = kin(0, 0, 0); world.createCollider(trimesh('7_bicchierino'), cupB);
+const trayB = kin(xh * S, 0, zh * S), pz = P.PIATTO, zp = P.Z_PIATTO;
+world.createCollider(blocco((pz.x1 - pz.x0) / 2, pz.y, .6, (pz.x0 + pz.x1) / 2 - xh, 0, zp + .6 - zh), trayB);
+world.createCollider(blocco(.6, pz.y, 2.5, pz.x1 - .6 - xh, 0, zp + 2.5 - zh), trayB);
+for (const sy of [-1, 1]) world.createCollider(blocco((pz.x1 - pz.x0) / 2, .6, 2.5, (pz.x0 + pz.x1) / 2 - xh, sy * (pz.y - .6), zp + 2.5 - zh), trayB);
+const cupB = kin(0, 0, 0), C = P.CUP, zc = P.Z_CUP, xm = (C.x0 + C.x1) / 2, lx = (C.x1 - C.x0) / 2;
+world.createCollider(blocco(lx, C.y, 1.1, xm, 0, zc + 1.1), cupB);
+for (const sx of [-1, 1]) world.createCollider(blocco(C.parete / 2, C.y, C.alt / 2, xm + sx * (lx - C.parete / 2), 0, zc + C.alt / 2), cupB);
+for (const sy of [-1, 1]) world.createCollider(blocco(lx, C.parete / 2, C.alt / 2, xm, sy * (C.y - C.parete / 2), zc + C.alt / 2), cupB);
+for (const sx of [-1, 1]) world.createCollider(blocco(1.25, C.y, .8, xm + sx * (lx - C.parete - 1.25), 0, zc + C.alt - .8), cupB);   // bordo che rientra
+for (const sy of [-1, 1]) world.createCollider(blocco(lx, 1.25, .8, xm, sy * (C.y - C.parete - 1.25), zc + C.alt - .8), cupB);
 const qY = new THREE.Quaternion(), qX = new THREE.Quaternion(), asseY = new THREE.Vector3(0, 1, 0), asseX = new THREE.Vector3(1, 0, 0);
 
 let pillole = [];

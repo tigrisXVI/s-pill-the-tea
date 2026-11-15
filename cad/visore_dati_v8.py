@@ -39,7 +39,7 @@ for k in ("2m",):
                                 litri=round(L * W * H / 1e6, 2), ruota_d=round(2 * M.R_CASS),
                                 Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,
                                 CAVI=[dict(nome=n, colore=c, r=r, punti=p, attacchi=a) for n, c, r, p, a in M.cavi()],
-                                MOD=s.MOD, STAMPA=[[n, *s.stampa(s.a_mesh(m))[:2]] for n, m in M.pezzi().items()]),
+                                MOD=s.MOD, R_AN_T=M.R_AN_T, R_GT=M.R_GT, R_CASS=M.R_CASS, Z_COR=M.Z_COR, Z_COP=M.Z_COP, SP_DIV=s.SP_DIV, N=s.N, STAMPA=[[n, *s.stampa(s.a_mesh(m))[:2]] for n, m in M.pezzi().items()]),
                     PEZZI=pezzi)
     print(k, "pezzi", len(pezzi))
 open(out, "w").write("export const PASSO=" + json.dumps(s.PASSO) + ", Q=" + json.dumps(Q) + ";\nexport const MODELLI=" + json.dumps(tutto) + ";\n")
