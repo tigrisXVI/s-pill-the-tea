@@ -34,7 +34,7 @@ for k in ("2m",):
         facce = [dict(lato=-1, y=-M.Z_TAS[0], off=0.0), dict(lato=1, y=M.Z_TAS[0], off=s.PASSO / 2)]
     L, W, H = M.misure()
     tutto[k] = dict(PAR=dict(nome=s.MODELLI[k]["nome"], ruote=M.ruote, R_I=M.R_I, R_O=M.R_O, Z_A=M.Z_A, H=H, L=L, W=W, X_HALF=M.X_HALF, Y_SX=M.Y_SX, Y_DX=M.Y_DX,
-                                Z_IMB0=M.Z_IMB0, Z_IMBB=M.Z_PIATTO + 7.0, Z_PIATTO=M.Z_PIATTO, PIATTO=M.PIATTO, CERNIERA=M.lato_cerniera(), Z_CUP=M.Z_CUP, CUP=M.CUP,
+                                Z_IMB0=M.Z_IMB0, Z_IMBB=M.Z_PIATTO + 7.0, Z_PIATTO=M.Z_PIATTO, PIATTO=M.PIATTO, PERNO=M.perno_piattino(), Z_CUP=M.Z_CUP, CUP=M.CUP,
                                 Z_DISP=M.Z_DISP, Y_MID=M.Y_MID, PIEDE=M.PIEDE, PROF=s.PROF, facce=facce, STAB=STAB[k],
                                 litri=round(L * W * H / 1e6, 2), ruota_d=round(2 * M.R_CASS),
                                 Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,

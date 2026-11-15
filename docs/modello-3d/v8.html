@@ -70,7 +70,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.5';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.6';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -199,8 +199,8 @@ for (const L of lati) {   // numeri delle dosi sul mozzo di ogni ruota (girano c
   const d = new THREE.Mesh(new THREE.CircleGeometry(P.R_I - 0.6, 64), new THREE.MeshPhysicalMaterial({ map: tex, roughness: .35 }));
   d.rotation.x = L.s < 0 ? Math.PI / 2 : -Math.PI / 2; d.position.y = L.s * (P.Y0 + P.Z_TAS[1] + 0.06); L.gira.add(d);
 }
-const yh = P.CERNIERA * (P.PIATTO.y + 1), zh = P.Z_PIATTO + .6;
-const perno = new THREE.Group(); perno.position.set(0, yh, zh); G['5_piattino'].position.set(0, -yh, -zh); perno.add(G['5_piattino']); radice.add(perno);
+const [xh, zh] = P.PERNO;
+const perno = new THREE.Group(); perno.position.set(xh, 0, zh); G['5_piattino'].position.set(-xh, 0, -zh); perno.add(G['5_piattino']); radice.add(perno);
 const cupG = new THREE.Group(); cupG.add(G['7_bicchierino']); radice.add(cupG);
 const pignoni = [1, 2].map(i => { const n = 'c_motore_' + i + '_pignone', g = new THREE.Group(); g.position.set(...P.PIGNONI[n]); g.add(G[n]); radice.add(g); return g; });
 for (const n in G) if (!G[n].parent) radice.add(G[n]);
@@ -260,7 +260,7 @@ for (const L of lati) {
   L.cB = kin(0, 0, 0); world.createCollider(trimesh('9_cassetta_' + L.nome), L.cB); world.createCollider(trimesh('11_coperchio_' + L.nome), L.cB);
   L.wB = kin(0, 0, P.Z_A * S); world.createCollider(trimesh('10_ruota_' + L.nome), L.wB);
 }
-const trayB = kin(0, yh * S, zh * S); world.createCollider(trimesh('5_piattino', 0, yh, zh), trayB);
+const trayB = kin(xh * S, 0, zh * S); world.createCollider(trimesh('5_piattino', xh, 0, zh), trayB);
 const cupB = kin(0, 0, 0); world.createCollider(trimesh('7_bicchierino'), cupB);
 const qY = new THREE.Quaternion(), qX = new THREE.Quaternion(), asseY = new THREE.Vector3(0, 1, 0), asseX = new THREE.Vector3(1, 0, 0);
 
@@ -303,7 +303,7 @@ function passo(h) {   // un passo di fisica: muove i pezzi cinematici, poi avanz
     L.wB.setNextKinematicTranslation({ x: 0, y: yc * S, z: P.Z_A * S });
     qY.setFromAxisAngle(asseY, L.giro * rad); L.wB.setNextKinematicRotation({ x: qY.x, y: qY.y, z: qY.z, w: qY.w });
   }
-  apre = verso(apre, apreMeta, 90 * h); qX.setFromAxisAngle(asseX, P.CERNIERA * apre * rad);
+  apre = verso(apre, apreMeta, 90 * h); qX.setFromAxisAngle(asseY, -apre * rad);
   trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w });
   cup = verso(cup, cupMeta, 1.4 * h); cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
   world.step();
@@ -328,6 +328,7 @@ function logica(dt) {
   if (fase === 'apre' && apre >= 59.9 && (attesa -= dt) <= 0) { apreMeta = 0; fase = 'chiude'; }
   if (fase === 'chiude' && apre <= .01) fase = 'prendi';
   if (fase === 'prendi' && cup > .5) { fase = 'presa'; prese++; }
+  const fuori = vive.filter(p => p.b.translation().z / S < P.Z_CUP + P.CUP.alt + 2 && !nelBicchiere(p)).length;
   if (fase === 'presa' && cupMeta === 0 && sotto) {
     for (const p of vive) if (nelBicchiere(p)) { world.removeRigidBody(p.b); scene.remove(p.m); p.stato = 'tolta'; }
     fase = 'pronta';
@@ -337,14 +338,14 @@ function logica(dt) {
   scrivi(...testi[fase]);
   const g = x => (x / 1000).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   stato.textContent = (fase === 'sbagliata' ? avviso : (dose ? 'Dose ' + nomeDose(dose) + ' · piattino ' + g(peso) + ' g su ' + g(pesoGiusto(dose)) + ' g impostati' : 'Pronta: premi il tasto per la prima dose'))
-    + ' · bicchierino ' + (sotto ? 'al suo posto' : 'tolto') + ' · dosi prese ' + prese;
+    + ' · bicchierino ' + (sotto ? 'al suo posto' : 'tolto') + ' · dosi prese ' + prese + (fuori ? ' · ' + fuori + (fuori > 1 ? ' pillole cadute' : ' pillola caduta') + ' fuori dal bicchierino' : '');
   $('tasto').disabled = !(fase === 'pronta' && dose < 28 && !lati.some(L => L.fuoriMeta || L.fuori > .01));
 }
 
 function disegna() {
   for (const L of lati) { L.gira.rotation.y = L.giro * rad; L.cas.position.y = L.s * L.fuori * 80; }
   pignoni.forEach((g, i) => { g.rotation.y = -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; });
-  perno.rotation.x = P.CERNIERA * apre * rad; cupG.position.x = cup * 75;
+  perno.rotation.y = -apre * rad; cupG.position.x = cup * 75;
   for (const p of pillole) { if (p.stato === 'tolta') continue; const t = p.b.translation(), q = p.b.rotation(); p.m.position.set(t.x / S, t.y / S, t.z / S); p.m.quaternion.set(q.x, q.y, q.z, q.w); }
   for (const n of ['1_guscio', '2_cappello', '3_piede']) { const m = G[n].material; m.transparent = trasparente; m.opacity = trasparente ? .12 : 1; m.depthWrite = !trasparente; G[n].castShadow = !trasparente; }
   schermo.visible = !trasparente;

@@ -218,22 +218,27 @@ class Modello:
     PIATTO = dict(x0=-11.0, x1=13.0, y=11.0)
     def lato_cerniera(self): return -1 if self.ruote == 2 else 1      # da che parte e' la cerniera della vaschetta
 
+    def perno_piattino(self): return (self.PIATTO["x1"] + 0.6, self.Z_PIATTO + 0.6)
+
     def piattino(self, gradi=0.0):
-        """Vaschetta pesata: si apre ruotando attorno a un bordo laterale (cerniera sulla staffa della cella)."""
-        p = self.PIATTO; z = self.Z_PIATTO; s = self.lato_cerniera(); yh = s * (p["y"] + 1.0)
+        """Vaschetta pesata: il perno e' davanti (lo gira il micro servo), il bordo dietro e' aperto e scende:
+        le pillole scivolano verso il fondo della nicchia e cadono nel bicchierino."""
+        p = self.PIATTO; z = self.Z_PIATTO; xh, zh = self.perno_piattino()
         m = scatola(p["x0"], p["x1"], -p["y"], p["y"], z, z + 1.2)
-        m += scatola(p["x0"], p["x0"] + 1.2, -p["y"], p["y"], z, z + 5) + scatola(p["x1"] - 1.2, p["x1"], -p["y"], p["y"], z, z + 5)
-        m += scatola(p["x0"], p["x1"], min(s * p["y"], s * (p["y"] - 1.2)), max(s * p["y"], s * (p["y"] - 1.2)), z, z + 5)
-        m += cil_x(1.6, p["x0"] + 1.3, p["x1"] - 1.3, yh, z + 0.6)
-        if gradi: m = m.translate([0, -yh, -(z + 0.6)]).rotate([s * gradi, 0, 0]).translate([0, yh, z + 0.6])
+        m += scatola(p["x1"] - 1.2, p["x1"], -p["y"], p["y"], z, z + 5)                                   # parete davanti
+        for sy in (-1, 1): m += scatola(p["x0"], p["x1"], min(sy * p["y"], sy * (p["y"] - 1.2)), max(sy * p["y"], sy * (p["y"] - 1.2)), z, z + 5)   # pareti di lato
+        m += scatola(p["x0"], p["x0"] + 0.8, -p["y"], p["y"], z, z + 1.8)                                # bordino dietro, basso
+        m += cil_y(1.2, -p["y"] - 2.2, p["y"] + 2.2, xh, zh)                                             # perno
+        if gradi: m = m.translate([-xh, 0, -zh]).rotate([0, -gradi, 0]).translate([xh, 0, zh])
         return m
 
     def staffa_cella(self):
-        p = self.PIATTO; z = self.Z_PIATTO; s = self.lato_cerniera(); yh = s * (p["y"] + 1.0)
-        yc = sorted((s * (p["y"] - 0.5), s * (p["y"] + 12.0)))
-        m = scatola(p["x0"] - 2.0, p["x1"] + 2.0, yc[0], yc[1], z - 2.8, z - 1.6) ^ scatola(-100, 100, min(yh, s * 30), max(yh, s * 30), -100, 400)
-        for x0 in (p["x0"] - 2.0, p["x1"] + 0.4):
-            m += scatola(x0, x0 + 1.6, min(yh - 2, yh + 2), max(yh - 2, yh + 2), z - 2.8, z + 2.4) - cil_x(1.65, x0 - 1, x0 + 3, yh, z + 0.6)
+        """Due spalle con il foro del perno, unite da una piastrina che sta sull'estremita' libera della cella."""
+        p = self.PIATTO; z = self.Z_PIATTO; xh, zh = self.perno_piattino()
+        m = scatola(xh - 1.0, xh + 1.0, -(p["y"] + 12.0), p["y"] + 2.0, z - 2.8, z - 1.6)
+        for sy in (-1, 1):
+            y0, y1 = sorted((sy * (p["y"] + 0.4), sy * (p["y"] + 2.0)))
+            m += scatola(xh - 1.0, xh + 1.0, y0, y1, z - 2.8, zh + 2.0) - cil_y(1.3, y0 - 1, y1 + 1, xh, zh)
         return m
 
     def cella(self):
