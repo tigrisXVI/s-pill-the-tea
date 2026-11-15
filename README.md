@@ -20,6 +20,20 @@ Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo
 
 **Cassette e sportellini:** la cassetta (l'anello attorno alla ruota) è stampata opaca ed è aperta davanti. Ogni scomparto della ruota ha il suo sportellino trasparente (PETG trasparente), con una cerniera vicino al mozzo (perno: un pezzo di filo da 0,8 mm), due dentini che scattano sugli scivoli dei divisori e una linguetta per aprirlo con il dito. Gli sportellini girano con la ruota: le pillole non strisciano contro parti ferme, e per ricaricare si apre uno scomparto alla volta.
 
+**Posizione delle ruote:** ogni ruota ha un magnete da 3 × 1 mm nella corona, sotto lo scomparto chiuso, e un sensore di Hall (DRV5032) nella parete centrale, a 1,7 mm attraverso il fondo della cassetta. La scatola si azzera all'accensione e a ogni giro, e se una ruota salta un dente se ne accorge e non dà la dose. Cosa deve fare il firmware: `firmware/v08_cosa_deve_fare.md`.
+
+**Senza corrente:** orologio DS3231 con pila a bottone nella camera dietro; la dose e la posizione delle ruote si salvano nella memoria dell'ESP32 a ogni passo. Una dose saltata per mancanza di corrente non esce mai da sola dopo.
+
+**Umidità:** nel mozzo di ogni ruota c'è una tasca per circa 2 g di gel di silice, chiusa da un tappo con feritoie; forellini da 1,2 mm portano l'aria secca in ogni scomparto (le pillole non ci passano). Gli sportellini chiudono su una guarnizione di TPU sopra i divisori.
+
+**Fermo delle cassette:** un dente a un quarto di giro nel fianco della scatola entra in una tacca della cassetta e la blocca. Si gira con una moneta. Il controllo verifica che, chiuso, la cassetta non esca.
+
+**Pezzi di prova (prima della scatola intera):** `cad/prove_v8.py` crea in `v8/2m/prove/`:
+- *prova 1, spicchio di ruota*: un quarto di ruota con 3 scomparti, lamelle di TPU, sportellini e il pezzo di cassetta con l'uscita e l'asse. Metti pillole vere (anche minuscole) negli scomparti, gira avanti e indietro 20 volte: non deve passare niente tra ruota e anello, lo scomparto vicino all'uscita non si deve svuotare, e la ruota deve girare con le lamelle senza forzare.
+- *prova 2, piattino pesato*: piattino, staffa e una base per la cella di carico. Con cella, HX711 ed ESP32 pesa 10 volte una pillola da 90 mg e una da 12 mg: si vede quanto è precisa la bilancia.
+
+**Ricarica guidata nell'app:** nell'app Blistra, nella scatoletta scegli il modello "v0.8": la ricarica guidata divide gli scomparti tra cassetta di sinistra (dispari) e di destra (pari), con il numero che trovi sul mozzo e le pillole da mettere.
+
 **Robustezza:** la parte di sopra sta a sbalzo sulla nicchia del bicchierino e poggia sulla colonna dietro. `cad/controlli_v8.py` calcola le sezioni vere del corpo: con qualcuno che preme sul tasto con 5 kg, la colonna lavora a circa 1,2 MPa contro 15 MPa di resistenza tra gli strati di stampa del PETG (sicurezza 12 volte); la parete da 1,2 mm si imbarcherebbe solo a 4,1 MPa (3,4 volte); la cima si sposta di 0,2 mm. Gli angoli della nicchia hanno uno scivolo a 45° per tutta la larghezza e due squadrette ai lati.
 
 **Pillole piccole:** in punta a ogni divisorio della ruota c'è una lamella di TPU (gomma stampabile) che tocca l'anello fermo: tra ruota e anello non passa niente e ogni scomparto resta chiuso finché non arriva sull'uscita. Le altre fessure lungo il percorso delle pillole sono di 0,6 mm o meno (gioco ruota-anello 0,3, ruota-coperchio 0,3, cassetta-imbuto 0,6, imbuto-piattino 0,4, piattino-paratia 0,6), così anche una pillola da 3 × 1,6 mm non si incastra.

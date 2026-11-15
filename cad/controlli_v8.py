@@ -17,7 +17,7 @@ def controlla(k):
         lam = "spazzole" in a + b and "cassetta" in a + b and a[-2:] == b[-2:]    # le lamelle di TPU premono sull'anello
         if v > (40.0 if lam else 1.5 if (a, b) in tocco or (b, a) in tocco else 0.3): male(a, b, round(v, 1))
     print("2) componenti")
-    sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio")}
+    sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio"), ("rtc", "1_guscio"), ("sensori_ruote", "1_guscio"), ("strisce_sensori", "1_guscio"), ("magneti_ruote", "10_ruota_sx"), ("magneti_ruote", "10_ruota_dx")}
     for c, m in C.items():
         for n in P:
             v = inter(m, P[n])
@@ -44,11 +44,20 @@ def controlla(k):
         for dy in range(10, 101, 10):
             g2 = g0.translate([0, sgn * dy, 0])
             for n in P:
-                if n in nomi or (M.ruote == 2 and n[:2] in ("9_", "10", "11")): continue
+                if n in nomi or (M.ruote == 2 and n[:2] in ("9_", "10", "11")) or n.startswith("13_fermo"): continue   # fermo sbloccato
                 v = inter(g2, P[n])
                 if v > 0.3: male("cassetta", lato, "fuori di", dy, "contro", n, round(v, 1))
             for c in C:
+                if c in ("gel_silice", "magneti_ruote"): continue   # escono insieme alla ruota
                 if inter(g2, C[c]) > 0.3: male("cassetta", lato, "fuori di", dy, "contro", c)
+    if M.ruote == 2:
+        print("4b) con il fermo chiuso la cassetta non esce; magnete di riposo davanti al sensore")
+        for sd, n in ((-1, "sx"), (1, "dx")):
+            cas = P["9_cassetta_" + n].translate([0, sd * 1.5, 0])
+            if inter(cas, P["13_fermo_" + n]) < 0.3: male("il fermo", n, "non trattiene la cassetta")
+        gap = (M.Y0 + M.Z_COR[0]) - 0.95
+        print(f"   magnete - sensore di Hall: {gap:.1f} mm (attraverso il fondo della cassetta; il DRV5032 vede un magnete N52 da 3 x 1 mm fino a circa 5 mm)")
+        if gap > 4: male("magnete troppo lontano dal sensore")
     print("5) il piattino si apre (0-60 gradi) e il bicchierino si prende")
     for g in range(0, 61, 10):
         pt = M.piattino(g)
