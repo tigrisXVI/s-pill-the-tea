@@ -33,7 +33,10 @@ T = math.tan(math.radians(INCL))
 FZ = (Z_INCL + H_G) / 2; FX = XF - (FZ - Z_INCL) * T      # centro della fascia
 NICCHIA = dict(x0=93.0, y=31.0, z=46.0)                  # il muro dietro la nicchia parte a x0
 X_FINE_SC = 99.5                      # lo scivolo finisce qui e le pillole cadono nel bicchierino
-BICCHIERE = dict(x0=96.0, x1=142.0, y=23.0, r=8.0, alt=15.5, parete=2.0, fondo=1.6)
+# bicchierino per mani che tremano: largo quanto la nicchia, alto, con il manico come una tazza, il bordo che rientra,
+# il fondo che scende verso il becco dietro (si versa come da una lattiera) e 4 gommini sotto
+BICCHIERE = dict(x0=96.0, x1=146.0, y=29.0, r=8.0, z0=2.6, alt=34.0, parete=2.6, basso=16.5, becco=23.5, labbro=2.5,
+                 fondo_dietro=4.6, fondo_davanti=6.2)
 DISPLAY = dict(a=-28.0, b=-4.0, larg=30.0, alt=16.0)      # coordinate sulla fascia: a = Y, b = in salita dal centro
 TASTO = dict(a=28.0, b=-4.0, r=15.1)
 LUCI = dict(b=19.5, larg=54.0, alt=10.5, pelle=0.6)
@@ -125,11 +128,28 @@ def cofanetto_aperto(gradi):
     return cofanetto().translate([-c["x"], 0, -c["z"]]).rotate([0, -gradi, 0]).translate([c["x"], 0, c["z"]])
 
 def bicchierino():
-    b = BICCHIERE
-    m = rett_arrotondato(b["x0"], b["x1"], -b["y"], b["y"], b["r"], 2.0, b["alt"])
-    p = b["parete"]
-    m -= rett_arrotondato(b["x0"] + p, b["x1"] - p, -b["y"] + p, b["y"] - p, b["r"] - p, 2.0 + b["fondo"], b["alt"] + 1)
-    m += rett_arrotondato(b["x1"] - 2, b["x1"] + 6, -9, 9, 3, b["alt"] - 3.0, b["alt"])     # linguetta per prenderlo
+    b = BICCHIERE; p = b["parete"]
+    m = rett_arrotondato(b["x0"], b["x1"], -b["y"], b["y"], b["r"], b["z0"], b["alt"])
+    # interno: il fondo scende verso il becco; in alto il bordo rientra (smusso a 45 gradi sotto, si stampa senza supporti)
+    xi0, xi1, yi = b["x0"] + p, b["x1"] - p, b["y"] - p
+    fondo = prisma_xz([(xi0 - 1, b["fondo_dietro"]), (xi1 + 1, b["fondo_davanti"]), (xi1 + 1, 60), (xi0 - 1, 60)], -50, 50)
+    l = b["labbro"]; zl = b["alt"] - 2.0
+    cavo = rett_arrotondato(xi0, xi1, -yi, yi, b["r"] - p, 0, zl - l)
+    cavo += Manifold.batch_hull([rett_arrotondato(xi0, xi1, -yi, yi, b["r"] - p, zl - l - 0.01, zl - l),
+                                 rett_arrotondato(xi0 + l, xi1 - l, -yi + l, yi - l, b["r"] - p - l, zl - 0.01, zl)])
+    cavo += rett_arrotondato(xi0 + l, xi1 - l, -yi + l, yi - l, b["r"] - p - l, zl - 0.02, b["alt"] + 1)
+    m -= cavo ^ fondo
+    # dietro il bordo e' basso (ci passa sotto la fine dello scivolo) e fa da becco per versare
+    m -= scatola(b["x0"] - 1, xi0 + 5, -b["becco"], b["becco"], b["basso"], 60)
+    m -= prisma_xz([(xi0 + 5, b["basso"]), (xi0 + 5 + (b["alt"] - b["basso"]), b["alt"] + 0.01), (xi0 - 1, b["alt"] + 0.01)], -b["becco"] + l, b["becco"] - l) ^ scatola(0, 300, -50, 50, b["basso"], 60)
+    # manico come quello di una tazza, davanti
+    sf = lambda x, z: Manifold.sphere(4.6, 24).scale([1.0, 1.55, 1.0]).translate([x, 0, z])
+    giro = [(b["x1"] - 3, b["alt"] - 5), (b["x1"] + 14, b["alt"] - 3), (b["x1"] + 24, b["alt"] - 8), (b["x1"] + 26, 19), (b["x1"] + 22, 10.5), (b["x1"] + 10, 9.0), (b["x1"] - 3, 9.0)]
+    for (xa, za), (xb, zb) in zip(giro, giro[1:]): m += Manifold.batch_hull([sf(xa, za), sf(xb, zb)])
+    m -= cavo ^ fondo                                                                        # il manico non entra nell'interno
+    # 4 incavi per gommini adesivi da 8 mm
+    for x in (b["x0"] + 8, b["x1"] - 8):
+        for y in (-b["y"] + 8, b["y"] - 8): m -= cil(4.3, b["z0"] - 1, b["z0"] + 1.0, x, y)
     return m
 
 def scivolo():

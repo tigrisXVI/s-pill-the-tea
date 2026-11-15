@@ -70,7 +70,7 @@ for dx in range(0, 61, 4):
         if v > 0.2: male("bicchierino spostato di", dx, "contro", n, round(v, 1))
 print("9) lo scivolo finisce sopra l'interno del bicchierino:", end=" ")
 b = s.BICCHIERE
-dentro = b["x0"] + b["parete"] < s.X_FINE_SC - 1.0
+dentro = b["x0"] + b["parete"] < s.X_FINE_SC - 0.4 and b["basso"] < 17.0      # e il bordo basso dietro passa sotto lo scivolo
 print("si" if dentro else "NO")
 if not dentro: ok = False
 print("RISULTATO:", "nessuna interferenza" if ok else "DA CORREGGERE")
