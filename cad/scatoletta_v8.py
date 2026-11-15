@@ -28,7 +28,8 @@ import scatoletta_v5 as v5
 N = 15; PASSO = 360.0 / N
 R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
 R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
-L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.4; PARETE = 2.0
+L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.4; PARETE = 1.2
+PAR_CAS = 1.0    # pareti e fondo della cassetta
 MOD = 0.8; Z_PIGNONE = 26; R_PIGNONE = Z_PIGNONE * MOD / 2   # pignone grande (26 denti): cosi' il motorino sta fuori dalle cassette
 N20 = dict(lato_a=12.0, lato_b=10.0, lungo=24.3 + 1.5, albero=3.0)   # motoriduttore N20 (senza encoder) + contatti
 ANG_MOT = {"2m": (118.0, 140.0), "1m": (135.0,)}        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
@@ -47,22 +48,22 @@ class Modello:
     def __init__(self, chiave):
         p = MODELLI[chiave]; self.k = chiave; self.nome = p["nome"]
         self.R_I = p["R_I"]; self.R_O = self.R_I + L_TASCA; self.ruote = p["ruote"]; self.labbri = p["labbri"]
-        self.R_GP = self.R_O + 2.4                       # raggio primitivo della corona
+        self.R_GP = self.R_O + 1.6                       # raggio primitivo della corona
         self.R_GT = self.R_GP + MOD                      # punta dei denti
         self.R_AN_T = self.R_O + G; self.R_AN_G = self.R_GT + G   # dentro dell'anello: zona tasche / zona corona
-        self.R_CASS = self.R_AN_G + 1.6
+        self.R_CASS = self.R_AN_G + PAR_CAS
         self.APRE = 6.0 if self.labbri else 9.0           # mezza larghezza dell'uscita in basso
         if self.ruote == 2:
-            self.Z_COR = (0.0, 2.4); self.Z_TAS = (2.4, 2.4 + PROF)       # locale: corona dietro, tasche davanti
+            self.Z_COR = (0.0, 2.0); self.Z_TAS = (2.0, 2.0 + PROF)       # locale: corona dietro, tasche davanti
         else:
             self.Z_COR = (-1.2, 1.2); self.Z_TAS = (1.2, 1.2 + PROF)      # corona in mezzo, tasche sui due lati
         self.TH = self.Z_TAS[1]
-        self.Z_COP = (self.TH + 0.2, self.TH + 1.8); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.6)
+        self.Z_COP = (self.TH + 0.2, self.TH + 1.4); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)
         # in Y
         if self.ruote == 2:
-            self.Y0 = 1.0 + 2.0                          # parete centrale (|y|<1) + fondo della cassetta
+            self.Y0 = 0.6 + 1.4                          # parete centrale (|y|<0,6) + fondo della cassetta
             self.Y_PIGN = self.Y0 + sum(self.Z_COR) / 2
-            self.Y_DX = -self.Y_PIGN + 2.0 + N20["lungo"] + PARETE + 0.4; self.Y_SX = -self.Y_DX
+            self.Y_DX = -self.Y_PIGN + 1.3 + N20["lungo"] + PARETE + 0.4; self.Y_SX = -self.Y_DX
         else:
             self.Y0 = 0.0
             self.Y_PIGN = 0.0
@@ -77,7 +78,7 @@ class Modello:
         self.Z_PIATTO = self.Z_NICCHIA + 11.0                  # sopra il tetto della nicchia: cella, staffa, vaschetta
         self.Z_IMB0 = self.Z_PIATTO + 7.0 + (abs(self.Y_PIGN) + PROF + 4 - 6.5) * 1.0 + 4   # imbuto a ~45 gradi
         self.Z_A = self.Z_IMB0 + self.R_CASS + 1.5 + 0.6
-        self.Z_DISP = (self.Z_A + math.sqrt(max(0, (self.R_CASS + 1.9) ** 2 - (self.R_CASS - 3.8) ** 2)) + 0.5, 0)   # il display sta dove la ruota curva
+        self.Z_DISP = (self.Z_A + math.sqrt(max(0, (self.R_CASS + 1.4) ** 2 - (self.R_CASS - 3.8) ** 2)) + 0.5, 0)   # il display sta dove la ruota curva
         self.Z_DISP = (self.Z_DISP[0], self.Z_DISP[0] + 34.0)
         self.H = max(self.Z_A + self.R_CASS + 0.6, self.Z_A + self._z_motori(), self.Z_DISP[1]) + PARETE + 2.6
         self.Y_MID = min((self.Y_SX + self.Y_DX) / 2, self.Y_DX - R_SPIG - 0.3 - 17.7)   # il display non deve toccare gli spigoli arrotondati
@@ -116,14 +117,14 @@ class Modello:
         m = Manifold()
         zc0, zc1 = self.Z_COR
         if self.ruote == 2:
-            m += cil(self.R_CASS, zc0 - 2.0, zc0 - 0.4)                                        # fondo
+            m += cil(self.R_CASS, zc0 - 1.4, zc0 - 0.4)                                        # fondo
             m += cil(3.0, zc0 - 0.41, self.TH - 0.5)                                            # asse fisso
-        m += cil(self.R_CASS, zc0 - (2.0 if self.ruote == 2 else 0.4), zc1 + 0.4) - cil(self.R_AN_G, zc0 - 1, zc1 + 1)   # anello della corona
+        m += cil(self.R_CASS, zc0 - (1.4 if self.ruote == 2 else 0.4), zc1 + 0.4) - cil(self.R_AN_G, zc0 - 1, zc1 + 1)   # anello della corona
         for s in lati:
             a0, a1 = (self.Z_TAS[0], self.Z_FL[0]) if s > 0 else (-self.Z_FL[0], -self.Z_TAS[0])
             m += cil(self.R_CASS, a0, a1) - cil(self.R_AN_T, a0 - 1, a1 + 1)                    # anello delle tasche
             fl = (self.Z_FL[0], self.Z_FL[1]) if s > 0 else (-self.Z_FL[1], -self.Z_FL[0])
-            m += cil(self.R_CASS + 1.5, fl[0], fl[1]) - cil(self.R_AN_T - 3.0, fl[0] - 1, fl[1] + 1)
+            m += cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T - 3.0, fl[0] - 1, fl[1] + 1)
             m -= scatola(-self.APRE, self.APRE, -self.R_CASS - 2, -self.R_AN_T + 1, min(self.Z_TAS[0] * s, self.Z_TAS[1] * s), max(self.Z_TAS[0] * s, self.Z_TAS[1] * s))  # uscita in basso
         for a in ANG_MOT[self.k]:
             m -= ruota(scatola(self.R_AN_G - 2, self.R_CASS + 3, -7.5, 7.5, zc0 - 0.3, zc1 + 0.3), a)   # finestra per il pignone
@@ -154,13 +155,13 @@ class Modello:
             if self.ruote == 2:
                 s = -1 if i == 0 else 1                  # motore della ruota di sinistra / di destra
                 yp = s * self.Y_PIGN
-                faccia = yp - s * 2.0                     # faccia del riduttore, il corpo va verso l'altro lato
+                faccia = yp - s * 1.3                     # faccia del riduttore, il corpo va verso l'altro lato
                 y0, y1 = sorted((faccia, faccia - s * N20["lungo"]))
             else:
                 yp = 0.0; faccia = 2.0; y0, y1 = 2.0, 2.0 + N20["lungo"]
             corpo = ruota(scatola(r - N20["lato_b"] / 2, r + N20["lato_b"] / 2, -N20["lato_a"] / 2, N20["lato_a"] / 2, 0, 1), 0)
             corpo = scatola(-N20["lato_b"] / 2, N20["lato_b"] / 2, y0, y1, -N20["lato_a"] / 2, N20["lato_a"] / 2).rotate([0, -a, 0]).translate([x, 0, z])
-            pign = cil_y(R_PIGNONE + MOD, yp - 1.3, yp + 1.3, x, z) + cil_y(N20["albero"] / 2, min(yp, faccia), max(yp, faccia), x, z)
+            pign = cil_y(R_PIGNONE + MOD, yp - 1.0, yp + 1.0, x, z) + cil_y(N20["albero"] / 2, min(yp, faccia), max(yp, faccia), x, z)
             out.append(corpo + pign)
         return out
 
@@ -169,7 +170,7 @@ class Modello:
         r = self.R_GP + R_PIGNONE
         for i, a in enumerate(ANG_MOT[self.k]):
             if self.ruote == 2:
-                s = -1 if i == 0 else 1; y0, y1 = sorted((s * self.Y_PIGN - s * 4.0, s * self.Y_PIGN - s * 2.0 - s * N20["lungo"]))
+                s = -1 if i == 0 else 1; y0, y1 = sorted((s * self.Y_PIGN - s * 3.0, s * self.Y_PIGN - s * 1.3 - s * N20["lungo"]))
             else: y0, y1 = 4.0, 2.0 + N20["lungo"]
             fascia = scatola(r + N20["lato_b"] / 2, r + N20["lato_b"] / 2 + 1.6, y0, y1, -N20["lato_a"] / 2 - 1.6, N20["lato_a"] / 2 + 1.6)
             fascia += scatola(r - N20["lato_b"] / 2 - 0.01, r + N20["lato_b"] / 2 + 1.6, y0, y1, N20["lato_a"] / 2, N20["lato_a"] / 2 + 1.6)
@@ -295,14 +296,14 @@ class Modello:
                 ys = sorted((s * 1.0, s * 40))
                 m -= cil_y(self.R_CASS + 0.4, ys[0], ys[1], 0, self.Z_A) - (scatola(-100, 100, -1.0, 1.0, 0, 300) if False else Manifold())
                 ys2 = sorted((s * (self.Y0 + self.Z_FL[0] - 0.01), s * 40))
-                m -= cil_y(self.R_CASS + 1.9, ys2[0], ys2[1], 0, self.Z_A)
-            m += (scatola(-self.X_HALF + 1, self.X_HALF - 8.0, -1.0, 1.0, self.Z_IMB0 + 2.2, self.H - 1.0) ^ self._profilo(PARETE - 0.5)) - cil_y(6.0, -2, 2, 0, self.Z_A) \
+                m -= cil_y(self.R_CASS + 1.4, ys2[0], ys2[1], 0, self.Z_A)
+            m += (scatola(-self.X_HALF + 1, self.X_HALF - 8.0, -0.6, 0.6, self.Z_IMB0 + 2.2, self.H - 1.0) ^ self._profilo(PARETE - 0.5)) - cil_y(6.0, -2, 2, 0, self.Z_A) \
                  - scatola(self.X_TASTO - 10.5, self.X_TASTO + 10.5, -2, 2, self.H - PARETE - 11.5, self.H) \
                  - scatola(self.X_TASTO - 13.6, self.X_TASTO + 13.6, -2, 2, self.H - PARETE - 2.0, self.H)
         else:
-            m -= cil_y(self.R_CASS + 1.9, -40, self.Z_FL[1] + 0.4, 0, self.Z_A)
+            m -= cil_y(self.R_CASS + 1.4, -40, self.Z_FL[1] + 0.4, 0, self.Z_A)
         # culle sotto le cassette (meta' di sotto), con il passaggio dell'uscita
-        culla = cil_y(self.R_CASS + 3.5, y0 + PARETE - 0.01, y1 - PARETE + 0.01, 0, self.Z_A) - cil_y(self.R_CASS + 1.9, y0, y1, 0, self.Z_A) - scatola(-100, 100, -100, 100, self.Z_A - 8, 400)
+        culla = cil_y(self.R_CASS + 2.8, y0 + PARETE - 0.01, y1 - PARETE + 0.01, 0, self.Z_A) - cil_y(self.R_CASS + 1.4, y0, y1, 0, self.Z_A) - scatola(-100, 100, -100, 100, self.Z_A - 8, 400)
         culla -= scatola(-self.APRE - 5.0, self.APRE + 5.0, -100, 100, 0, self.Z_A)
         m += culla
         for c in self.motori():
@@ -316,7 +317,7 @@ class Modello:
         self._corpo = m
         return m
 
-    X_TASTO = 30.0; R_TASTO = 10.5      # tasto tondo da 21 mm sul tetto, davanti (dove la ruota curva e lascia spazio)
+    X_TASTO = 26.0; R_TASTO = 10.5      # tasto tondo da 21 mm sul tetto, davanti (dove la ruota curva e lascia spazio)
     def tasto(self):
         """Il tasto stampato: cupoletta che sporge 3 mm, bordino sotto il tetto che lo trattiene, perno che preme l'interruttore."""
         hr = self.H - PARETE

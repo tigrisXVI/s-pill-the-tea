@@ -16,9 +16,9 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Corpo scuro e cappello colorato a righine con gli spigoli tondi; tasto tondo da 21 mm sul cappello.
 
-**Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 700). Baricentro a 5,5 cm da terra: si ribalta solo se inclinata di 42° di lato, 50° in avanti, 46° indietro. Sotto, quattro piedini di gomma.
+**Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 640). Baricentro a 4,6 cm da terra: si ribalta solo se inclinata di 47° di lato, 54° in avanti, 50° indietro. Sotto, quattro piedini di gomma.
 
-Corpo 10,9 × 5,2 × 20,7 cm (1,18 l), piede 12,3 × 10 cm, uno scomparto 4,3 cm³. Modello in `cad/scatoletta_v8.py`, controlli in `cad/controlli_v8.py` (nessuna interferenza), pezzi in `v8/2m/`, visore: [modello 3D v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Non ancora stampata.
+Pareti da 1,2 mm, cassette da 1 mm. Corpo 10,5 × 5,1 × 20,3 cm (1,09 l), piede 11,9 × 10 cm, uno scomparto 4,3 cm³. Modello in `cad/scatoletta_v8.py`, controlli in `cad/controlli_v8.py` (nessuna interferenza), pezzi in `v8/2m/`, visore: [modello 3D v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Non ancora stampata.
 
 ## In prova: v0.7 a due ruote
 
