@@ -123,6 +123,10 @@ class Modello:
                 pts = [(self.R_O * math.cos(a - ag), self.R_O * math.sin(a - ag)), (self.R_O * math.cos(a + ag), self.R_O * math.sin(a + ag)),
                        ((self.R_O - 5.0) * math.cos(a), (self.R_O - 5.0) * math.sin(a))]
                 m += Manifold.extrude(CrossSection([ccw(pts)]), a1 - a0 + 0.01).translate([0, 0, a0 - 0.01])
+            if self.ruote == 2:   # fossette dove scattano i dentini degli sportellini
+                for k in range(N):
+                    for sgn in (-1, 1):
+                        m -= ruota(cil(0.6, a1 - 0.45, a1 + 1.0, self.R_O - 1.5, 0), -90.0 + PASSO / 2 + k * PASSO + sgn * 1.5)
             for k in range(N):   # fessura in punta a ogni divisorio per la lamella di TPU
                 m -= ruota(scatola(self.R_O - 2.0, self.R_O + 1.0, -0.42, 0.42, a0, a1 + 1.0), -90.0 + off + PASSO / 2 + k * PASSO)
             if self.labbri:                               # bordo con aperture larghe 12 mm: tra un'uscita e l'altra c'e' pieno
@@ -156,11 +160,8 @@ class Modello:
             a0, a1 = (self.Z_TAS[0], self.Z_FL[0]) if s > 0 else (-self.Z_FL[0], -self.Z_TAS[0])
             m += cil(self.R_CASS, a0, a1) - cil(self.R_AN_T, a0 - 1, a1 + 1)                    # anello delle tasche
             fl = (self.Z_FL[0], self.Z_FL[1]) if s > 0 else (-self.Z_FL[1], -self.Z_FL[0])
-            if self.ruote == 2:   # baionetta: scanalatura per le linguette sotto la flangia, e tre tacche per farle entrare
-                m -= cil(self.R_AN_T + 1.8, self.Z_COP[0] - 0.05, self.Z_COP[1] + 0.05)
-                fla = cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T + 0.2, fl[0] - 1, fl[1] + 1)
-                for c in BAIONETTA: fla -= settore(self.R_AN_T, self.R_AN_T + 2.0, c - 5.8, c + 5.8, fl[0] - 1, fl[1] + 1)
-                m += fla
+            if self.ruote == 2:   # davanti la cassetta e' aperta: ogni scomparto ha il suo sportellino sulla ruota
+                m += cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T + 0.2, fl[0] - 1, fl[1] + 1)
             else:
                 m += cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T - 3.0, fl[0] - 1, fl[1] + 1)
             m -= scatola(-self.APRE, self.APRE, -self.R_CASS - 2, -self.R_AN_T + 1, min(self.Z_TAS[0] * s, self.Z_TAS[1] * s), max(self.Z_TAS[0] * s, self.Z_TAS[1] * s))  # uscita in basso
@@ -168,6 +169,22 @@ class Modello:
             m -= ruota(scatola(self.R_AN_G - 2, self.R_CASS + 3, -7.5, 7.5, zc0 - 0.3, zc1 + 0.3), a)   # finestra per il pignone
             if self.ruote == 1:                                   # la cassetta esce verso -Y (locale +Z): il pignone passa in una scanalatura
                 m -= ruota(scatola(self.R_GP - MOD - 0.6, self.R_CASS + 3, -7.5, 7.5, -self.Z_FL[1] - 1, zc1), a)
+        return m
+
+    def sportellini_locale(self):
+        """Uno sportellino trasparente (PETG trasparente) per ogni scomparto: cerniera a perno vicino al mozzo,
+        si chiude a scatto sui due divisori e ha una linguetta per aprirlo con il dito. Gira con la ruota."""
+        z0 = self.TH + 0.05; z1 = z0 + 1.2; rh = self.R_I + 1.6
+        m = Manifold()
+        for k in range(1, N):
+            c = -90.0 + k * PASSO
+            p = settore(self.R_I + 2.6, self.R_O - 0.3, c - PASSO / 2 + 0.6, c + PASSO / 2 - 0.6, z0, z1)
+            w = 2 * rh * math.sin(math.radians(PASSO / 2 - 1.2))
+            p += ruota(cil_y(0.9, -w / 2, w / 2, rh, z0 + 0.95) - cil_y(0.45, -w, w, rh, z0 + 0.95), c)               # cerniera (perno da 0,8 mm, un pezzo di filo)
+            p += ruota(scatola(self.R_O - 5.0, self.R_O - 1.5, -2.5, 2.5, z1 - 0.01, z1 + 1.2), c)                 # linguetta per il dito
+            for sgn in (-1, 1):                                                                                   # dentini dello scatto, sopra gli scivoli dei divisori
+                p += ruota(cil(0.5, z0 - 0.35, z0 + 0.01, self.R_O - 1.5, 0), c + sgn * (PASSO / 2 - 1.5))
+            m += p
         return m
 
     def coperchio_locale(self, s=1):
@@ -499,7 +516,7 @@ class Modello:
                 P["9_cassetta_" + n] = self.metti(self.cassetta_locale(), s)
                 P["10_ruota_" + n] = self.metti(self.ruota_locale(), s)
                 P["10_spazzole_" + n] = self.metti(self.spazzole_locale(), s)
-                P["11_coperchio_" + n] = self.metti(self.coperchio_locale(), s)
+                P["10_sportellini_" + n] = self.metti(self.sportellini_locale(), s)
         else:
             P["9_cassetta"] = self.metti(self.cassetta_locale(), 0)
             P["10_ruota_doppia"] = self.metti(self.ruota_locale(), 0)

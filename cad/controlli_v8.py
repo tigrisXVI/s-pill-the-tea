@@ -124,7 +124,7 @@ def controlla(k):
     print("9) le pillole piccole non si incastrano (pillola minuscola: 3 mm x 1,6 mm)")
     xh, zh = M.perno_piattino(); pz = M.PIATTO
     zb = M.Z_PIATTO + 7.0
-    fessure = [("lamelle di TPU - anello (gioco ruota-anello " + str(s8.G).replace(".", ",") + " mm)", 0.0), ("ruota - coperchio trasparente", M.Z_COP[0] - M.TH),
+    fessure = [("lamelle di TPU - anello (gioco ruota-anello " + str(s8.G).replace(".", ",") + " mm)", 0.0), ("divisori - sportellini (si chiudono sopra)", 0.05),
                ("cassetta - bordo dell'imbuto", M.Z_A - M.R_CASS - (M.Z_IMB0 + 0.5)),
                ("bocca dell'imbuto - pareti del piattino", (zb - 1.6) - (M.Z_PIATTO + 5.0)),
                ("piattino - paratia dietro", 0.6)]
