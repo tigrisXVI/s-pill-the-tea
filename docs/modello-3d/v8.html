@@ -315,22 +315,22 @@ function passo(h) {   // un passo di fisica: muove i pezzi cinematici solo se ca
   }
   const a0 = apre, c0 = cup;
   apre = verso(apre, apreMeta, 90 * h); if (apre !== a0 || primo) { qX.setFromAxisAngle(asseY, -apre * rad); trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w }); }
-  cup = verso(cup, cupMeta, 1.4 * h); if (cup !== c0 || primo) cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
+  cupT = verso(cupT, cupMeta, .9 * h); cup = liscio(cupT); if (cup !== c0 || primo) cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
   primo = false;
   world.step();
 }
-let primo = true;
+let primo = true, cupT = 0;
 
 function logica(dt) {
   const vive = pillole.filter(p => p.stato !== 'tolta'), dosePill = vive.filter(p => p.d === dose);
   const fermeRuote = !lati.some(L => Math.abs(L.giro - L.meta) > .01), sotto = cup < .02;
   const Ld = lati[dose % 2 ? 0 : 1];
-  if (fase === 'gira' && fermeRuote) {   // arrivata: si scuote avanti e indietro di pochi gradi, per staccare le pillole
+  if (fase === 'gira' && fermeRuote) {   // arrivata: si scuote solo all'indietro (verso lo scomparto gia' vuoto), per staccare le pillole senza aprire quello dopo
     if (scossa.length) Ld.meta = base + scossa.shift(); else { fase = 'cade'; if (!scosse) attesa = 7; calma = 0; }
   }
   if (fase === 'cade') {
     attesa -= dt; calma = dosePill.every(p => sulPiatto(p) && !veloce(p)) ? calma + dt : 0;
-    if (attesa < 4.5 && scosse < 2 && dosePill.some(p => !sulPiatto(p) && !veloce(p))) { scosse++; scossa = [4, -4, 3, -3, 0]; fase = 'gira'; }
+    if (attesa < 4.5 && scosse < 2 && dosePill.some(p => !sulPiatto(p) && !veloce(p))) { scosse++; scossa = [-5, 0, -4, 0]; fase = 'gira'; }
     if (calma > .5 || attesa <= 0) { fase = 'pesa'; attesa = .6; }
   }
   const peso = vive.filter(sulPiatto).reduce((t, p) => t + p.mg, 0);
@@ -416,14 +416,14 @@ function suoni() { if (faseSuonata === fase) return; faseSuonata = fase;
 // ---------------- comandi
 const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
 function ricomincia() {
-  dose = 0; fase = 'pronta'; apre = apreMeta = 0; cup = cupMeta = 0; prese = 0; avviso = '';
+  dose = 0; fase = 'pronta'; apre = apreMeta = 0; cup = cupMeta = cupT = 0; prese = 0; avviso = '';
   for (const L of lati) { L.giro = L.meta = 0; L.fuori = L.fuoriMeta = 0; L.primo = true; } primo = true;
   for (let k = 0; k < 3; k++) passo(world.timestep);
   riempi();
   premi($('sx'), false, '', 'Sfila la cassetta di sinistra'); premi($('dx'), false, '', 'Sfila la cassetta di destra'); premi($('cup'), false, '', 'Prendi il bicchierino');
   $('sbaglia').textContent = 'Prova: togli una pillola dalla prossima dose';
 }
-$('tasto').onclick = () => { if ($('tasto').disabled) return; dose++; const L = lati[dose % 2 ? 0 : 1]; base = L.meta = Math.ceil(dose / 2) * PASSO; scossa = [3, -3, 2, -2, 0]; scosse = 0; fase = 'gira'; };
+$('tasto').onclick = () => { if ($('tasto').disabled) return; dose++; const L = lati[dose % 2 ? 0 : 1]; base = L.meta = Math.ceil(dose / 2) * PASSO; scossa = [-4, 0, -3, 0]; scosse = 0; fase = 'gira'; };
 $('sbaglia').onclick = () => {
   if (fase !== 'pronta' || dose >= 28) return; const d = dose + 1;
   const p = pillole.find(q => q.d === d && q.stato === 'ruota'); if (!p) return;
