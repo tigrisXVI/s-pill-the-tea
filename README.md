@@ -12,6 +12,19 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 > ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
 
+## In prova: v0.8, la più compatta (due modelli da scegliere)
+
+Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Piede largo con una piastra d'acciaio per la stabilità; tutto il tetto è il tasto.
+
+| | Due ruote, due motorini | Una ruota doppia, un motorino |
+|---|---|---|
+| Corpo | 10,9 × 5,2 × 20,3 cm (1,15 l) | 13,9 × 4,8 × 21,6 cm (1,44 l) |
+| Piede | 12,3 × 8,8 cm | 15,3 × 10 cm |
+| Uno scomparto | 4,3 cm³ | 6,2 cm³ |
+| Si ribalta se inclinata di lato | 27° | 27° |
+
+Modello in `cad/scatoletta_v8.py`, controlli in `cad/controlli_v8.py` (nessuna interferenza in tutti e due), pezzi in `v8/2m/` e `v8/1m/`, visore: [modello 3D v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Non ancora stampata.
+
 ## In prova: v0.7 a due ruote
 
 Due ruote in piedi da 14 dosi, ognuna con il suo motorino, in cassette che si sfilano di lato. Lo scomparto che arriva in basso si svuota da solo: niente sportelli e niente servi. Bilancia sotto il bicchierino. **11 × 8 × 17,5 cm (1,5 litri), un terzo della v0.5.** Modello in `cad/scatoletta_v7.py`, controlli in `cad/controlli_v7.py`, pezzi in `v7/stl/`, visore: [modello 3D v0.7](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v7.html). Non ancora stampata né simulata.
