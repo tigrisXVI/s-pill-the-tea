@@ -12,6 +12,10 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 > ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
 
+## In prova: v0.6 a due piani
+
+Due caroselli da 14 scomparti uno sopra l'altro: in pianta occupa quasi la metà (circa 18 × 12 cm invece di 24,5 × 17,5). Fondi a cono, due sportelli a ghigliottina, bilancia sotto il bicchierino. Modello in `cad/scatoletta_v6.py`, controlli in `cad/controlli_v6.py`, pezzi in `v6/stl/`, visore: [modello 3D v0.6](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v6.html). Non ancora stampata né simulata.
+
 ## Com'è fatta
 
 - **Un guscio unico** arrotondato nasconde il meccanismo. Sopra c'è un **cofanetto**, il coperchio colorato con la cerniera dietro: si apre per ricaricare.
