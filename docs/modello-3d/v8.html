@@ -58,7 +58,7 @@
   <ol>
     <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Il bordo di ogni ruota è una corona dentata da 122 denti; la muove il pignone da 26 denti di un motorino N20, nell'angolo in alto dove la ruota tonda lascia spazio (uno davanti, uno dietro).</li>
     <li>All'ora giusta l'altoparlante davanti suona e il display si accende. La persona preme il tasto tondo sul cappello. La ruota avanza di uno scomparto: quello che arriva in basso si apre sull'uscita, le pillole cadono nell'imbuto e poi sul piattino.</li>
-    <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, un micro servo lo apre e le pillole scivolano nel bicchierino. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
+    <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, il micro servo lo inclina all'indietro e le pillole scivolano verso il fondo della nicchia, dentro il bicchierino. Mentre pesa, dietro il bordo aperto c'è una paratia fissa a 0,6 mm: le pillole non scivolano via, ma la paratia non tocca il piattino e non falsa il peso. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
     <li>Il bicchierino ha un magnete nella parete dietro: un sensore nella nicchia sa se è al suo posto. Quando lo togli la dose risulta presa.</li>
     <li>Cavi: i fili dei motorini, del display e del tasto corrono sotto il tetto e scendono in un canale dentro la parete centrale fino alle schede, dietro in basso. Corrente da una presa USB-C dietro (5 V).</li>
     <li>Internet: l'ESP32-S3 si collega al Wi-Fi di casa. La sua antenna sta in cima alla pila delle schede, a 15 mm dal metallo più vicino. Se il Wi-Fi manca, la scatola continua con gli orari salvati e manda tutto quando torna la rete.</li>
@@ -70,7 +70,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.7';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.8';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm

@@ -213,6 +213,9 @@ class Modello:
         sez = Manifold.extrude(CrossSection([ccw(prof)]), 2 * larg).translate([0, 0, -larg]).transform([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
         m = sez + sez.mirror([0, 1, 0])
         for x in (-larg - 1.6, larg): m += scatola(x, x + 1.6, -ye - 1.6, ye + 1.6, zb - 1.6, self.Z_IMB0 + 0.5)
+        # paratia fissa dietro il piattino: a 0,6 mm dal suo bordo aperto, cosi' le pillole non scivolano via
+        p = self.PIATTO
+        m += scatola(p["x0"] - 1.8, p["x0"] - 0.6, -p["y"], p["y"], self.Z_PIATTO + 0.2, zb - 1.59) + scatola(p["x0"] - 1.8, -larg - 0.01, -p["y"], p["y"], zb - 1.6, zb)
         return m
 
     PIATTO = dict(x0=-11.0, x1=13.0, y=11.0)
