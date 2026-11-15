@@ -120,6 +120,25 @@ def controlla(k):
         print(f"   antenna Wi-Fi: il metallo piu' vicino e' {dm[1]} a {dm[0]:.0f} mm")
         if dm[0] < 10: male("antenna troppo vicina a", dm[1])
         print("   cavi:", ", ".join(c[0] for c in M.cavi()))
+    print("9) le pillole piccole non si incastrano (pillola minuscola: 3 mm x 1,6 mm)")
+    xh, zh = M.perno_piattino(); pz = M.PIATTO
+    zb = M.Z_PIATTO + 7.0
+    fessure = [("ruota - anello della cassetta", s8.G), ("ruota - coperchio trasparente", M.Z_COP[0] - M.TH),
+               ("cassetta - bordo dell'imbuto", M.Z_A - M.R_CASS - (M.Z_IMB0 + 0.5)),
+               ("bocca dell'imbuto - pareti del piattino", (zb - 1.6) - (M.Z_PIATTO + 5.0)),
+               ("piattino - paratia dietro", 0.6)]
+    for nome, g in fessure:
+        ok9 = g <= 0.6 + 1e-6 or g >= 4.0
+        print(f"   {nome}: {g:.1f} mm {'ok' if ok9 else 'TROPPO: una pillola minuscola ci si puo incastrare'}")
+        if not ok9: male("fessura", nome, round(g, 2))
+    print("10) stampa 3D: verso di stampa e sbalzi da sostenere")
+    tot = 0
+    for n, m in P.items():
+        verso, area, st = s8.stampa(s8.a_mesh(m))
+        x, y, z = st.extents; tot += area
+        print(f"   {n:18s} {x:5.0f} x {y:4.0f} x {z:4.0f} mm, appoggiato {verso:9s} supporti {area:5.1f} cm2")
+        if max(x, y) > 220 or z > 250: male(n, "non entra in una stampante da 22 x 22 cm")
+    print(f"   area da sostenere in tutto: {tot:.0f} cm2")
     print("7) stabilita'")
     rho = 1.24 * 0.6
     masse = [(m.volume() * rho / 1000, m) for n, m in P.items()]

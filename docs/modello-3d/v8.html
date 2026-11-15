@@ -49,6 +49,7 @@
     <button id="ricarica">Ricarica la settimana</button>
     <button id="suona">Fai suonare la sveglia</button>
     <button id="foto">Salva una foto</button>
+    <button id="mini" aria-pressed="false">Prova con pillole minuscole</button>
   </div>
 
   <h2>Misure e stabilità</h2>
@@ -56,7 +57,7 @@
 
   <h2>Come funziona</h2>
   <ol>
-    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Il bordo di ogni ruota è una corona dentata da 122 denti; la muove il pignone da 26 denti di un motorino N20, nell'angolo in alto dove la ruota tonda lascia spazio (uno davanti, uno dietro).</li>
+    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Il bordo di ogni ruota è una corona dentata (modulo 1, denti abbastanza grossi da stampare in 3D); la muove il pignone di un motorino N20, nell'angolo in alto dove la ruota tonda lascia spazio (uno davanti, uno dietro).</li>
     <li>All'ora giusta l'altoparlante davanti suona e il display si accende. La persona preme il tasto tondo sul cappello. La ruota avanza di uno scomparto: quello che arriva in basso si apre sull'uscita, le pillole cadono nell'imbuto e poi sul piattino.</li>
     <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, il micro servo lo inclina all'indietro e le pillole scivolano verso il fondo della nicchia, dentro il bicchierino. Mentre pesa, dietro il bordo aperto c'è una paratia fissa a 0,6 mm: le pillole non scivolano via, ma la paratia non tocca il piattino e non falsa il peso. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
     <li>Il bicchierino ha un magnete nella parete dietro: un sensore nella nicchia sa se è al suo posto. Quando lo togli la dose risulta presa.</li>
@@ -70,7 +71,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.8';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.9';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -234,8 +235,11 @@ const FORME = {
   grande: { geo: () => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 8, 24); g.rotateZ(Math.PI / 2); g.scale(1, .72, 1); return g; }, h: 3.75, mg: 1150 },
   capsula: { geo: () => { const g = new THREE.CapsuleGeometry(3.4, 12.6, 8, 24); g.rotateZ(Math.PI / 2); return g; }, h: 3.4, mg: 480 },
   tonda: { geo: () => compressa(4.5, 3.5), h: 1.75, mg: 250 },
-  piccola: { geo: () => compressa(2.5, 2.5), h: 1.25, mg: 90 } };
-const ricetta = d => { const m = (d - 1) % 4; return m === 0 ? [['grande', '#ffffff'], ['piccola', '#f4d35e']] : m === 1 ? [['tonda', '#e8505b']] : m === 2 ? [['capsula', '#f4d35e', '#e8505b'], ['tonda', '#ffffff']] : [['piccola', '#ffffff'], ['tonda', '#7fb7e6']]; };
+  piccola: { geo: () => compressa(2.5, 2.5), h: 1.25, mg: 90 },
+  mini: { geo: () => compressa(1.5, 1.6), h: 0.8, mg: 12 } };
+let conMini = false;
+const ricetta = d => [...ricetta0(d), ...(conMini ? [['mini', '#ff9eb5']] : [])];
+const ricetta0 = d => { const m = (d - 1) % 4; return m === 0 ? [['grande', '#ffffff'], ['piccola', '#f4d35e']] : m === 1 ? [['tonda', '#e8505b']] : m === 2 ? [['capsula', '#f4d35e', '#e8505b'], ['tonda', '#ffffff']] : [['piccola', '#ffffff'], ['tonda', '#7fb7e6']]; };
 const pesoGiusto = d => ricetta(d).reduce((t, [f]) => t + FORME[f].mg, 0);
 const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'], momenti = ['mattina', 'mezzogiorno', 'pomeriggio', 'sera'];
 const nomeDose = d => giorni[Math.floor((d - 1) / 4)] + ' ' + momenti[(d - 1) % 4];
@@ -402,6 +406,7 @@ for (const [id, i, t] of [['sx', 0, 'sinistra'], ['dx', 1, 'destra']]) $(id).onc
 $('cup').onclick = () => { cupMeta = cupMeta ? 0 : 1; premi($('cup'), !!cupMeta, 'Rimetti il bicchierino', 'Prendi il bicchierino'); };
 $('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro (cavi e schede)'); };
 $('ricarica').onclick = ricomincia;
+$('mini').onclick = () => { conMini = !conMini; premi($('mini'), conMini, 'Togli le pillole minuscole', 'Prova con pillole minuscole'); ricomincia(); };
 $('suona').onclick = () => { try { sveglia(); } catch (e) {} };
 $('foto').onclick = () => {
   const w = box.clientWidth, h = box.clientHeight; renderer.setPixelRatio(3); renderer.setSize(w, h, false); renderer.render(scene, camera);
@@ -412,13 +417,14 @@ const S2 = P.STAB, cm = x => (x / 10).toLocaleString('it-IT', { maximumFractionD
 $('tabella').innerHTML = [
   ['Ingombro (corpo)', cm(P.L) + ' × ' + cm(P.W) + ' × ' + cm(P.H) + ' cm (' + P.litri.toLocaleString('it-IT') + ' litri)'],
   ['Piede', cm(P.PIEDE.x1 - P.PIEDE.x0) + ' × ' + cm(2 * P.PIEDE.y) + ' cm, con dentro ' + S2.zavorra + ' g di ferro'],
-  ['Ruote', '2 da ' + cm(P.ruota_d) + ' cm, corona da ' + P.Z_CORONA + ' denti, pignone da ' + P.Z_PIGNONE + ' (modulo 0,8)'],
+  ['Ruote', '2 da ' + cm(P.ruota_d) + ' cm, corona da ' + P.Z_CORONA + ' denti, pignone da ' + P.Z_PIGNONE + ' (modulo ' + String(P.MOD).replace('.', ',') + ')'],
   ['Peso', 'circa ' + S2.peso + ' g, baricentro a ' + cm(S2.cg) + ' cm da terra'],
   ['Si ribalta se inclinata', 'di lato ' + S2.lato + '°, in avanti ' + S2.avanti + '°, indietro ' + S2.dietro + '°'],
   ['Uno scomparto', S2.tasca.toLocaleString('it-IT') + ' cm³'],
   ['Corrente', 'USB-C 5 V dietro (alimentatore da 2 A)'],
   ['Internet', 'Wi-Fi 2,4 GHz dell\'ESP32-S3; antenna a 15 mm dal metallo più vicino'],
-  ['Cavi', P.CAVI.map(c => c.nome).join(', ')]].map(([t, v]) => `<tr><th>${t}</th><td>${v}</td></tr>`).join('');
+  ['Cavi', P.CAVI.map(c => c.nome).join(', ')],
+  ['Stampa 3D', P.STAMPA.length + ' pezzi in PETG (ugello 0,4 mm, pareti 1,2 mm = 3 passate, giochi 0,3–0,4 mm). Supporti: ' + P.STAMPA.filter(s => s[2] > 3).map(s => s[0].replace(/^\d+_/, '').replace(/_/g, ' ') + ' ' + Math.round(s[2]) + ' cm²').join(', ') + '; gli altri si stampano senza o quasi']].map(([t, v]) => `<tr><th>${t}</th><td>${v}</td></tr>`).join('');
 const visti = new Set();
 $('legenda').innerHTML = Object.keys(G).map(tipo).filter(t => !visti.has(t[1]) && visti.add(t[1])).map(t => `<li><i style="background:#${MAT[t[2]]().color.getHexString()}"></i>${t[1]}</li>`).join('');
 
@@ -430,7 +436,7 @@ function ciclo(ora) {
   if (n === 10) resto = 0;
   logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
-window.__v8 = { get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
+window.__v8 = { FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
 requestAnimationFrame(ciclo);
 </script>
 </body>

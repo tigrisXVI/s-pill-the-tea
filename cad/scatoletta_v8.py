@@ -30,8 +30,8 @@ R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
 Z_ESP = 12.0     # l'ESP32 sta 12 mm sopra la scheda dei driver: antenna lontana dalla cella di carico
 R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
 L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.4; PARETE = 1.2
-PAR_CAS = 1.0    # pareti e fondo della cassetta
-MOD = 0.8; Z_PIGNONE = 26; R_PIGNONE = Z_PIGNONE * MOD / 2   # pignone grande (26 denti): cosi' il motorino sta fuori dalle cassette
+PAR_CAS = 1.2    # pareti della cassetta: 3 passate da 0,4 mm
+MOD = 1.0; Z_PIGNONE = 20; R_PIGNONE = Z_PIGNONE * MOD / 2   # modulo 1: denti abbastanza grossi per la stampa 3D; pignone da 20 denti, il motorino sta fuori dalle cassette
 N20 = dict(lato_a=12.0, lato_b=10.0, lungo=24.3 + 1.5, albero=3.0)   # motoriduttore N20 (senza encoder) + contatti
 ANG_MOT = {"2m": (62.0, 118.0), "1m": (135.0,)}   # motorino della ruota sinistra davanti in alto, della destra dietro in alto        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
 
@@ -70,7 +70,7 @@ class Modello:
         else:
             self.Z_COR = (-1.2, 1.2); self.Z_TAS = (1.2, 1.2 + PROF)      # corona in mezzo, tasche sui due lati
         self.TH = self.Z_TAS[1]
-        self.Z_COP = (self.TH + 0.2, self.TH + 1.4); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)
+        self.Z_COP = (self.TH + 0.3, self.TH + 1.5); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)
         # in Y
         if self.ruote == 2:
             self.Y0 = 0.95 + 1.4 + 0.3                   # parete centrale con il canale dei cavi (|y|<0,95) + fondo della cassetta + gioco
@@ -89,7 +89,7 @@ class Modello:
         self.Z_NICCHIA = self.Z_CUP + self.CUP["alt"] + 12.0   # il piattino si apre sopra il bicchierino
         self.Z_PIATTO = self.Z_NICCHIA + 11.0                  # sopra il tetto della nicchia: cella, staffa, vaschetta
         self.Z_IMB0 = self.Z_PIATTO + 7.0 + (abs(self.Y_PIGN) + PROF + 4 - 6.5) * 1.0 + 4   # imbuto a ~45 gradi
-        self.Z_A = self.Z_IMB0 + self.R_CASS + 1.5 + 0.6
+        self.Z_A = self.Z_IMB0 + self.R_CASS + 1.1          # 0,6 mm tra cassetta e imbuto: le pillole non si incastrano
         self.Z_DISP = (self.Z_A + math.sqrt(max(0, (self.R_CASS + 1.4) ** 2 - (self.R_CASS - 3.8) ** 2)) + 0.5, 0)   # il display sta dove la ruota curva
         self.Z_DISP = (self.Z_DISP[0], self.Z_DISP[0] + 34.0)
         self.H = max(self.Z_A + self.R_CASS + 0.6, self.Z_A + self._z_motori(), self.Z_DISP[1]) + PARETE + 2.6
@@ -120,7 +120,7 @@ class Modello:
                     a = -90.0 + off + k * PASSO
                     lab -= ruota(scatola(self.R_O - 3, self.R_O + 1, -self.APRE, self.APRE, a0 - 1, a1 + 1), a)
                 m += lab
-        m -= cil(3.2, -50, 50)                            # foro per l'asse
+        m -= cil(3.3, -50, 50)                            # foro per l'asse (gioco 0,3 mm per la stampa)
         return m
 
     # ---------------- cassetta (locale)
@@ -212,7 +212,10 @@ class Modello:
         prof = [(6.5, zb - 1.6), (ye + 1.6, self.Z_IMB0 - 0.01), (ye + 1.6, self.Z_IMB0 + 0.5), (ye, self.Z_IMB0 + 0.5), (6.5, zb)]
         sez = Manifold.extrude(CrossSection([ccw(prof)]), 2 * larg).translate([0, 0, -larg]).transform([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
         m = sez + sez.mirror([0, 1, 0])
-        for x in (-larg - 1.6, larg): m += scatola(x, x + 1.6, -ye - 1.6, ye + 1.6, zb - 1.6, self.Z_IMB0 + 0.5)
+        for x in (-larg - 1.6, larg): m += scatola(x, x + 1.6, -ye - 1.6, ye + 1.6, zb - 1.6, self.Z_IMB0 + 8.0) - cil_y(self.R_CASS + 0.6, -50, 50, 0, self.Z_A) \
+                 - cil_y(self.R_CASS + 1.6, self.Y0 + self.Z_FL[0] - 0.6, 50, 0, self.Z_A) - cil_y(self.R_CASS + 1.6, -50, -(self.Y0 + self.Z_FL[0] - 0.6), 0, self.Z_A)
+        yf = self.Y0 + self.Z_FL[0] - 0.6
+        m -= cil_y(self.R_CASS + 1.6, yf, 50, 0, self.Z_A) + cil_y(self.R_CASS + 1.6, -50, -yf, 0, self.Z_A)   # spazio per la flangia della cassetta
         # paratia fissa dietro il piattino: a 0,6 mm dal suo bordo aperto, cosi' le pillole non scivolano via
         p = self.PIATTO
         m += scatola(p["x0"] - 1.8, p["x0"] - 0.6, -p["y"], p["y"], self.Z_PIATTO + 0.2, zb - 1.59) + scatola(p["x0"] - 1.8, -larg - 0.01, -p["y"], p["y"], zb - 1.6, zb)
@@ -230,17 +233,17 @@ class Modello:
         m = scatola(p["x0"], p["x1"], -p["y"], p["y"], z, z + 1.2)
         m += scatola(p["x1"] - 1.2, p["x1"], -p["y"], p["y"], z, z + 5)                                   # parete davanti
         for sy in (-1, 1): m += scatola(p["x0"], p["x1"], min(sy * p["y"], sy * (p["y"] - 1.2)), max(sy * p["y"], sy * (p["y"] - 1.2)), z, z + 5)   # pareti di lato
-        m += cil_y(1.2, -p["y"] - 2.2, p["y"] + 2.2, xh, zh)                                             # perno
+        m += cil_y(1.25, -p["y"] - 2.6, p["y"] + 2.6, xh, zh)                                            # perno (diametro 2,5 mm, stampato in verticale)
         if gradi: m = m.translate([-xh, 0, -zh]).rotate([0, -gradi, 0]).translate([xh, 0, zh])
         return m
 
     def staffa_cella(self):
         """Due spalle con il foro del perno, unite da una piastrina che sta sull'estremita' libera della cella."""
         p = self.PIATTO; z = self.Z_PIATTO; xh, zh = self.perno_piattino()
-        m = scatola(xh - 1.0, xh + 1.0, -(p["y"] + 12.0), p["y"] + 2.0, z - 2.8, z - 1.6)
+        m = scatola(xh - 2.6, xh + 1.3, -(p["y"] + 12.0), p["y"] + 2.6, z - 2.8, z - 1.6)
         for sy in (-1, 1):
-            y0, y1 = sorted((sy * (p["y"] + 0.4), sy * (p["y"] + 2.0)))
-            m += scatola(xh - 1.0, xh + 1.0, y0, y1, z - 2.8, zh + 2.0) - cil_y(1.3, y0 - 1, y1 + 1, xh, zh)
+            y0, y1 = sorted((sy * (p["y"] + 0.4), sy * (p["y"] + 2.6)))
+            m += scatola(xh - 2.6, xh + 2.6, y0, y1, z - 2.8, zh + 2.6) - cil_y(1.55, y0 - 1, y1 + 1, xh, zh)   # foro con 0,3 mm di gioco
         return m
 
     def cella(self):
@@ -273,7 +276,8 @@ class Modello:
         # piede largo e basso, con i fianchi inclinati (come la base di una lampada)
         m = Manifold.batch_hull([v5.rett_arrotondato(p["x0"], p["x1"], -p["y"], p["y"], 18, 0, 1.0),
                                  v5.rett_arrotondato(p["x0"] + 4, p["x1"] - 4, -p["y"] + 4, p["y"] - 4, 14, p["h"] - 0.01, p["h"])])
-        m -= self._zavorra(0.3)                                                                 # tasca chiusa per la zavorra (si inserisce in pausa di stampa)
+        z = self.ZAVORRA; xc = (p["x0"] + p["x1"]) / 2
+        m -= scatola(xc - z["lungo"] / 2 - 0.3, xc + z["lungo"] / 2 + 0.3, -z["largo"] / 2 - 0.3, z["largo"] / 2 + 0.3, -1, 1.2 + z["spess"] + 0.3)   # tasca aperta sotto: la piastra si incolla da sotto, poi i piedini di gomma
         return m
 
     ZAVORRA = dict(lungo=104.0, largo=76.0, spess=6.0)    # piastra di ferro 104 x 76 x 6 mm (~370 g)
@@ -476,6 +480,22 @@ class Modello:
     def misure(self):
         return (2 * self.X_HALF, self.Y_DX - self.Y_SX, self.H)
 
+VERSI = {"giu'": (0, 0, -1), "su": (0, 0, 1), "dietro": (-1, 0, 0), "davanti": (1, 0, 0), "sinistra": (0, -1, 0), "destra": (0, 1, 0)}
+def stampa(mesh):
+    """Sceglie il verso di stampa con meno sbalzi (facce che guardano in giu' oltre 45 gradi, non appoggiate al piano).
+    Ritorna (nome del verso, area da sostenere in cm2, mesh ruotata e appoggiata a z=0)."""
+    import numpy as np
+    meglio = None
+    for nome, d in VERSI.items():
+        d = np.array(d, float)
+        R = trimesh.geometry.align_vectors(d, [0, 0, -1])
+        m = mesh.copy(); m.apply_transform(R); m.apply_translation([0, 0, -m.bounds[0][2]])
+        n, c, a = m.face_normals, m.triangles_center, m.area_faces
+        sbalzo = (n[:, 2] < -0.7071) & (c[:, 2] > 0.3)
+        area = a[sbalzo].sum() / 100.0
+        if meglio is None or area < meglio[1] - 0.05: meglio = (nome, area, m)
+    return meglio
+
 def genera(chiave, cartella):
     M = Modello(chiave); P = M.pezzi(); C = M.componenti()
     for d in ("stampa", "assieme", "componenti"):
@@ -483,7 +503,7 @@ def genera(chiave, cartella):
         for f in os.listdir(dd): os.remove(os.path.join(dd, f))
     for n, m in P.items():
         mesh = a_mesh(m); mesh.export(os.path.join(cartella, "assieme", n + ".stl"))
-        st = mesh.copy(); b = st.bounds; st.apply_translation([-(b[0][0] + b[1][0]) / 2, -(b[0][1] + b[1][1]) / 2, -b[0][2]]); st.export(os.path.join(cartella, "stampa", n + ".stl"))
+        verso, area, st = stampa(mesh); b = st.bounds; st.apply_translation([-(b[0][0] + b[1][0]) / 2, -(b[0][1] + b[1][1]) / 2, 0]); st.export(os.path.join(cartella, "stampa", n + ".stl"))
     for n, m in C.items(): a_mesh(m).export(os.path.join(cartella, "componenti", n + ".stl"))
     return M, P, C
 
