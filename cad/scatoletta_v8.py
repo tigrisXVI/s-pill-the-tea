@@ -314,6 +314,10 @@ class Modello:
         m -= scatola(x1 - PARETE - 1, x1 + 1, self.Y_MID - 12, self.Y_MID + 12, self.Z_DISP[0] + 6, self.Z_DISP[1] - 6)
         m -= scatola(-self.X_HALF - 1, -self.X_HALF + PARETE + 1, -4.5, 4.5, self.Z_NICCHIA + 4, self.Z_NICCHIA + 8)
         m -= cil(self.R_TASTO + 0.4, self.H - 7, self.H + 1, self.X_TASTO, 0)                    # foro del tasto
+        xa = x1 - PARETE
+        m += cil_x(11.4, xa - 4.0, xa + 0.01, 0, self.Z_SUONO) - cil_x(10.25, xa - 5, xa + 1, 0, self.Z_SUONO)   # anello che tiene l'altoparlante
+        for dy, dz in [(0, 0)] + [(5.5 * math.cos(math.radians(a)), 5.5 * math.sin(math.radians(a))) for a in range(0, 360, 60)]:
+            m -= cil_x(1.1, xa - 1, x1 + 1, dy, self.Z_SUONO + dz)                                # griglia del suono
         self._corpo = m
         return m
 
@@ -337,10 +341,21 @@ class Modello:
         return scatola(x1 - PARETE - 4.2, x1 - PARETE - 0.2, self.Y_MID - 17.7, self.Y_MID + 17.7, self.Z_DISP[0], self.Z_DISP[1] - 1.5)
 
     def schede(self):
-        """ESP32-S3 SuperMini, DRV8833, HX711, cicalino: dietro, sopra il tetto della nicchia."""
+        """ESP32-S3 SuperMini, DRV8833, HX711: dietro, sopra il tetto della nicchia."""
         z = self.Z_PIATTO - 1.0
         xb = -self.X_HALF + PARETE + 0.5
-        return scatola(xb, xb + 18.0, -11.25, 11.25, z, z + 4.5) + scatola(xb, xb + 18.5, -8, 8, z + 5, z + 9) + cil(6.0, z + 9.5, z + 15, xb + 7, 0)
+        return scatola(xb, xb + 18.0, -11.25, 11.25, z, z + 4.5) + scatola(xb, xb + 18.5, -8, 8, z + 5, z + 9)
+
+    Z_SUONO = 68.0
+    def altoparlante(self):
+        """Altoparlante da 20 mm (8 ohm, 1 W) dietro la griglia davanti: suona e puo' dire "E' ora delle pillole"."""
+        x1 = self.X_HALF - PARETE
+        return cil_x(10.0, x1 - 4.5, x1 - 0.05, 0, self.Z_SUONO)
+
+    def amplificatore(self):
+        """Amplificatore I2S MAX98357A (18 x 18 mm), appoggiato sul tetto della nicchia."""
+        z = self.Z_NICCHIA + PARETE + 0.1
+        return scatola(26.0, 44.0, -9.0, 9.0, z, z + 3.0)
 
     def sensore_bicchiere(self):
         return cil(2.0, 0.6, 2.2, 0, 0)
@@ -364,7 +379,7 @@ class Modello:
 
     def componenti(self):
         C = {"cella": self.cella(), "servo": self.servo(), "display": self.display(), "schede": self.schede(),
-             "piastra_acciaio": self.piastra_acciaio(), "sensore_bicchiere": self.sensore_bicchiere(), "interruttore": self.interruttore()}
+             "piastra_acciaio": self.piastra_acciaio(), "sensore_bicchiere": self.sensore_bicchiere(), "interruttore": self.interruttore(), "altoparlante": self.altoparlante(), "amplificatore": self.amplificatore()}
         for i, m in enumerate(self.motori()): C["motore_" + str(i + 1)] = m
         return C
 

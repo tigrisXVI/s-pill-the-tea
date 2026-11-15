@@ -13,7 +13,7 @@ def dati(m):
     return {"v": base64.b64encode(np.round(v / Q).astype(np.int16).tobytes()).decode(), "i": base64.b64encode(i.astype(np.uint16).tobytes()).decode()}
 
 # dai controlli (cad/controlli_v8.py): angolo a cui si ribalta, con e senza piastra; capacita' di uno scomparto
-STAB = {"2m": dict(lato=47, lato_senza=25, avanti=54, dietro=50, tasca=4.3, peso=635, zavorra=370, cg=46)}
+STAB = {"2m": dict(lato=47, lato_senza=26, avanti=53, dietro=50, tasca=4.3, peso=643, zavorra=370, cg=47)}
 
 tutto = {}
 for k in ("2m",):

@@ -49,6 +49,7 @@
     <button id="dx" aria-pressed="false">Sfila la cassetta di destra</button>
     <button id="dentro" aria-pressed="false">Guarda dentro</button>
     <button id="ricarica">Ricarica la settimana</button>
+    <button id="suona">Fai suonare la sveglia</button>
   </div>
 
   <h2>Misure e stabilità</h2>
@@ -59,7 +60,7 @@
   <h2>Come funziona</h2>
   <ol>
     <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Le muove un motorino N20 con un ingranaggio sul bordo della ruota, sistemato nell'angolo dietro in alto, dove la ruota tonda lascia spazio libero.</li>
-    <li>All'ora giusta la scatola suona e il display si accende. La persona preme il tasto tondo sul cappello. Lo scomparto che arriva in basso si svuota nell'imbuto e le pillole cadono sul piattino.</li>
+    <li>All'ora giusta l'altoparlante davanti suona (e può dire «È ora delle pillole») e il display si accende. La persona preme il tasto tondo sul cappello. Lo scomparto che arriva in basso si svuota nell'imbuto e le pillole cadono sul piattino.</li>
     <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, un micro servo lo apre e le pillole scendono nel bicchierino. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
     <li>Il bicchierino ha un magnete nella base: un sensore sotto il piede sa se è al suo posto. Il piattino si apre solo con il bicchierino sotto, e quando lo togli la dose risulta presa.</li>
     <li>Stabilità: il piede è largo 10 cm (il corpo 5) e dentro c'è una piastra di ferro da 6 mm, circa 370 g su 640 in tutto. Il baricentro sta a 4,6 cm da terra: per farla cadere di lato bisogna inclinarla di 47 gradi. Sotto vanno quattro piedini di gomma antiscivolo.</li>
@@ -71,14 +72,14 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.3';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.4';
 
 const COLORI = [
   [/^1_guscio/, 'Corpo', '#30353c'], [/^2_cappello/, 'Cappello colorato', '#a8dcc8'], [/^12_tasto/, 'Tasto tondo', '#f7f7f4'], [/^c_interruttore/, 'Interruttore del tasto', '#2e7d4f'], [/^3_piede/, 'Piede largo', '#262a30'], [/^4_imbuto/, 'Imbuto', '#a9cbe6'],
   [/^5_piattino/, 'Piattino pesato', '#f0a030'], [/^6_staffa/, 'Staffa della cella', '#8f99a6'], [/^7_bicchierino/, 'Bicchierino', '#ffffff'], [/^8_supporti/, 'Supporti dei motorini', '#8f99a6'],
   [/^9_cassetta/, 'Cassette', '#2f7a6a'], [/^10_ruota/, 'Ruote', '#f2f1ec'], [/^11_coperchio/, 'Coperchi trasparenti', '#bfe3ff'],
   [/^c_motore/, 'Motorini N20 con pignone', '#b7bcc4'], [/^c_cella/, 'Cella di carico 100 g', '#d6dade'], [/^c_servo/, 'Micro servo', '#3b6fd6'],
-  [/^c_display/, 'Display', '#101216'], [/^c_schede/, 'ESP32-S3, driver, HX711, cicalino', '#2e7d4f'], [/^c_piastra/, 'Piastra di ferro (zavorra)', '#5d636b'], [/^c_sensore/, 'Sensore di Hall', '#222']];
+  [/^c_display/, 'Display', '#101216'], [/^c_schede/, 'ESP32-S3, driver, HX711', '#2e7d4f'], [/^c_piastra/, 'Piastra di ferro (zavorra)', '#5d636b'], [/^c_sensore/, 'Sensore di Hall', '#222'], [/^c_altoparlante/, 'Altoparlante 20 mm', '#c8a24a'], [/^c_amplificatore/, 'Amplificatore MAX98357A', '#1f5fae']];
 const colore = n => COLORI.find(c => c[0].test(n)) || [null, n, '#cccccc'];
 
 const box = document.getElementById('scena'), stato = document.getElementById('stato');
@@ -248,6 +249,20 @@ function aggiorna(dt) {
   A.schermo.visible = !trasparente;
 }
 
+// ---- suono (Web Audio): le stesse note che farebbe l'altoparlante
+let audio;
+function nota(f, t0, dur, vol = .18) {
+  audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+  const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime + t0;
+  o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(audio.destination); o.start(t); o.stop(t + dur + .05);
+}
+const sveglia = () => [[659, 0], [784, .22], [988, .44], [659, .9], [784, 1.12], [988, 1.34]].forEach(([f, t]) => nota(f, t, .35));
+const pronto = () => [[784, 0], [1047, .16]].forEach(([f, t]) => nota(f, t, .3));
+const errore = () => [[330, 0], [262, .3]].forEach(([f, t]) => nota(f, t, .45, .22));
+let faseSuonata = '';
+function suoni() { if (faseSuonata === fase) return; faseSuonata = fase; try { if (fase === 'prendi') pronto(); if (fase === 'sbagliata') errore(); } catch (e) {} }
+
 // ---- camera
 let az = -0.75, el = 0.32, dist = 560;
 function posaCamera() { const c = new THREE.Vector3(5, 0, A.PAR.H / 2);
@@ -293,6 +308,7 @@ for (const [id, i] of [['sx', 0], ['dx', 1]]) $(id).onclick = () => {
 $('cup').onclick = () => { cupMeta = cupMeta ? 0 : 1; premi($('cup'), !!cupMeta, 'Rimetti il bicchierino', 'Prendi il bicchierino'); };
 $('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro'); };
 $('ricarica').onclick = () => nuovoModello(A.k);
+$('suona').onclick = () => { try { sveglia(); } catch (e) {} };
 
 // tabella di confronto
 const S = k => MODELLI[k].PAR, cm = x => (x / 10).toLocaleString('it-IT', { maximumFractionDigits: 1 });
@@ -312,7 +328,7 @@ let prima = performance.now();
 const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
 function ciclo(ora) {
   const dt = Math.min(.05, (ora - prima) / 1000); prima = ora;
-  aggiorna(dt); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+  aggiorna(dt); suoni(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
 nuovoModello('2m');
 window.__v8 = { get A() { return A; }, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole };

@@ -14,7 +14,7 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 ## In prova: v0.8, due ruote e due motorini (la più compatta)
 
-Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Corpo scuro e cappello colorato a righine con gli spigoli tondi; tasto tondo da 21 mm sul cappello.
+Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Corpo scuro e cappello colorato a righine con gli spigoli tondi; tasto tondo da 21 mm sul cappello. Davanti, dietro una griglia, un altoparlante da 20 mm con amplificatore MAX98357A: suona la sveglia e può dire «È ora delle pillole».
 
 **Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 640). Baricentro a 4,6 cm da terra: si ribalta solo se inclinata di 47° di lato, 54° in avanti, 50° indietro. Sotto, quattro piedini di gomma.
 

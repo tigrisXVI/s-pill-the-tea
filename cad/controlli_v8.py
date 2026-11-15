@@ -93,7 +93,7 @@ def controlla(k):
     print("7) stabilita'")
     rho = 1.24 * 0.6
     masse = [(m.volume() * rho / 1000, m) for n, m in P.items()]
-    peso_comp = {"interruttore": 2, "cella": 12, "servo": 4, "display": 8, "schede": 15, "sensore_bicchiere": 1}
+    peso_comp = {"altoparlante": 6, "amplificatore": 2, "interruttore": 2, "cella": 12, "servo": 4, "display": 8, "schede": 15, "sensore_bicchiere": 1}
     for n, m in C.items():
         g = 7.85 * m.volume() / 1000 if n == "piastra_acciaio" else peso_comp.get(n, 10)
         masse.append((g, m))
