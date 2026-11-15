@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Scatoletta Blistra v0.6, prova a due piani: due caroselli uno sopra l'altro, ingombro in pianta quasi dimezzato. Modello 3D interattivo.">
+<title>Scatoletta Blistra v0.6 (due piani) – modello 3D</title>
+<style>
+  :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141a22; --ink:#eef1f5; --soft:#9aa6b6; --card:#1e2631; --line:#313c4a; --on:#58c9a6; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 12px 14px 32px; }
+  h1 { font-size: 1.15rem; margin: 6px 0 2px; }
+  h2 { font-size: 1rem; margin: 18px 0 6px; }
+  p.sotto { margin: 0 0 10px; color: var(--soft); font-size: .9rem; }
+  #scena { width:100%; height:56vh; min-height:300px; border-radius:14px; overflow:hidden; background:var(--card); border:1px solid var(--line); touch-action:none; position:relative; }
+  #scena canvas { display:block; width:100%; height:100%; }
+  #stato { position:absolute; left:10px; top:8px; right:10px; font-size:.82rem; color:var(--soft); background:color-mix(in srgb, var(--card) 80%, transparent); padding:2px 8px; border-radius:8px; }
+  .comandi { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+  button { font:inherit; padding:12px 10px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
+  button:focus-visible, input:focus-visible { outline:3px solid var(--on); outline-offset:2px; }
+  button.primo { grid-column:1 / -1; background:var(--on); color:#fff; border-color:var(--on); font-weight:600; }
+  @media (prefers-color-scheme: dark) { button.primo { color:#0c1512; } }
+  button[aria-pressed="true"] { border-color:var(--on); box-shadow: inset 0 0 0 1px var(--on); }
+  label.esploso { grid-column:1 / -1; display:flex; align-items:center; gap:10px; padding:6px 2px; color:var(--soft); font-size:.92rem; }
+  label.esploso input { flex:1; accent-color: var(--on); }
+  ul.pezzi { list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; font-size:.88rem; }
+  ul.pezzi i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid var(--line); }
+  .nota { margin-top:18px; font-size:.85rem; color:var(--soft); border-top:1px solid var(--line); padding-top:10px; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Scatoletta Blistra v0.6 – prova a due piani</h1>
+  <p class="sotto"><a href="it.html">Versione v0.5</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a></p>
+  <p class="sotto">Due caroselli da 14 scomparti uno sopra l'altro, sfalsati di mezzo scomparto: una dose esce da sotto, la successiva da sopra. In pianta occupa quasi la metà della v0.5. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
+  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D…</div></div>
+  <div class="comandi">
+    <button class="primo" id="avanti">Avanti di una dose</button>
+    <button id="tasto" aria-pressed="false">Premi il tasto grande</button>
+    <button id="cofanetto" aria-pressed="false">Apri il cofanetto</button>
+    <button id="coperchio" aria-pressed="false">Togli il coperchio</button>
+    <button id="sfila" aria-pressed="false">Sfila il piano di sopra</button>
+    <button id="dentro" aria-pressed="false">Guarda dentro</button>
+    <button id="pillole" aria-pressed="true">Nascondi le pillole</button>
+    <label class="esploso">Smonta <input id="esploso" type="range" min="0" max="100" value="0" aria-label="Smonta i pezzi"></label>
+  </div>
+
+  <h2>Come funziona</h2>
+  <ol>
+    <li>I fondi sono due coni a 28 gradi, uno sopra l'altro: le pillole stanno appoggiate contro la parete. Il fondo di sopra fa da coperchio al piano di sotto.</li>
+    <li>Un solo motore gira i due caroselli insieme. Quello di sopra è sfalsato di mezzo scomparto: a ogni passo arriva davanti una dose, una volta del piano di sotto e una di quello di sopra.</li>
+    <li>All'ora della dose la persona preme il tasto: un micro servo apre lo sportello a ghigliottina del piano giusto (quello di sotto scende, quello di sopra sale) e le pillole scivolano fuori da sole, giù per il cono.</li>
+    <li>Le pillole di sopra escono su un gradino e cadono sullo stesso scivolo di quelle di sotto. Tutte finiscono nel bicchierino, che sta su una bilancia: pesa quello che è arrivato davvero.</li>
+    <li>Ricarica: si apre il cofanetto e si toglie il coperchio a cono per il piano di sopra. Per quello di sotto si tira il pomello: carosello e fondo di sopra escono insieme, senza fili.</li>
+  </ol>
+  <h2>I pezzi</h2>
+  <ul class="pezzi" id="legenda"></ul>
+  <p class="nota">Prova al computer: i pezzi non si toccano (controlli in <code>cad/controlli_v6.py</code>), ma non è ancora stampata né simulata. Qui le pillole seguono un percorso disegnato, non la fisica. Non ancora pronti: le leve tra i servi e gli sportelli, le viti, i cavi.</p>
+</main>
+
+<script type="module">
+import * as THREE from './three.js';
+import { PAR, PEZZI } from './modello_v6.js';
+
+const COLORI = {
+  '1_base': ['Base con la parete', '#c9ccd1'], '2_fondo_sotto': ['Fondo di sotto (cono)', '#5aa0cf'], '3_carosello_sotto': ['Carosello di sotto', '#f2f1ec'],
+  '4_fondo_sopra': ['Fondo di sopra (si sfila)', '#7cc0e8'], '5_carosello_sopra': ['Carosello di sopra (si sfila)', '#f6e7c8'], '6_coperchio': ['Coperchio a cono', '#2a3448'],
+  '7_scivolo': ['Scivolo e guide', '#a9cbe6'], '8_sportello_sotto': ['Sportello di sotto', '#3fb58c'], '9_sportello_sopra': ['Sportello di sopra', '#2e9c78'],
+  '10_guscio': ['Guscio', '#eef0ef'], '11_cofanetto': ['Cofanetto', '#2f7a6a'], '12_bicchierino': ['Bicchierino', '#ffffff'], '13_piatto_bilancia': ['Piatto della bilancia', '#f0a030'],
+  '14_appoggio_cella': ['Appoggio della cella', '#c9ccd1'], 'motore': ['Motore 28BYJ-48', '#b7bcc4'], 'servi': ['Due micro servi MG90S', '#2f55b8'], 'cella': ['Cella di carico', '#d6dade'],
+  'display': ['Display', '#101216'], 'tasto': ['Tasto grande', '#d93a2b'], 'schede': ['ESP32-S3, DRV8833, HX711', '#2e7d4f'] };
+const ALZA = { '1_base': 0, '7_scivolo': 0, '8_sportello_sotto': 0, '9_sportello_sopra': 0, '10_guscio': 0, '12_bicchierino': 0, '13_piatto_bilancia': 0, '14_appoggio_cella': 0,
+  'motore': 0, 'servi': 0, 'cella': 0, 'display': 0, 'tasto': 0, 'schede': 0, '2_fondo_sotto': 40, '3_carosello_sotto': 70, '4_fondo_sopra': 105, '5_carosello_sopra': 135, '6_coperchio': 170, '11_cofanetto': 200 };
+
+const box = document.getElementById('scena');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+catch (e) { box.innerHTML = '<p style="padding:12px">Il tuo browser non riesce a mostrare il 3D (WebGL spento).</p>'; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+box.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 5, 3000); camera.up.set(0, 0, 1);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a93a0, 1.6));
+const sole = new THREE.DirectionalLight(0xffffff, 1.9); sole.position.set(200, -150, 320); scene.add(sole);
+const rad = Math.PI / 180;
+
+function geometria(d) {
+  const bin = s => Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(Float32Array.from(new Int16Array(bin(d.v)), x => x * PAR.Q), 3));
+  g.setIndex(new THREE.BufferAttribute(new Uint16Array(bin(d.i)), 1));
+  const p = g.toNonIndexed(); p.computeVertexNormals(); return p;
+}
+const G = {};
+for (const n in COLORI) {
+  G[n] = new THREE.Mesh(geometria(PEZZI[n]), new THREE.MeshStandardMaterial({ color: COLORI[n][1], roughness: .6, side: THREE.DoubleSide, transparent: true }));
+}
+const pernoCof = new THREE.Group(); pernoCof.position.set(PAR.COF_X, 0, PAR.COF_Z); pernoCof.add(G['11_cofanetto']); scene.add(pernoCof);
+const giraSotto = new THREE.Group(), giraSopra = new THREE.Group(); scene.add(giraSotto, giraSopra);
+giraSotto.add(G['3_carosello_sotto']); giraSopra.add(G['5_carosello_sopra']);
+for (const n in G) if (!G[n].parent) scene.add(G[n]);
+
+// display
+const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128; const penna = tela.getContext('2d');
+const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
+const schermo = new THREE.Mesh(new THREE.PlaneGeometry(29, 15), new THREE.MeshBasicMaterial({ map: trama }));
+schermo.rotation.set(Math.PI / 2, Math.PI / 2, 0); schermo.position.set(PAR.XF + 0.05, PAR.DISPLAY.y, PAR.DISPLAY.z); scene.add(schermo);
+let scritto = '';
+function scrivi(a, b) { if (a + b === scritto) return; scritto = a + b;
+  penna.fillStyle = '#05070a'; penna.fillRect(0, 0, 256, 128); penna.fillStyle = '#e8f4ff'; penna.textAlign = 'center';
+  penna.font = 'bold 60px system-ui, sans-serif'; penna.fillText(a, 128, 66); penna.font = 'bold 26px system-ui, sans-serif'; penna.fillText(b, 128, 108); trama.needsUpdate = true; }
+
+// ---- pillole: dose d (1..28): dispari = piano di sopra, pari = piano di sotto; scomparto k = ceil(d/2)
+const zCono = (zb, r) => zb + PAR.T * (PAR.R_F - Math.min(Math.max(r, PAR.R_H), PAR.R_F));
+const zSc = x => PAR.Z1 - 0.6 - (x - PAR.X0_SC) * Math.tan(PAR.SC_ANG * rad);
+const forme = {
+  grande: [() => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 6, 16); g.rotateZ(Math.PI / 2); g.scale(1, 1, .72); return g; }, 3.75, 10.9, 1150],
+  tonda: [() => { const g = new THREE.CylinderGeometry(4.5, 4.5, 3.5, 24); g.rotateX(Math.PI / 2); return g; }, 1.75, 4.5, 250],
+  piccola: [() => { const g = new THREE.CylinderGeometry(2.5, 2.5, 2.5, 18); g.rotateX(Math.PI / 2); return g; }, 1.25, 2.5, 90],
+  capsula: [() => { const g = new THREE.CapsuleGeometry(3.4, 12.6, 6, 16); g.rotateZ(Math.PI / 2); return g; }, 3.4, 9.7, 480] };
+const pillole = [];
+[[1, 'grande', 0, '#ffffff'], [1, 'piccola', 1, '#f4d35e'], [2, 'tonda', 0, '#e8505b'], [2, 'piccola', 1, '#ffffff'], [3, 'capsula', 0, '#e8505b'], [4, 'grande', 0, '#ffffff'], [4, 'tonda', 1, '#f4d35e'],
+ [5, 'tonda', 0, '#7fb7e6'], [6, 'capsula', 0, '#f4d35e']].forEach(([d, f, i, c]) => {
+  const [geo, h, rl, mg] = forme[f];
+  const m = new THREE.Mesh(geo(), new THREE.MeshStandardMaterial({ color: c, roughness: .4 })); scene.add(m);
+  pillole.push({ m, d, piano: d % 2 ? 1 : 0, k: Math.ceil(d / 2), h, rl, mg, da: (i ? 5 : -4), uscita: 0, y: 0 });
+});
+
+// ---- stato
+let theta = 0, meta = 0, esploso = 0, cof = 0, cofMeta = 0, cop = 0, copMeta = 0, sfila = 0, sfilaMeta = 0, trasparente = false, vediPillole = true;
+const ap = [0, 0], apMeta = [0, 0];
+const stato = document.getElementById('stato');
+const doseDavanti = () => { const d = Math.round(theta / (PAR.PASSO / 2)); return ((d % 30) + 30) % 30; };
+const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'], momenti = ['mattina', 'mezzogiorno', 'pomeriggio', 'sera'];
+const inSalita = q => q * q * (3 - 2 * q);
+
+function aggiorna(ora) {
+  const t = theta * rad;
+  giraSotto.rotation.z = t; giraSopra.rotation.z = t;
+  for (const n in G) {
+    const z = esploso * (ALZA[n] || 0);
+    if (n === '11_cofanetto') pernoCof.position.z = PAR.COF_Z + z;
+    else if (n === '3_carosello_sotto') giraSotto.position.z = z;
+    else if (n === '5_carosello_sopra') giraSopra.position.z = z + sfila * 70;
+    else G[n].position.z = z;
+  }
+  G['4_fondo_sopra'].position.z += sfila * 70; G['6_coperchio'].position.z += cop * 95 + sfila * 70;
+  G['8_sportello_sotto'].position.z -= PAR.CORSA * inSalita(ap[0]); G['9_sportello_sopra'].position.z += PAR.CORSA * inSalita(ap[1]);
+  pernoCof.rotation.y = -cof * 110 * rad;
+  const vel = trasparente ? .14 : Math.max(.14, 1 - esploso * 1.6);
+  for (const n of ['10_guscio', '11_cofanetto']) { G[n].material.opacity = n === '11_cofanetto' && cof > .02 ? 1 : vel; G[n].material.depthWrite = G[n].material.opacity > .99; }
+  for (const n of ['1_base', '6_coperchio', '4_fondo_sopra']) { G[n].material.opacity = trasparente ? .35 : 1; G[n].material.depthWrite = !trasparente; }
+  schermo.visible = esploso < .02;
+  const d = doseDavanti(), fermo = Math.abs(theta - meta) < .01, piano = d % 2 ? 1 : 0;
+  // pillole
+  let nelBicchiere = 0, peso = 0;
+  pillole.forEach(p => {
+    p.m.visible = vediPillole && esploso < .02;
+    const zb = p.piano ? PAR.Z2 : PAR.Z1;
+    if (p.uscita > 0) {
+      const u = Math.min(1, p.uscita), r0 = PAR.R_F - p.rl, xe = PAR.X_SC1, cx = PAR.CUP.x0 + 14 + p.k * 3 + p.da, cy = p.da * 1.6 - 4 + p.piano * 8;
+      let x, y = 0, z, inc = PAR.CONO;
+      if (u < .3) { const v = u / .3; x = r0 + (PAR.R_E + 1 - r0) * v; z = zCono(zb, Math.min(x, PAR.R_F)) - (x > PAR.R_F ? .6 : 0); }
+      else if (p.piano && u < .55) { const v = (u - .3) / .25; x = PAR.R_E + 1 + (PAR.XG + 3 - PAR.R_E - 1) * v; const zt = PAR.Z2 - .6, zf = zSc(PAR.XG + 3); z = v < .4 ? zt : zt + (zf - zt) * ((v - .4) / .6) ** 2; inc = v < .4 ? 0 : 40; }
+      else { const s0 = p.piano ? .55 : .3, v = (u - s0) / (1 - s0), xs = p.piano ? PAR.XG + 3 : PAR.R_E + 1;
+        if (v < .55) { x = xs + (xe - xs) * (v / .55); z = zSc(x); inc = PAR.SC_ANG; }
+        else { const w = (v - .55) / .45; x = xe + (cx - xe) * w; y = cy * w; z = zSc(xe) + (PAR.CUP.fondo_dietro + 1 - zSc(xe)) * w * w; inc = PAR.SC_ANG * (1 - w); } }
+      p.m.position.set(x, y, z + p.h); p.m.rotation.set(0, inc * rad, 0);
+      if (u >= 1) { nelBicchiere++; peso += p.mg; }
+      return;
+    }
+    const a = (p.piano ? PAR.PASSO / 2 : 0) - p.k * PAR.PASSO + theta + p.da, r = PAR.R_F - p.rl - .5;
+    p.m.position.set(r * Math.cos(a * rad), r * Math.sin(a * rad), zCono(zb, r) + p.h / Math.cos(PAR.CONO * rad) + p.rl * Math.tan(PAR.CONO * rad) * 0);
+    p.m.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), a * rad).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), PAR.CONO * rad));
+  });
+  const aspetta = d !== 0 && fermo && ap[0] < .02 && ap[1] < .02;
+  if (ap[0] > .5 || ap[1] > .5) scrivi('Prendi', 'le pillole'); else if (aspetta) scrivi("E' ora", 'premi il tasto'); else scrivi('08:00', 'prossima 13:00');
+  stato.textContent = (d === 0 ? 'Davanti: scomparti di riposo' : 'Davanti: dose ' + d + ' (' + giorni[Math.floor((d - 1) / 4) % 7] + ' ' + momenti[(d - 1) % 4] + '), piano di ' + (piano ? 'sopra' : 'sotto') + ', scomparto ' + Math.ceil(d / 2))
+    + ' · bilancia ' + (peso / 1000).toLocaleString('it-IT', { minimumFractionDigits: 2 }) + ' g' + (nelBicchiere ? ' (' + nelBicchiere + ' nel bicchierino)' : '');
+}
+
+// ---- camera
+let az = -0.75, el = 0.42, dist = 390; const centro = new THREE.Vector3(32, 0, 48);
+function posaCamera() { const zc = centro.z + esploso * 70, dd = dist * (1 + .6 * esploso);
+  camera.position.set(centro.x + dd * Math.cos(el) * Math.cos(az), dd * Math.cos(el) * Math.sin(az), zc + dd * Math.sin(el)); camera.lookAt(centro.x, 0, zc); }
+const punt = new Map(); let pizzico = 0; const cv = renderer.domElement;
+cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); punt.set(e.pointerId, [e.clientX, e.clientY]); pizzico = 0; });
+cv.addEventListener('pointermove', e => { if (!punt.has(e.pointerId)) return; const p = punt.get(e.pointerId);
+  if (punt.size === 1) { az -= (e.clientX - p[0]) * .008; el = Math.min(1.5, Math.max(-.2, el + (e.clientY - p[1]) * .008)); }
+  punt.set(e.pointerId, [e.clientX, e.clientY]);
+  if (punt.size === 2) { const [a, b] = [...punt.values()], dd = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pizzico) dist = Math.min(1000, Math.max(120, dist * pizzico / dd)); pizzico = dd; } });
+const via = e => { punt.delete(e.pointerId); pizzico = 0; }; cv.addEventListener('pointerup', via); cv.addEventListener('pointercancel', via);
+cv.addEventListener('wheel', e => { e.preventDefault(); dist = Math.min(1000, Math.max(120, dist * (1 + e.deltaY * .001))); }, { passive: false });
+function misura() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(misura).observe(box); misura();
+
+// ---- comandi
+const $ = id => document.getElementById(id);
+const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
+const chiusi = () => apMeta[0] === 0 && apMeta[1] === 0 && ap[0] < .02 && ap[1] < .02;
+$('avanti').onclick = () => { if (!chiusi() || sfilaMeta) return; meta = (Math.round(theta / (PAR.PASSO / 2)) + 1) * PAR.PASSO / 2; };
+$('tasto').onclick = () => {
+  const d = doseDavanti(), piano = d % 2 ? 1 : 0;
+  if (apMeta[0] || apMeta[1]) { apMeta[0] = apMeta[1] = 0; premi($('tasto'), false, '', 'Premi il tasto grande'); return; }
+  if (d === 0) return;
+  apMeta[piano] = 1; premi($('tasto'), true, 'Chiudi lo sportello', '');
+};
+$('cofanetto').onclick = () => { cofMeta = cofMeta ? 0 : 1; premi($('cofanetto'), !!cofMeta, 'Chiudi il cofanetto', 'Apri il cofanetto'); };
+$('coperchio').onclick = () => { if (!cofMeta) { cofMeta = 1; premi($('cofanetto'), true, 'Chiudi il cofanetto', ''); } copMeta = copMeta ? 0 : 1; premi($('coperchio'), !!copMeta, 'Rimetti il coperchio', 'Togli il coperchio'); };
+$('sfila').onclick = () => { if (!cofMeta) { cofMeta = 1; premi($('cofanetto'), true, 'Chiudi il cofanetto', ''); } sfilaMeta = sfilaMeta ? 0 : 1; premi($('sfila'), !!sfilaMeta, 'Rimetti il piano di sopra', 'Sfila il piano di sopra'); };
+$('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro'); };
+$('pillole').onclick = () => { vediPillole = !vediPillole; premi($('pillole'), vediPillole, 'Nascondi le pillole', 'Mostra le pillole'); };
+$('esploso').oninput = e => { esploso = e.target.value / 100; };
+$('legenda').innerHTML = Object.values(COLORI).map(([n, c]) => `<li><i style="background:${c}"></i>${n}</li>`).join('');
+
+let prima = performance.now();
+const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
+function ciclo(ora) {
+  const dt = Math.min(.05, (ora - prima) / 1000); prima = ora;
+  if (theta < meta) theta = Math.min(meta, theta + 14 * dt);
+  for (const i of [0, 1]) ap[i] = verso(ap[i], apMeta[i], 2.2 * dt);
+  cof = verso(cof, cofMeta, 1.6 * dt); cop = verso(cop, copMeta, 1.4 * dt); sfila = verso(sfila, sfilaMeta, 1.2 * dt);
+  const d = doseDavanti();
+  if (d && Math.abs(theta - meta) < .01) for (const i of [0, 1]) if (ap[i] > .9) pillole.forEach(p => { if (p.d === d && p.piano === i && p.uscita < 1) p.uscita = Math.min(1, p.uscita + dt / 1.8); });
+  aggiorna(ora); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+}
+window.__pronto = true; requestAnimationFrame(ciclo);
+</script>
+</body>
+</html>
