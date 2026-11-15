@@ -64,7 +64,7 @@ class Modello:
         self.R_GT = self.R_GP + MOD                      # punta dei denti
         self.R_AN_T = self.R_O + G; self.R_AN_G = self.R_GT + G   # dentro dell'anello: zona tasche / zona corona
         self.R_CASS = self.R_AN_G + PAR_CAS
-        self.APRE = 6.0 if self.labbri else 9.0           # mezza larghezza dell'uscita in basso
+        self.APRE = 6.0 if self.labbri else 7.0           # mezza larghezza dell'uscita in basso: lo scomparto chiuso la copre con 3 mm di margine per lato
         if self.ruote == 2:
             self.Z_COR = (0.0, 2.0); self.Z_TAS = (2.0, 2.0 + PROF)       # locale: corona dietro, tasche davanti
         else:
@@ -340,7 +340,7 @@ class Modello:
             m -= cil_y(self.R_CASS + 1.4, -40, self.Z_FL[1] + 0.4, 0, self.Z_A)
         # culle sotto le cassette (meta' di sotto), con il passaggio dell'uscita
         culla = cil_y(self.R_CASS + 2.8, y0 + PARETE - 0.01, y1 - PARETE + 0.01, 0, self.Z_A) - cil_y(self.R_CASS + 1.4, y0, y1, 0, self.Z_A) - scatola(-100, 100, -100, 100, self.Z_A - 8, 400)
-        culla -= scatola(-self.APRE - 5.0, self.APRE + 5.0, -100, 100, 0, self.Z_A)
+        culla -= scatola(-self.APRE - 3.6, self.APRE + 3.6, -100, 100, 0, self.Z_A)   # la culla arriva fino all'imbuto: nessuna fessura dove una pillola si incastra
         m += culla
         for c in self.motori():
             b = c.bounding_box(); m -= scatola(b[0] - 1, b[3] + 1, b[1] - 1, b[4] + 1, b[2] - 1, b[5] + 1)

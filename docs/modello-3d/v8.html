@@ -75,7 +75,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.9';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.10';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -252,12 +252,13 @@ const nomeDose = d => giorni[Math.floor((d - 1) / 4)] + ' ' + momenti[(d - 1) % 
 stato.textContent = 'Carico il motore fisico…';
 const mod = await import('./rapier.mjs'); const R = mod.default || mod; await R.init();
 const world = new R.World({ x: 0, y: 0, z: -981 });
-world.timestep = 1 / 240; world.integrationParameters.numSolverIterations = 8;
+world.timestep = 1 / 400; world.integrationParameters.numSolverIterations = 10;   // passi piccoli: le pillole minuscole non attraversano le pareti sottili
 const FLAG = R.TriMeshFlags ? R.TriMeshFlags.FIX_INTERNAL_EDGES : undefined;
 function trimesh(n, dx = 0, dy = 0, dz = 0) {
   const { v, i } = GEO[n], w = new Float32Array(v.length);
   for (let k = 0; k < v.length; k += 3) { w[k] = (v[k] - dx) * S; w[k + 1] = (v[k + 1] - dy) * S; w[k + 2] = (v[k + 2] - dz) * S; }
   const d = FLAG !== undefined ? R.ColliderDesc.trimesh(w, Uint32Array.from(i), FLAG) : R.ColliderDesc.trimesh(w, Uint32Array.from(i));
+  if (d.setContactSkin) d.setContactSkin(.005);
   return d.setFriction(.45).setRestitution(.1);
 }
 const fisso = world.createRigidBody(R.RigidBodyDesc.fixed());
@@ -459,8 +460,8 @@ function ciclo(ora) {
   const dt = Math.min(.05, (ora - prima) / 1000); prima = ora; resto += dt;
   esploso = verso(esploso, esplosoMeta, .7 * dt); $('esploso').value = Math.round(esploso * 100);
   if (esploso > 0) resto = 0;   // smontata: la fisica si ferma
-  let n = 0; while (resto >= world.timestep && n < 10) { passo(world.timestep); resto -= world.timestep; n++; }
-  if (n === 10) resto = 0;
+  let n = 0; while (resto >= world.timestep && n < 16) { passo(world.timestep); resto -= world.timestep; n++; }
+  if (n === 16) resto = 0;
   logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
 window.__v8 = { FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
