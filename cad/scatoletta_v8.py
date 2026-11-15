@@ -376,8 +376,13 @@ class Modello:
         m += scatola(self.CUP["x0"] - 2.6, self.CUP["x0"] - 0.6, y0 + 0.01, y1 - 0.01, self.Z_PIEDE, self.Z_NICCHIA + 0.01)   # fondo della nicchia: a 0,6 mm dal bicchierino
         # scivolo a 45 gradi sopra il bicchierino: le pillole che sbattono sulla parete tornano dentro (6 mm sopra il bordo: il bicchierino si solleva e si sfila)
         za = self.Z_CUP + self.CUP["alt"] + 6.0; xa = self.CUP["x0"] - 0.6
-        scivolo = CrossSection([ccw([(xa - 0.01, za), (self.CUP["x0"] + 3.5, za), (xa - 0.01, za + 4.1)])])
+        zn = self.Z_NICCHIA + 0.01      # lo scivolo sale a 45 gradi fino al tetto della nicchia: fa anche da squadretta che irrigidisce l'angolo
+        scivolo = CrossSection([ccw([(xa - 0.01, za), (self.CUP["x0"] + 3.5, za), (self.CUP["x0"] + 3.5 + (zn - za), zn), (xa - 0.01, zn)])])
         m += Manifold.extrude(scivolo, 2 * self.CUP["y"]).translate([0, 0, -self.CUP["y"]]).transform([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0]])
+        # squadrette ai lati della nicchia (fuori dal bicchierino): l'angolo tra colonna e sbalzo non si piega
+        sq = CrossSection([ccw([(xa - 0.01, self.Z_NICCHIA + 0.01), (xa + 16.0, self.Z_NICCHIA + 0.01), (xa - 0.01, self.Z_NICCHIA - 16.0)])])
+        for yy in (y0 + 0.01, y1 - 1.6 - 0.01):
+            m += Manifold.extrude(sq, 1.6).translate([0, 0, yy]).transform([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0]])
         m += scatola(self.CUP["x0"] - 2.6, x1, y0 + 0.01, y1 - 0.01, self.Z_NICCHIA, self.Z_NICCHIA + PARETE) - scatola(-14, 16, -13, 13, self.Z_NICCHIA - 1, self.Z_NICCHIA + 3)   # tetto della nicchia, con il passaggio
         # sedi delle cassette
         if self.ruote == 2:

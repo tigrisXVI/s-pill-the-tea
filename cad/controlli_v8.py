@@ -140,6 +140,28 @@ def controlla(k):
         print(f"   {n:18s} {x:5.0f} x {y:4.0f} x {z:4.0f} mm, appoggiato {verso:9s} supporti {area:5.1f} cm2")
         if max(x, y) > 220 or z > 250: male(n, "non entra in una stampante da 22 x 22 cm")
     print(f"   area da sostenere in tutto: {tot:.0f} cm2")
+    print("11) robustezza: qualcuno preme forte sul tasto (5 kg) + il peso di tutto quello che sta sopra")
+    import numpy as np
+    g = P["1_guscio"]
+    def props(polys):
+        A = Cx = Cy = Ixx = Iyy = 0.0
+        for q in polys:
+            q = np.asarray(q); x, y = q[:, 0], q[:, 1]; x1, y1 = np.roll(x, -1), np.roll(y, -1); cr = x * y1 - x1 * y
+            A += cr.sum() / 2; Cx += ((x + x1) * cr).sum() / 6; Cy += ((y + y1) * cr).sum() / 6
+            Ixx += ((y * y + y * y1 + y1 * y1) * cr).sum() / 12; Iyy += ((x * x + x * x1 + x1 * x1) * cr).sum() / 12
+        Cx /= A; Cy /= A; return A, Cx, Cy, Ixx - A * Cy * Cy, Iyy - A * Cx * Cx
+    F = 50.0 + 3.5                       # N: 5 kg sul tasto + circa 350 g di pezzi sopra
+    PETG_STRATI = 15.0; E = 2000.0       # MPa: resistenza tra uno strato e l'altro (prudente), modulo elastico
+    A, cx, cy, _, I = props(g.slice(M.Z_NICCHIA - 25).to_polygons())
+    poly = np.vstack([np.asarray(q) for q in g.slice(M.Z_NICCHIA - 25).to_polygons()])
+    cmax = max(abs(poly[:, 0].max() - cx), abs(poly[:, 0].min() - cx))
+    Mf = F * (M.X_TASTO - cx); sig = Mf * cmax / I + F / A
+    bmax = 2 * M.Y_DX
+    scr = 3.6 * E * (s8.PARETE / bmax) ** 2
+    print(f"   colonna sotto la nicchia: sezione {A:.0f} mm2, sforzo massimo {sig:.1f} MPa contro {PETG_STRATI:.0f} tra gli strati (sicurezza x{PETG_STRATI / sig:.0f}), instabilita' della parete da {s8.PARETE} mm a {scr:.1f} MPa (x{scr / sig:.1f})")
+    th = Mf * M.Z_NICCHIA / (E * I); fr = th * (M.H - M.Z_NICCHIA)
+    print(f"   la cima si sposta di {fr:.2f} mm quando premi")
+    if PETG_STRATI / sig < 4 or scr / sig < 2: male("struttura troppo debole")
     print("7) stabilita'")
     rho = 1.24 * 0.6
     masse = [(m.volume() * rho / 1000, m) for n, m in P.items()]
