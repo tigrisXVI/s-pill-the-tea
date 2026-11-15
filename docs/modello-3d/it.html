@@ -192,6 +192,7 @@ const PIL = creaPillole(THREE, scene, PAR, zFondo);
 // ---- stato
 let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0, cof = 0, trasparente = false, vediEle = false;
 const stato = document.getElementById('stato');
+let avviso = '', avvisoFino = 0;
 const STATO0 = 'Sul ripiano: scomparto di riposo', STATO1 = 'Sul ripiano: scomparto ';
 const scompartoSulRipiano = () => ((Math.round(theta / PAR.PASSO) % PAR.N) + PAR.N) % PAR.N;
 function aggiorna(ora) {
@@ -227,6 +228,7 @@ function aggiorna(ora) {
   stato.textContent = (sc === 0 ? STATO0 : STATO1 + sc + ' (' + ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'][Math.floor((sc - 1) / 4)] + ', dose ' + ((sc - 1) % 4 + 1) + ')')
     + (sc !== 0 ? ' · bilancia ' + g(L.peso) + (L.prevista ? ' (prevista ' + g(L.prevista) + ')' : '') : '')
     + (vibra > 0 ? ' · vibra' : '') + (L.nelBicchiere ? ' · nel bicchierino: ' + L.nelBicchiere : '');
+  if (performance.now() < avvisoFino) stato.textContent = avviso;
 }
 
 // ---- camera
@@ -263,7 +265,7 @@ $('esploso').oninput = e => { esploso = e.target.value / 100; };
 const lingua = document.documentElement.lang, PILLOLE_ON = 'Nascondi le pillole', PILLOLE_OFF = 'Mostra le pillole';
 $('forma').innerHTML = Object.entries(FORME).map(([k, F]) => `<option value="${k}">${F[lingua === 'it' ? 'it' : 'en']} · ${(F.mg / 1000).toLocaleString('it-IT')} g</option>`).join('');
 $('scomparto').innerHTML = Array.from({ length: PAR.N - 1 }, (_, i) => `<option value="${i + 1}">${i + 1} · ${['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'][Math.floor(i / 4)]}, dose ${i % 4 + 1}</option>`).join('');
-$('aggiungi').onclick = () => { if (!PIL.aggiungi($('forma').value, +$('scomparto').value)) stato.textContent = 'Lo scomparto è pieno: scegline un altro'; vediPillole = true; premi($('pillole'), true, PILLOLE_ON, PILLOLE_OFF); };
+$('aggiungi').onclick = () => { if (!PIL.aggiungi($('forma').value, +$('scomparto').value)) { avviso = 'Lo scomparto è pieno: scegline un altro'; avvisoFino = performance.now() + 3500; } vediPillole = true; premi($('pillole'), true, PILLOLE_ON, PILLOLE_OFF); };
 $('svuotaB').onclick = () => PIL.svuotaBicchiere();
 $('svuotaT').onclick = () => PIL.svuotaTutto();
 const visti = new Set();

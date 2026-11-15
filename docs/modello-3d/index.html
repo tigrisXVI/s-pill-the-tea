@@ -192,6 +192,7 @@ const PIL = creaPillole(THREE, scene, PAR, zFondo);
 // ---- stato
 let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0, cof = 0, trasparente = false, vediEle = false;
 const stato = document.getElementById('stato');
+let avviso = '', avvisoFino = 0;
 const STATO0 = 'On the landing: empty rest compartment', STATO1 = 'On the landing: compartment ';
 const scompartoSulRipiano = () => ((Math.round(theta / PAR.PASSO) % PAR.N) + PAR.N) % PAR.N;
 function aggiorna(ora) {
@@ -227,6 +228,7 @@ function aggiorna(ora) {
   stato.textContent = (sc === 0 ? STATO0 : STATO1 + sc + ' (' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][Math.floor((sc - 1) / 4)] + ', dose ' + ((sc - 1) % 4 + 1) + ')')
     + (sc !== 0 ? ' · scale ' + g(L.peso) + (L.prevista ? ' (expected ' + g(L.prevista) + ')' : '') : '')
     + (vibra > 0 ? ' · vibrating' : '') + (L.nelBicchiere ? ' · in the cup: ' + L.nelBicchiere : '');
+  if (performance.now() < avvisoFino) stato.textContent = avviso;
 }
 
 // ---- camera
@@ -263,7 +265,7 @@ $('esploso').oninput = e => { esploso = e.target.value / 100; };
 const lingua = document.documentElement.lang, PILLOLE_ON = 'Hide the pills', PILLOLE_OFF = 'Show the pills';
 $('forma').innerHTML = Object.entries(FORME).map(([k, F]) => `<option value="${k}">${F[lingua === 'it' ? 'it' : 'en']} · ${(F.mg / 1000).toLocaleString('en-GB')} g</option>`).join('');
 $('scomparto').innerHTML = Array.from({ length: PAR.N - 1 }, (_, i) => `<option value="${i + 1}">${i + 1} · ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][Math.floor(i / 4)]}, dose ${i % 4 + 1}</option>`).join('');
-$('aggiungi').onclick = () => { if (!PIL.aggiungi($('forma').value, +$('scomparto').value)) stato.textContent = 'That compartment is full: pick another one'; vediPillole = true; premi($('pillole'), true, PILLOLE_ON, PILLOLE_OFF); };
+$('aggiungi').onclick = () => { if (!PIL.aggiungi($('forma').value, +$('scomparto').value)) { avviso = 'That compartment is full: pick another one'; avvisoFino = performance.now() + 3500; } vediPillole = true; premi($('pillole'), true, PILLOLE_ON, PILLOLE_OFF); };
 $('svuotaB').onclick = () => PIL.svuotaBicchiere();
 $('svuotaT').onclick = () => PIL.svuotaTutto();
 const visti = new Set();
