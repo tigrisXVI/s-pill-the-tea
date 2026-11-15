@@ -114,6 +114,14 @@ class Modello:
                 a = -90.0 + off + PASSO / 2 + k * PASSO
                 m += ruota(scatola(self.R_I - 0.5, self.R_O, -SP_DIV / 2, SP_DIV / 2, a0 - 0.01, a1), a)
             m += settore(self.R_I - 0.5, self.R_O, -90.0 + off - PASSO / 2, -90.0 + off + PASSO / 2, a0 - 0.01, a1)   # chiuso
+            # scivoli ai lati di ogni divisorio, vicino al bordo: lo scomparto finisce largo quanto l'uscita
+            # e le pillole (anche quelle minuscole) scivolano verso il centro, a 60 gradi
+            ag = ((self.R_O * 2 * math.pi / N - SP_DIV) / 2 - self.APRE + 0.4 + SP_DIV / 2) / self.R_O
+            for k in range(N):
+                a = math.radians(-90.0 + off + PASSO / 2 + k * PASSO)
+                pts = [(self.R_O * math.cos(a - ag), self.R_O * math.sin(a - ag)), (self.R_O * math.cos(a + ag), self.R_O * math.sin(a + ag)),
+                       ((self.R_O - 5.0) * math.cos(a), (self.R_O - 5.0) * math.sin(a))]
+                m += Manifold.extrude(CrossSection([ccw(pts)]), a1 - a0 + 0.01).translate([0, 0, a0 - 0.01])
             if self.labbri:                               # bordo con aperture larghe 12 mm: tra un'uscita e l'altra c'e' pieno
                 lab = cil(self.R_O, a0 - 0.01, a1) - cil(self.R_O - 2.0, a0 - 1, a1 + 1)
                 for k in range(1, N):

@@ -75,7 +75,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.10';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.11';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -296,7 +296,7 @@ function riempi() {
 }
 
 // ---------------- stato della dose
-let esploso = 0, esplosoMeta = 0;
+let esploso = 0, esplosoMeta = 0, scossa = [], base = 0, scosse = 0;
 let dose = 0, fase = 'pronta', apre = 0, apreMeta = 0, cup = 0, cupMeta = 0, trasparente = false, attesa = 0, prese = 0, avviso = '', calma = 0;
 const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
 function sulPiatto(p) { const t = p.b.translation(), x = t.x / S, y = t.y / S, z = t.z / S;
@@ -322,9 +322,13 @@ function passo(h) {   // un passo di fisica: muove i pezzi cinematici, poi avanz
 function logica(dt) {
   const vive = pillole.filter(p => p.stato !== 'tolta'), dosePill = vive.filter(p => p.d === dose);
   const fermeRuote = !lati.some(L => Math.abs(L.giro - L.meta) > .01), sotto = cup < .02;
-  if (fase === 'gira' && fermeRuote) { fase = 'cade'; attesa = 7; calma = 0; }
+  const Ld = lati[dose % 2 ? 0 : 1];
+  if (fase === 'gira' && fermeRuote) {   // arrivata: si scuote avanti e indietro di pochi gradi, per staccare le pillole
+    if (scossa.length) Ld.meta = base + scossa.shift(); else { fase = 'cade'; attesa = 7; calma = 0; }
+  }
   if (fase === 'cade') {
     attesa -= dt; calma = dosePill.every(p => sulPiatto(p) && !veloce(p)) ? calma + dt : 0;
+    if (attesa < 4.5 && scosse < 2 && dosePill.some(p => !sulPiatto(p) && !veloce(p))) { scosse++; scossa = [4, -4, 3, -3, 0]; fase = 'gira'; }
     if (calma > .5 || attesa <= 0) { fase = 'pesa'; attesa = .6; }
   }
   const peso = vive.filter(sulPiatto).reduce((t, p) => t + p.mg, 0);
@@ -417,7 +421,7 @@ function ricomincia() {
   premi($('sx'), false, '', 'Sfila la cassetta di sinistra'); premi($('dx'), false, '', 'Sfila la cassetta di destra'); premi($('cup'), false, '', 'Prendi il bicchierino');
   $('sbaglia').textContent = 'Prova: togli una pillola dalla prossima dose';
 }
-$('tasto').onclick = () => { if ($('tasto').disabled) return; dose++; const L = lati[dose % 2 ? 0 : 1]; L.meta = Math.ceil(dose / 2) * PASSO; fase = 'gira'; };
+$('tasto').onclick = () => { if ($('tasto').disabled) return; dose++; const L = lati[dose % 2 ? 0 : 1]; base = L.meta = Math.ceil(dose / 2) * PASSO; scossa = [3, -3, 2, -2, 0]; scosse = 0; fase = 'gira'; };
 $('sbaglia').onclick = () => {
   if (fase !== 'pronta' || dose >= 28) return; const d = dose + 1;
   const p = pillole.find(q => q.d === d && q.stato === 'ruota'); if (!p) return;
