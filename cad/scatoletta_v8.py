@@ -28,7 +28,7 @@ import scatoletta_v5 as v5
 N = 15; PASSO = 360.0 / N
 BAIONETTA = (90.0, 210.0, 330.0)
 R_MAGNETE = 40.0   # magnete 3 x 1 mm nella corona, sotto lo scomparto chiuso: segna la posizione di riposo
-ANG_FERMO = -45.0  # fermo della cassetta (gradi, davanti in basso)
+ANG_FERMO = -55.0  # fermo della cassetta (gradi, davanti in basso): lo gira un micro servo, comandato dall'app
 R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
 Z_ESP = 12.0     # l'ESP32 sta 12 mm sopra la scheda dei driver: antenna lontana dalla cella di carico
 R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
@@ -208,20 +208,28 @@ class Modello:
     def silice_locale(self):
         return cil(19.5, self.Z_TAS[0] + 3.5, self.TH - 2.5) - cil(6.0, 0, 30)
 
-    # ---------------- fermo della cassetta (camma a un quarto di giro, si gira con una moneta o un cacciavite)
+    # ---------------- fermo della cassetta: camma girata da un micro servo (dall'app: "Sblocca le cassette")
     def _fermo_pos(self):
-        rc = self.R_CASS + 1.0 + 4.0
+        rc = self.R_CASS + 7.0
         return rc, rc * math.cos(math.radians(ANG_FERMO)), rc * math.sin(math.radians(ANG_FERMO))
 
     def fermo_locale(self):
-        rc, xc, yc = self._fermo_pos(); f0, f1 = self.Z_FL; zw = self.Y_DX - self.Y0
+        rc, xc, yc = self._fermo_pos(); f0, f1 = self.Z_FL
         m = ruota(scatola(self.R_CASS - 0.4, rc, -1.5, 1.5, f0 + 0.1, f1 - 0.1), ANG_FERMO)          # dente che entra nella tacca della flangia
-        m += cil(1.5, f0 + 0.1, zw + 0.06, xc, yc)                                                  # perno
-        return m + (cil(2.6, zw + 0.05, zw + 0.9, xc, yc) - scatola(xc - 2.7, xc + 2.7, yc - 0.4, yc + 0.4, zw + 0.4, zw + 1))   # testa con il taglio
+        return m + cil(2.6, f0 - 0.6, f1 - 0.1, xc, yc) - cil(1.0, f0 - 1, f0 + 0.3, xc, yc)          # mozzo che si incastra sull'albero del servo
+
+    def _servo_fermo_locale(self, g=0.0):
+        rc, xc, yc = self._fermo_pos(); z1 = self.Z_FL[0] - 0.65
+        return ruota(scatola(rc - 5.0 - g, rc + 15.2 + g, -10.1 - g, 10.1 + g, z1 - 8.5 - g, z1 + g), ANG_FERMO)
+
+    def _staffa_fermo_locale(self):
+        rc, xc, yc = self._fermo_pos(); z1 = self.Z_FL[0] - 0.65
+        return ruota(scatola(rc + 9.0, rc + 15.2, -10.1, 10.1, z1 - 0.01, self.Y_DX - PARETE - self.Y0 + 0.01), ANG_FERMO)   # attacca il servo al fianco, fuori dal giro del dente
 
     def fermo(self, s): return self.metti(self.fermo_locale(), s)
     def fermo_perno(self, s):
         rc, xc, yc = self._fermo_pos(); return [xc, s * (self.Y0 + self.Z_FL[0]), self.Z_A + yc]
+    def servo_fermo(self, s): return self.metti(self._servo_fermo_locale(), s)
 
     def coperchio_locale(self, s=1):
         z0, z1 = self.Z_COP
@@ -463,11 +471,11 @@ class Modello:
                 m -= scatola(-1.6, 1.6, y0s, y1s, zs - 1.6, zs + 1.6)                                 # sede del sensore di Hall della ruota
                 m -= scatola(self.X_CANALE + 3.0, 0.0, y0g, y1g, zs - 0.75, zs + 0.75)               # scanalatura per la striscia flessibile
             m -= scatola(self.X_CANALE + 2.5, self.X_CANALE + 4.5, -0.96, 0.96, zs - 0.75, zs + 0.75)   # entra nel canale dei cavi
-            rc, xc, yc = self._fermo_pos(); zw = self.Y_DX - self.Y0
+            rc, xc, yc = self._fermo_pos()
             for sd in (-1, 1):
-                m += self.metti(cil(3.4, self.Z_FL[1] + 0.5, zw - PARETE + 0.01, xc, yc), sd)         # boccola del fermo
-                m -= self.metti(cil(1.75, self.Z_FL[0], zw + 1.0, xc, yc), sd)                        # foro del perno
-                m -= self.metti(cil(5.5, self.Z_FL[0] - 0.4, self.Z_FL[1] + 0.4, xc, yc) + ruota(scatola(self.R_CASS - 1.0, self.R_CASS + 6.0, -2.2, 2.2, self.Z_FL[0] - 0.4, self.Z_FL[1] + 0.4), ANG_FERMO), sd)   # spazio per il dente che gira
+                m -= self.metti(self._servo_fermo_locale(0.3), sd)                                      # posto per il servo del fermo
+                m -= self.metti(cil(7.9, self.Z_FL[0] - 0.7, self.Z_FL[1] + 0.4, xc, yc) + ruota(scatola(self.R_CASS - 1.0, rc, -2.2, 2.2, self.Z_FL[0] - 0.4, self.Z_FL[1] + 0.4), ANG_FERMO), sd)   # spazio per il dente che gira
+                m += self.metti(self._staffa_fermo_locale(), sd)
         self._corpo = m
         return m
 
@@ -539,6 +547,8 @@ class Modello:
             ("altoparlante", "#7f8c8d", 0.7, [(46.6, 5.0, 60.0), (44.8, 5.0, 52.0), (42.5, 5.0, 51.4)], ["altoparlante", "amplificatore"]),
             ("cella di carico", "#16a085", 1.0, [(-32.6, -17.9, 51.6), (-35.5, -12.0, 55.0), (-36.0, -8.6, zd + 1.5)], ["cella", "schede"]),
             ("sensore del bicchiere", "#34495e", 0.8, [(self.CUP["x0"] - 3.8, 0, self.Z_CUP + 6.0), (-40.0, 0, self.Z_CUP + 12.0), (-40.0, 0, zd - 1.0)], ["sensore_bicchiere", "schede"]),
+            ("servo del fermo sinistro", "#e67e22", 0.8, [(36.0, -14.5, 68.4), (33.0, -15.5, 58.0), (-29.0, -15.5, 58.0), (-31.6, -6.0, zd + 2.0)], ["servo_fermo_sx", "schede"]),
+            ("servo del fermo destro", "#e67e22", 0.8, [(36.0, 14.5, 68.4), (33.0, 15.5, 58.0), (-29.0, 15.5, 58.0), (-31.6, 6.0, zd + 2.6)], ["servo_fermo_dx", "schede"]),
             ("orologio con pila (RTC)", "#9b59b6", 0.7, [(-41.0, 13.0, 34.6), (-41.0, 13.0, 50.0), (-45.0, 7.6, zd - 0.8)], ["rtc", "schede"]),
             ("alimentazione USB-C", "#1b1b1b", 1.75, [(-self.X_HALF - 17.0, 0, ze + 2.5), (-self.X_HALF - 32.0, 0, ze + 2.5), (-self.X_HALF - 44.0, 0, ze - 14.0), (-self.X_HALF - 50.0, 0, 1.75)], ["spina_usb"]),
         ]
@@ -589,6 +599,7 @@ class Modello:
             C["strisce_sensori"] = scatola(self.X_CANALE + 3.0, -1.5, 0.71, 0.95, zs - 0.7, zs + 0.7) + scatola(self.X_CANALE + 3.0, -1.5, -0.95, -0.71, zs - 0.7, zs + 0.7)
             C["magneti_ruote"] = sum((self.metti(cil(1.5, self.Z_COR[0], self.Z_COR[0] + 1.0, 0, -R_MAGNETE), sd) for sd in (-1, 1)), Manifold())
             C["rtc"] = scatola(-51.3, -31.3, 6.0, 20.0, 28.0, 34.0)
+            C["servo_fermo_sx"] = self.servo_fermo(-1); C["servo_fermo_dx"] = self.servo_fermo(1)
             C["gel_silice"] = sum((self.metti(self.silice_locale(), sd) for sd in (-1, 1)), Manifold())
         for i, m in enumerate(self.motori()): C["motore_" + str(i + 1)] = m
         for i, (m, *_c) in enumerate(self.pignoni()): C["motore_" + str(i + 1) + "_pignone"] = m

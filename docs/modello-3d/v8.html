@@ -63,7 +63,7 @@
   <ol>
     <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Il bordo di ogni ruota è una corona dentata (modulo 1, denti abbastanza grossi da stampare in 3D); la muove il pignone di un motorino N20, nell'angolo in alto dove la ruota tonda lascia spazio (uno davanti, uno dietro).</li>
     <li>All'ora giusta l'altoparlante davanti suona e il display si accende. La persona preme il tasto tondo sul cappello. La ruota avanza di uno scomparto: quello che arriva in basso si apre sull'uscita, le pillole cadono nell'imbuto e poi sul piattino.</li>
-    <li>Ricarica: si gira il fermo con una moneta e si sfila la cassetta. Ogni scomparto ha il suo sportellino trasparente con una linguetta: lo apri, metti le pillole, lo richiudi a scatto. Gli altri scomparti restano chiusi. Gli sportellini girano con la ruota, quindi le pillole non strisciano mai contro una parte ferma.</li>
+    <li>Ricarica: dall'app «Sblocca le cassette» (o tenendo premuto il tasto 10 secondi): un micro servo gira il fermo e la cassetta si sfila; quando la rimetti si richiude da sola. Ogni scomparto ha il suo sportellino trasparente con una linguetta: lo apri, metti le pillole, lo richiudi a scatto. Gli altri scomparti restano chiusi. Gli sportellini girano con la ruota, quindi le pillole non strisciano mai contro una parte ferma.</li>
     <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, il micro servo lo inclina all'indietro e le pillole scivolano verso il fondo della nicchia, dentro il bicchierino. Mentre pesa, dietro il bordo aperto c'è una paratia fissa a 0,6 mm: le pillole non scivolano via, ma la paratia non tocca il piattino e non falsa il peso. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
     <li>Il bicchierino ha un magnete nella parete dietro: un sensore nella nicchia sa se è al suo posto. Quando lo togli la dose risulta presa.</li>
     <li>Ogni ruota ha un magnete sotto lo scomparto chiuso e un sensore nella parete centrale: la scatola sa sempre dove sono le ruote e se una salta un dente se ne accorge. Un orologio con pila tiene l'ora anche senza corrente. Nel mozzo di ogni ruota c'è il gel di silice contro l'umidità, con forellini verso gli scomparti, e gli sportellini chiudono su una guarnizione di TPU.</li>
@@ -77,7 +77,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.19';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.20';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -111,7 +111,7 @@ const MAT = {
 const PEZZI = [
   [/^1_guscio/, 'Corpo', 'corpo'], [/^2_cappello/, 'Cappello colorato', 'cappello'], [/^3_piede/, 'Piede con zavorra', 'piede'], [/^4_imbuto/, 'Imbuto', 'imbuto'],
   [/^5_piattino/, 'Piattino pesato', 'arancio'], [/^6_staffa/, 'Staffa della cella', 'grigio'], [/^7_bicchierino/, 'Bicchierino', 'ceramica'], [/^12_tasto/, 'Tasto tondo', 'bianco'],
-  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'bianco'], [/^13_fermo/, 'Fermo della cassetta (si gira con una moneta)', 'grigio'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'nero'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'kapton'], [/^c_magneti/, 'Magneti di riposo delle ruote', 'ferro'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'pcbBlu'], [/^c_gel/, 'Gel di silice', 'silice'], [/^10_spazzole/, 'Lamelle di TPU sui divisori (toccano l\'anello)', 'tpu'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'vetro'],
+  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'bianco'], [/^13_fermo/, 'Fermo della cassetta (lo gira un micro servo)', 'grigio'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'nero'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'kapton'], [/^c_magneti/, 'Magneti di riposo delle ruote', 'ferro'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'pcbBlu'], [/^c_gel/, 'Gel di silice', 'silice'], [/^10_spazzole/, 'Lamelle di TPU sui divisori (toccano l\'anello)', 'tpu'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'vetro'],
   [/^c_motore_\d_pignone/, 'Pignoni da 26 denti', 'ottone'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
   [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi), driver, HX711', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
   [/^c_altoparlante/, 'Altoparlante 20 mm', 'ferro'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'pcbBlu'], [/^c_interruttore/, 'Interruttore del tasto', 'pcb'], [/^c_spina_usb/, 'Spina USB-C', 'nero'],

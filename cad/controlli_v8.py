@@ -17,7 +17,7 @@ def controlla(k):
         lam = "spazzole" in a + b and "cassetta" in a + b and a[-2:] == b[-2:]    # le lamelle di TPU premono sull'anello
         if v > (40.0 if lam else 1.5 if (a, b) in tocco or (b, a) in tocco else 0.3): male(a, b, round(v, 1))
     print("2) componenti")
-    sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio"), ("rtc", "1_guscio"), ("sensori_ruote", "1_guscio"), ("strisce_sensori", "1_guscio"), ("magneti_ruote", "10_ruota_sx"), ("magneti_ruote", "10_ruota_dx")}
+    sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio"), ("rtc", "1_guscio"), ("servo_fermo_sx", "1_guscio"), ("servo_fermo_dx", "1_guscio"), ("sensori_ruote", "1_guscio"), ("strisce_sensori", "1_guscio"), ("magneti_ruote", "10_ruota_sx"), ("magneti_ruote", "10_ruota_dx")}
     for c, m in C.items():
         for n in P:
             v = inter(m, P[n])

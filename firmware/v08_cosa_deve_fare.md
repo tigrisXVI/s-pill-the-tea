@@ -23,6 +23,12 @@ Ogni ruota ha un magnete da 3 × 1 mm nella corona, sotto lo scomparto chiuso. N
 - Gli esiti si mettono in coda e partono quando torna il Wi-Fi.
 - La password del Wi-Fi si imposta dall'app, mai scritta nel codice (`config.h` non va pubblicato).
 
-## 4. Fermo delle cassette
+## 4. Fermo delle cassette (comandato dall'app)
 
-Il fermo è meccanico: un dente a un quarto di giro che si gira con una moneta. Il firmware se ne accorge lo stesso, perché quando una cassetta è sfilata il sensore di quella ruota non vede più il magnete. A quel punto la scatola entra in "ricarica" e non dà dosi. Quando la cassetta torna dentro, la ruota si azzera e i pesi si ricontrollano.
+Ogni fermo è un dente girato da un micro servo (90 gradi: chiuso / aperto).
+
+- **Sblocco:** la scatola ascolta il campo `cmd.unlock` del suo documento in Firestore, scritto dall'app con «Sblocca le cassette». Se è più recente dell'ultimo comando eseguito, apre tutti e due i fermi, suona una volta e scrive in `status` che i fermi sono aperti.
+- **Richiusura da sola:** dopo 2 minuti, se le cassette sono ancora dentro, richiude. Se una cassetta è stata sfilata, il sensore della sua ruota non vede più il magnete. Quando lo rivede, cioè quando la cassetta è tornata dentro, aspetta 3 secondi e richiude.
+- **Durante la ricarica** non dà dosi. Quando le cassette sono di nuovo chiuse, azzera le ruote e ricontrolla i pesi.
+- **Sblocco senza app:** tenendo premuto il tasto per 10 secondi, la scatola chiede la conferma sul display e apre i fermi. Così si ricarica anche senza internet.
+- **Senza corrente** i servo restano dove sono. I servo vanno alimentati solo mentre si muovono, per non consumare e non scaldare.

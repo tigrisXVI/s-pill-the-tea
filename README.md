@@ -26,7 +26,7 @@ Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo
 
 **Umidità:** nel mozzo di ogni ruota c'è una tasca per circa 2 g di gel di silice, chiusa da un tappo con feritoie; forellini da 1,2 mm portano l'aria secca in ogni scomparto (le pillole non ci passano). Gli sportellini chiudono su una guarnizione di TPU sopra i divisori.
 
-**Fermo delle cassette:** un dente a un quarto di giro nel fianco della scatola entra in una tacca della cassetta e la blocca. Si gira con una moneta. Il controllo verifica che, chiuso, la cassetta non esca.
+**Fermo delle cassette, comandato dall'app:** per ogni cassetta un dente entra in una tacca della flangia e la blocca; lo gira di un quarto di giro un micro servo nascosto nell'angolo davanti in basso, sotto la ruota. Nell'app, nella ricarica guidata, il pulsante «Sblocca le cassette» apre i fermi per 2 minuti; quando la cassetta torna dentro (il sensore della ruota rivede il magnete) il fermo si richiude da solo. Il controllo verifica che, chiuso, la cassetta non esca.
 
 **Pezzi di prova (prima della scatola intera):** `cad/prove_v8.py` crea in `v8/2m/prove/`:
 - *prova 1, spicchio di ruota*: un quarto di ruota con 3 scomparti, lamelle di TPU, sportellini e il pezzo di cassetta con l'uscita e l'asse. Metti pillole vere (anche minuscole) negli scomparti, gira avanti e indietro 20 volte: non deve passare niente tra ruota e anello, lo scomparto vicino all'uscita non si deve svuotare, e la ruota deve girare con le lamelle senza forzare.
