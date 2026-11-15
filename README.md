@@ -18,6 +18,8 @@ Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo
 
 **Stampa 3D:** tutti i pezzi in PETG con ugello da 0,4 mm; pareti da 1,2 mm (3 passate), giochi da 0,3–0,4 mm per le parti che si muovono, denti a modulo 1. `cad/controlli_v8.py` sceglie per ogni pezzo il verso di stampa con meno sbalzi (le STL in `v8/2m/stl/stampa/` sono già girate così): servono supporti soprattutto sotto il tetto della nicchia del corpo. Il piede si stampa capovolto; la piastra di ferro si incolla da sotto, poi quattro piedini di gomma.
 
+**Cassette e coperchi:** la cassetta (l'anello attorno alla ruota) è stampata opaca; il coperchio trasparente è un disco piatto, meglio tagliato al laser da una lastra di plexiglass da 2 mm (il PETG stampato viene solo traslucido).
+
 **Pillole piccole:** tutte le fessure lungo il percorso delle pillole sono di 0,6 mm o meno (ruota-anello 0,4, ruota-coperchio 0,3, cassetta-imbuto 0,6, imbuto-piattino 0,4, piattino-paratia 0,6), così anche una pillola da 3 × 1,6 mm non si incastra.
 
 **Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 680). Baricentro a 5,2 cm da terra: si ribalta solo se inclinata di 44° di lato, 50° in avanti, 47° indietro. Sotto, quattro piedini di gomma.
