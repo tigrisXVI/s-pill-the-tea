@@ -1,5 +1,5 @@
 /*
-  Scatoletta Blistra - programma per ESP32 (prototipo v0.4)
+  Scatoletta Blistra - programma per ESP32 (prototipo v0.5)
 
   Cosa fa
   - Fino a 4 dosi al giorno, 28 scomparti (7 giorni x 4) + 1 di riposo.
@@ -7,7 +7,7 @@
     fino al ripiano pesato. Pesa la dose e la confronta con quella attesa.
   - Suona, accende le luci gialle e scrive sul display che e' ora. Chi prende le pillole preme il
     TASTO GRANDE: un piccolo servo alza lo sportello, il ripiano vibra e le pillole scendono dallo
-    scivolo nella vaschetta. Ripesa: se il ripiano e' vuoto la dose e' "erogata".
+    scivolo e cadono nel bicchierino. Ripesa: se il ripiano e' vuoto la dose e' "erogata".
     Poi il servo abbassa la leva e lo sportello si richiude da solo, per gravita'.
   - Lo sportello si puo' sempre alzare anche a mano: funziona lo stesso.
   - Il carosello gira SOLO a sportello chiuso.
@@ -47,7 +47,7 @@
   Servo servo;
 #endif
 
-#define VERSIONE "0.4"
+#define VERSIONE "0.5"
 
 enum Stato { RIPOSO, IN_ATTESA, VERIFICA, ERRORE };
 Stato stato = RIPOSO;

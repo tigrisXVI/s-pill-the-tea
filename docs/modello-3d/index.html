@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blistra pill box v0.4 – 3D model</title>
+<title>Blistra pill box v0.5 – 3D model</title>
 <style>
   :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; }
   @media (prefers-color-scheme: dark) { :root { --bg:#141a22; --ink:#eef1f5; --soft:#9aa6b6; --card:#1e2631; --line:#313c4a; --on:#58c9a6; } }
@@ -33,16 +33,17 @@
 </head>
 <body>
 <main>
-  <h1>Blistra pill box v0.4</h1>
+  <h1>Blistra pill box v0.5</h1>
   <p class="sotto"><a href="it.html">Italiano</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">Source on GitHub</a></p>
-  <p class="sotto">28 compartments: 4 doses a day for one week. Display, big button and motorized door. Drag to rotate, pinch (or scroll) to zoom.</p>
+  <p class="sotto">28 compartments: 4 doses a day for one week. Everything sits inside one shell with a hinged lid: a display and a big button on the front, and a cup below where the pills land. Drag to rotate, pinch (or scroll) to zoom.</p>
   <div id="scena"><div id="stato" aria-live="polite"></div></div>
   <div class="comandi">
     <button class="primo" id="avanti">Next dose</button>
     <button id="sportello" aria-pressed="false">Press the big button</button>
-    <button id="coperchio" aria-pressed="false">Remove the lid</button>
+    <button id="coperchio" aria-pressed="false">Open the lid</button>
     <button id="gira" aria-pressed="false">Rotate slowly</button>
     <button id="pillole" aria-pressed="true">Hide the pills</button>
+    <button id="dentro" aria-pressed="false">See inside</button>
     <label class="esploso">Explode <input id="esploso" type="range" min="0" max="100" value="0" aria-label="Explode the parts"></label>
   </div>
 
@@ -52,10 +53,10 @@
     <li>The motor turns the hub. The 29 paddles turn with it but can slide up and down freely: they rest on the floor and climb with it.</li>
     <li>Each paddle pushes its compartment's dose up the ramp to the orange landing, exactly one compartment wide.</li>
     <li>The landing is a plate resting on a load cell: the box weighs the dose and compares it with the expected weight.</li>
-    <li>At dose time the box beeps, the light bar blinks yellow and the display says it is time. The person presses the big button: a small servo lifts the door, whose skirt uncovers the opening in the wall. The plate vibrates and the pills slide down the chute into the tray.</li>
+    <li>At dose time the box beeps, the light bar blinks yellow and the display says it is time. The person presses the big button: a small servo lifts the door, whose skirt uncovers the opening in the wall. The plate vibrates and the pills slide down the chute and drop into the cup.</li>
     <li>It weighs again: if the plate is empty, the dose was delivered. The servo lowers its lever and the door closes under its own weight, so it cannot pinch fingers. The carousel only turns with the door closed.</li>
   </ol>
-  <p class="sotto" style="margin-top:8px">Try it: remove the lid, press “Next dose” twice, then put the lid back and press the big button.</p>
+  <p class="sotto" style="margin-top:8px">Try it: press “Next dose” twice, then “Press the big button”: the pills drop into the cup. “See inside” shows the mechanism; “Open the lid” is how you refill it.</p>
 
   <h2>The parts</h2>
   <ul class="pezzi" id="legenda"></ul>
@@ -70,8 +71,8 @@ import { PAR, PEZZI } from './modello.js';
 const COLORI = {
   '1_base': ['Base', '#c9ccd1'], '2_fondo_a_rampa': ['Ramp floor (fixed)', '#5aa0cf'], '3_piastra_pesata': ['Weighed vibrating plate', '#f0a030'],
   '3b_tappini_x2': ['Plate caps', '#f0a030'], '4_mozzo': ['Hub', '#7d8590'], '5_paletta_x29': ['Paddles (29)', '#f2f1ec'],
-  '6_scivolo_vaschetta': ['Chute and tray', '#a9cbe6'], '7_coperchio': ['Lid', '#2a3448'], '8_sportello': ['Door', '#3fb58c'], '9_leva_servo': ['Servo lever', '#f2c14e'], 'servo': ['Micro servo', '#2f55b8'], 'display': ['Display', '#101216'], 'tasto': ['Big button', '#d93a2b'], 'luci': ['Light bar', '#e9e6cf'] };
-const ALZA = { '1_base': 0, '6_scivolo_vaschetta': 0, '2_fondo_a_rampa': 34, '3_piastra_pesata': 56, '3b_tappini_x2': 62, '5_paletta_x29': 82, '4_mozzo': 96, '7_coperchio': 120, '8_sportello': 134, '9_leva_servo': 126, 'servo': 120, 'display': 0, 'tasto': 0, 'luci': 0 };
+  '6_scivolo': ['Chute', '#a9cbe6'], '7_coperchio': ['Inner lid', '#2a3448'], '8_sportello': ['Door', '#3fb58c'], '9_leva_servo': ['Servo lever', '#f2c14e'], 'servo': ['Micro servo', '#2f55b8'], 'display': ['Display', '#101216'], 'tasto': ['Big button', '#d93a2b'], '10_guscio': ['Shell', '#eef0ef'], '11_cofanetto': ['Outer lid', '#2f7a6a'], '12_bicchierino': ['Pill cup', '#ffffff'] };
+const ALZA = { '1_base': 0, '6_scivolo': 0, '10_guscio': 0, '12_bicchierino': 0, '11_cofanetto': 175, '2_fondo_a_rampa': 34, '3_piastra_pesata': 56, '3b_tappini_x2': 62, '5_paletta_x29': 82, '4_mozzo': 96, '7_coperchio': 120, '8_sportello': 134, '9_leva_servo': 126, 'servo': 120, 'display': 0, 'tasto': 0, 'luci': 0 };
 
 const box = document.getElementById('scena');
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -93,7 +94,10 @@ const mat = n => new THREE.MeshStandardMaterial({ color: COLORI[n][1], roughness
 const pezzo = n => new THREE.Mesh(geometria(PEZZI[n]), mat(n));
 
 const G = {};
-for (const n of ['1_base', '2_fondo_a_rampa', '3_piastra_pesata', '3b_tappini_x2', '6_scivolo_vaschetta', '7_coperchio']) { G[n] = pezzo(n); scene.add(G[n]); }
+for (const n of ['1_base', '2_fondo_a_rampa', '3_piastra_pesata', '3b_tappini_x2', '6_scivolo', '7_coperchio', '10_guscio', '12_bicchierino']) { G[n] = pezzo(n); scene.add(G[n]); }
+G['10_guscio'].material.transparent = true;
+const pernoCof = new THREE.Group(); pernoCof.position.set(PAR.COF_X, 0, PAR.COF_Z); scene.add(pernoCof);
+G['11_cofanetto'] = pezzo('11_cofanetto'); G['11_cofanetto'].material.transparent = true; pernoCof.add(G['11_cofanetto']);
 const carosello = new THREE.Group(); scene.add(carosello);
 G['4_mozzo'] = pezzo('4_mozzo'); carosello.add(G['4_mozzo']);
 const gPal = geometria(PEZZI['5_paletta_x29']), mPal = mat('5_paletta_x29'), palette = [];
@@ -101,8 +105,8 @@ for (let j = 0; j < PAR.N; j++) { const p = new THREE.Mesh(gPal, mPal); scene.ad
 // sportello: ruota attorno al perno della cerniera (asse Y)
 const perno = new THREE.Group(); perno.position.set(PAR.CERN_X, 0, PAR.CERN_Z); scene.add(perno);
 G['8_sportello'] = pezzo('8_sportello'); perno.add(G['8_sportello']);
-// v0.4: servo sul coperchio, leva che alza lo sportello, console con display, tasto e luci
-for (const n of ['servo', 'display', 'tasto', 'luci']) { G[n] = pezzo(n); scene.add(G[n]); }
+// v0.5: servo sul coperchio, leva che alza lo sportello, console con display, tasto e luci
+for (const n of ['servo', 'display', 'tasto']) { G[n] = pezzo(n); scene.add(G[n]); }
 const pernoLeva = new THREE.Group(); pernoLeva.position.set(PAR.SERVO_X, 0, PAR.SERVO_Z); scene.add(pernoLeva);
 G['9_leva_servo'] = pezzo('9_leva_servo'); pernoLeva.add(G['9_leva_servo']);
 // quello che si legge sul display: un piccolo disegno incollato sulla finestra
@@ -110,13 +114,13 @@ const tela = document.createElement('canvas'); tela.width = 256; tela.height = 1
 const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
 const schermo = new THREE.Mesh(new THREE.PlaneGeometry(PAR.DISPLAY.larg - 1, PAR.DISPLAY.alt - 1), new THREE.MeshBasicMaterial({ map: trama }));
 schermo.matrixAutoUpdate = false;
-{ const gira = new THREE.Matrix4().makeRotationZ(PAR.ANG_CONS * Math.PI / 180), posa = new THREE.Matrix4().makeTranslation(PAR.CX, 0, PAR.CZ), inclina = new THREE.Matrix4().makeRotationY(-45 * Math.PI / 180);
+{ const gira = new THREE.Matrix4().makeRotationZ(PAR.ANG_CONS * Math.PI / 180), posa = new THREE.Matrix4().makeTranslation(PAR.CX, 0, PAR.CZ), inclina = new THREE.Matrix4().makeRotationY(-PAR.INCL * Math.PI / 180);
   const faccia = new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)).setPosition(-2.3, PAR.DISPLAY.a, PAR.DISPLAY.b);
   schermo.matrix.copy(gira).multiply(posa).multiply(inclina).multiply(faccia); }
 scene.add(schermo);
-const striscia = new THREE.Mesh(new THREE.PlaneGeometry(PAR.LUCI.larg - 2, PAR.LUCI.alt - 4), new THREE.MeshBasicMaterial({ color: '#d9dce1' }));
+const striscia = new THREE.Mesh(new THREE.PlaneGeometry(PAR.LUCI.larg - 2, PAR.LUCI.alt - 4), new THREE.MeshBasicMaterial({ color: '#e6e8e7' }));
 striscia.matrixAutoUpdate = false;
-{ const gira = new THREE.Matrix4().makeRotationZ(PAR.ANG_CONS * Math.PI / 180), posa = new THREE.Matrix4().makeTranslation(PAR.CX, 0, PAR.CZ), inclina = new THREE.Matrix4().makeRotationY(-45 * Math.PI / 180);
+{ const gira = new THREE.Matrix4().makeRotationZ(PAR.ANG_CONS * Math.PI / 180), posa = new THREE.Matrix4().makeTranslation(PAR.CX, 0, PAR.CZ), inclina = new THREE.Matrix4().makeRotationY(-PAR.INCL * Math.PI / 180);
   const faccia = new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)).setPosition(0.15, 0, PAR.LUCI.b);
   striscia.matrix.copy(gira).multiply(posa).multiply(inclina).multiply(faccia); }
 scene.add(striscia);
@@ -153,33 +157,37 @@ const pillole = [];
     scene.add(m); pillole.push({ m, k, da, r, h, uscita: 0, y: (da * r * rad) }); });
 
 // ---- stato
-let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0;
+let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0, cof = 0, trasparente = false;
 const stato = document.getElementById('stato');
 const scompartoSulRipiano = () => ((Math.round(theta / PAR.PASSO) % PAR.N) + PAR.N) % PAR.N;
 function aggiorna(ora) {
   carosello.rotation.z = theta * rad;
   palette.forEach((p, j) => { const a = PAR.PASSO / 2 + j * PAR.PASSO + theta;
     p.rotation.z = a * rad; p.position.z = Math.max(quota(a - D), quota(a), quota(a + D)) + esploso * ALZA['5_paletta_x29']; });
-  for (const n in G) { const z = esploso * ALZA[n]; if (n === '8_sportello') perno.position.z = PAR.CERN_Z + z; else if (n === '9_leva_servo') pernoLeva.position.z = PAR.SERVO_Z + z; else G[n].position.z = z; }
+  for (const n in G) { const z = esploso * ALZA[n]; if (n === '8_sportello') perno.position.z = PAR.CERN_Z + z; else if (n === '9_leva_servo') pernoLeva.position.z = PAR.SERVO_Z + z; else if (n === '11_cofanetto') pernoCof.position.z = PAR.COF_Z + z; else G[n].position.z = z; }
   const tremo = vibra > 0 ? 0.35 * Math.sin(ora / 6) : 0;
   G['3_piastra_pesata'].position.x = tremo; G['3b_tappini_x2'].position.x = tremo;
   const gradi = aperto * PAR.APERTO;
   perno.rotation.y = -gradi * rad;
   pernoLeva.rotation.y = -(gradi * rad + Math.asin(4 * (1 - Math.cos(gradi * rad)) / PAR.BRACCIO));     // il perno scorre sotto la mensola
-  G['7_coperchio'].visible = !senzaCoperchio; perno.visible = !senzaCoperchio || esploso > 0;
+  pernoCof.rotation.y = -cof * 100 * rad;
+  const vel = trasparente ? .14 : Math.max(.14, 1 - esploso * 1.6);
+  for (const n of ['10_guscio', '11_cofanetto']) { G[n].material.opacity = n === '11_cofanetto' ? Math.min(vel, cof > .02 ? 1 : vel) : vel; G[n].material.depthWrite = G[n].material.opacity > .99; }
+  G['7_coperchio'].visible = cof < .5; perno.visible = cof < .5 || esploso > 0;
   G['servo'].visible = pernoLeva.visible = G['7_coperchio'].visible; schermo.visible = esploso < .02;
   const sc = scompartoSulRipiano();
   const aspetta = sc !== 0 && aperto < .02 && Math.abs(theta - meta) < .01;
   if (aperto > .5) scrivi('Take', 'your pills'); else if (aspetta) scrivi("It's time", 'press the button'); else scrivi('08:00', 'next 13:00');
-  striscia.material.color.set(aperto > .5 ? '#ffffff' : aspetta ? (Math.floor(ora / 400) % 2 ? '#ffb000' : '#6b5a2a') : '#d9dce1'); striscia.visible = schermo.visible;
+  striscia.material.color.set(aperto > .5 ? '#ffffff' : aspetta ? (Math.floor(ora / 400) % 2 ? '#ffb000' : '#6b5a2a') : '#e6e8e7'); striscia.visible = schermo.visible;
   pillole.forEach(p => {
     p.m.visible = vediPillole && esploso < .02;
-    if (p.uscita > 0) {                                   // in discesa: ripiano -> scivolo -> vaschetta
-      const u = Math.min(1, p.uscita), xEnd = PAR.X2_SC - 4 - p.k * 3;
-      const x = u < .25 ? p.r + (PAR.R_FONDO + 1 - p.r) * u / .25 : PAR.R_FONDO + 1 + (xEnd - PAR.R_FONDO - 1) * (u - .25) / .75;
-      const z = x <= PAR.R_FONDO ? zFondo(0, x) : zScivolo(Math.max(PAR.X0_SC, x));
-      p.m.position.set(x, p.y * Math.max(.4, 1 - u) + (u > .9 ? (p.k - 2) * 6 : 0), z + p.h);
-      p.m.rotation.set(0, x > PAR.R_FONDO && x < PAR.X1_SC ? 40 * rad : 0, 0);
+    if (p.uscita > 0) {                                   // in discesa: ripiano -> scivolo -> bicchierino
+      const u = Math.min(1, p.uscita), XE = PAR.X_FINE_SC, bx = PAR.CUP_X + p.da * 4 + (p.k - 2) * 3, by = (p.r - 56) * .9;
+      let x, y, z, rot = 0;
+      if (u < .25) { x = p.r + (PAR.R_FONDO + 1 - p.r) * u / .25; y = p.y * (1 - u); z = zFondo(0, x); }
+      else if (u < .6) { const v = (u - .25) / .35; x = PAR.R_FONDO + 1 + (XE - PAR.R_FONDO - 1) * v; y = p.y * .75 * (1 - v) + by * .5 * v; z = zScivolo(Math.max(PAR.X0_SC, x)); rot = 40 * rad; }
+      else { const v = (u - .6) / .4; x = XE + (bx - XE) * Math.min(1, v * 1.6); y = by * (.5 + .5 * v); z = zScivolo(XE) + (PAR.CUP_Z - zScivolo(XE)) * v * v; rot = 40 * rad * (1 - v); }
+      p.m.position.set(x, y, z + p.h); p.m.rotation.set(0, rot, 0);
       return;
     }
     const a = -p.k * PAR.PASSO + p.da + theta;
@@ -190,7 +198,7 @@ function aggiorna(ora) {
 }
 
 // ---- camera
-let az = -0.95, el = 0.6, dist = 540; const centro = new THREE.Vector3(20, 0, 30);
+let az = -0.62, el = 0.5, dist = 620; const centro = new THREE.Vector3(35, 0, 45);
 function posaCamera() { const zc = centro.z + esploso * 60, d = dist * (1 + .55 * esploso);
   camera.position.set(centro.x + d * Math.cos(el) * Math.cos(az), d * Math.cos(el) * Math.sin(az), zc + d * Math.sin(el)); camera.lookAt(centro.x, 0, zc); }
 const punt = new Map(); let pizzico = 0;
@@ -211,7 +219,8 @@ const premi = (b, on, testoOn, testoOff) => { b.setAttribute('aria-pressed', on)
 const sportelloChiuso = () => apertoMeta === 0 && aperto < .02;
 $('avanti').onclick = () => { if (!sportelloChiuso()) { stato.textContent = 'The carousel only turns with the door closed'; return; } continuo = false; premi($('gira'), false, '', 'Rotate slowly'); meta = (Math.round(theta / PAR.PASSO) + 1) * PAR.PASSO; };
 $('gira').onclick = () => { if (!sportelloChiuso()) return; continuo = !continuo; premi($('gira'), continuo, 'Stop', 'Rotate slowly'); if (!continuo) meta = Math.ceil(theta / PAR.PASSO - .001) * PAR.PASSO; };
-$('coperchio').onclick = () => { senzaCoperchio = !senzaCoperchio; premi($('coperchio'), senzaCoperchio, 'Put the lid back', 'Remove the lid'); };
+$('coperchio').onclick = () => { senzaCoperchio = !senzaCoperchio; premi($('coperchio'), senzaCoperchio, 'Close the lid', 'Open the lid'); };
+$('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Solid shell', 'See inside'); };
 $('sportello').onclick = () => {
   apertoMeta = apertoMeta ? 0 : 1; premi($('sportello'), !!apertoMeta, 'Close the door', 'Press the big button');
   if (apertoMeta) { continuo = false; premi($('gira'), false, '', 'Rotate slowly'); meta = Math.round(theta / PAR.PASSO) * PAR.PASSO; }
@@ -224,6 +233,7 @@ let prima = performance.now();
 function ciclo(ora) {
   const dt = Math.min(.05, (ora - prima) / 1000); prima = ora;
   if (continuo) { theta += 14 * dt; meta = theta; } else if (theta < meta) theta = Math.min(meta, theta + 16 * dt);
+  cof += Math.sign((senzaCoperchio ? 1 : 0) - cof) * Math.min(Math.abs((senzaCoperchio ? 1 : 0) - cof), 1.6 * dt);
   aperto += Math.sign(apertoMeta - aperto) * Math.min(Math.abs(apertoMeta - aperto), 2.2 * dt);
   // sportello aperto e carosello fermo: la piastra vibra e la dose scende
   const sc = scompartoSulRipiano(), fermo = Math.abs(theta - meta) < .01 && !continuo;

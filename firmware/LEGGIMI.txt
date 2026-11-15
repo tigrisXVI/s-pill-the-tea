@@ -1,4 +1,4 @@
-SCATOLETTA BLISTRA v0.4 - PROGRAMMA PER ESP32
+SCATOLETTA BLISTRA v0.5 - PROGRAMMA PER ESP32
 (prototipo: controllato solo al computer, mai provato su una scheda vera)
 
 1. Arduino IDE 2 -> Gestore schede: "esp32" di Espressif (versione 3.x) -> scheda "ESP32 Dev Module".
@@ -22,13 +22,14 @@ Prima taratura (una volta sola, con il coperchio tolto):
 
 Uso:
   - All'ora della dose suona, la barra di luci lampeggia gialla e il display scrive "E' ora".
-  - Pressione breve del tasto grande: il servo alza lo sportello, il ripiano vibra e le pillole scendono nella vaschetta.
+  - Pressione breve del tasto grande: il servo alza lo sportello, il ripiano vibra e le pillole cadono nel bicchierino.
     Dopo 20 secondi (o a un altro tocco del tasto) la leva scende e lo sportello si richiude da solo.
   - Lo sportello si puo' anche alzare a mano: la scatoletta eroga lo stesso.
   - Pressione lunga durante l'attesa: silenzio per 30 secondi.
   - Pressione lunga a riposo: verifica del carico (pesa i 28 scomparti uno a uno, sportello chiuso, circa 2 minuti).
   - Il carosello non gira mai con lo sportello aperto.
-  - Alimentazione: presa USB-C da pannello -> interruttore -> piedino 5V dell'ESP32. Il servo va alimentato dai 5 V, non dai 3,3 V.
+  - Alimentazione: presa USB-C da pannello (fianco destro) -> interruttore -> piedino 5V dell'ESP32.
+    Il servo va alimentato dai 5 V, non dai 3,3 V. Il foro dietro serve solo per programmare l'ESP32 con il cavo.
 
 Scomparti: 1-4 lunedi' (dose 1, 2, 3, 4), 5-8 martedi', ... 25-28 domenica. Lo scomparto 0 e' il riposo e resta vuoto.
 

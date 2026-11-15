@@ -57,7 +57,7 @@
 #define LUMINOSITA_LUCI  60       // 0-255
 #define USA_SERVO        1
 #define SERVO_CHIUSO     20       // gradi a riposo: la leva appena sotto la mensola, senza toccarla
-#define SERVO_APERTO     101      // SERVO_CHIUSO + 81 gradi = sportello alzato di 70 (se va al contrario: 160 e 79)
+#define SERVO_APERTO     58       // SERVO_CHIUSO + 38 gradi = sportello alzato di 35 (se va al contrario: 160 e 122)
 #define SERVO_MS_PER_GRADO 12     // lentezza del movimento
 #define SECONDI_APERTO   20       // quanto resta aperto dopo aver erogato (un tocco del tasto lo chiude prima)
 
