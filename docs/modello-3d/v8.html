@@ -75,7 +75,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.12';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.13';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -278,21 +278,26 @@ function riempi() {
   for (const p of pillole) { if (p.stato !== 'tolta') world.removeRigidBody(p.b); scene.remove(p.m); } pillole = [];
   for (let d = 1; d <= 28; d++) {
     const L = lati[d % 2 ? 0 : 1], k = Math.ceil(d / 2), a = (-90 + k * PASSO) * rad, r = (P.R_I + P.R_O) / 2;
-    let prof = 0;
-    ricetta(d).forEach(([forma, c1, c2]) => {
+    let primo0 = 0;
+    ricetta(d).forEach(([forma, c1, c2], i) => {
       const F = FORME[forma], geo = F.geo();
       if (c2) bicolore(geo, c1, c2);
       const m = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: c2 ? '#ffffff' : c1, vertexColors: !!c2, roughness: .38, clearcoat: .55, clearcoatRoughness: .25 }));
       m.castShadow = true; m.receiveShadow = true;
-      const y = L.s * (P.Y0 + P.Z_TAS[0] + prof + F.h + .35); prof += 2 * F.h + .35;
-      const pos = new THREE.Vector3(r * Math.cos(a), y, P.Z_A + r * Math.sin(a)), q = new THREE.Quaternion().setFromAxisAngle(asseY, -a);
+      // la prima pillola sta sul fondo dello scomparto; le altre sopra, una verso il centro e una verso il bordo: nessuna nasce sovrapposta
+      if (i === 0) primo0 = 2 * F.h;
+      const prof = i === 0 ? 0 : primo0 + .6, rr = i === 0 ? r : r + (i === 1 ? -5.5 : 5.5);
+      const y = L.s * (P.Y0 + P.Z_TAS[0] + prof + F.h + .35);
+      const pos = new THREE.Vector3(rr * Math.cos(a), y, P.Z_A + rr * Math.sin(a)), q = new THREE.Quaternion().setFromAxisAngle(asseY, -a);
       const punti = Float32Array.from(geo.attributes.position.array, x => x * S);
-      const b = world.createRigidBody(R.RigidBodyDesc.dynamic().setTranslation(pos.x * S, pos.y * S, pos.z * S).setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }).setCcdEnabled(true).setLinearDamping(.05).setAngularDamping(.3));
+      const b = world.createRigidBody(R.RigidBodyDesc.dynamic().setTranslation(pos.x * S, pos.y * S, pos.z * S).setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }).setCcdEnabled(true).setLinearDamping(4).setAngularDamping(4));
       world.createCollider(R.ColliderDesc.convexHull(punti).setDensity(1.2).setFriction(.42).setRestitution(.15), b);
       m.position.copy(pos); m.quaternion.copy(q);
       scene.add(m); pillole.push({ m, b, d, L, mg: F.mg, stato: 'ruota' });
     });
   }
+  for (let k = 0; k < 360; k++) world.step();   // si assestano piano nei loro scomparti
+  for (const p of pillole) { p.b.setLinearDamping(.05); p.b.setAngularDamping(.3); p.b.setLinvel({ x: 0, y: 0, z: 0 }, true); p.b.setAngvel({ x: 0, y: 0, z: 0 }, true); }
 }
 
 // ---------------- stato della dose
@@ -318,6 +323,12 @@ function passo(h) {   // un passo di fisica: muove i pezzi cinematici solo se ca
   cupT = verso(cupT, cupMeta, .9 * h); cup = liscio(cupT); if (cup !== c0 || primo) cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
   primo = false;
   world.step();
+  for (const p of pillole) {   // limite di velocita' realistico: una pillola che cade da 10 cm non supera 1,4 m/s
+    if (p.stato === 'tolta') continue; const v = p.b.linvel(), n = Math.hypot(v.x, v.y, v.z);
+    if (n > 140) p.b.setLinvel({ x: v.x * 140 / n, y: v.y * 140 / n, z: v.z * 140 / n }, true);
+    const w = p.b.angvel(), m = Math.hypot(w.x, w.y, w.z);
+    if (m > 40) p.b.setAngvel({ x: w.x * 40 / m, y: w.y * 40 / m, z: w.z * 40 / m }, true);
+  }
 }
 let primo = true, cupT = 0;
 
