@@ -30,7 +30,7 @@ BAIONETTA = (90.0, 210.0, 330.0)   # tacche della baionetta (gradi, lontane dall
 R_SPIG = 5.0     # raggio degli spigoli verticali del guscio
 Z_ESP = 12.0     # l'ESP32 sta 12 mm sopra la scheda dei driver: antenna lontana dalla cella di carico
 R_TOP = 14.0     # spigoli del tetto arrotondati (davanti e dietro), come una macchina del caffe'
-L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.4; PARETE = 1.2
+L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.3; PARETE = 1.2
 PAR_CAS = 1.2    # pareti della cassetta: 3 passate da 0,4 mm
 MOD = 1.0; Z_PIGNONE = 20; R_PIGNONE = Z_PIGNONE * MOD / 2   # modulo 1: denti abbastanza grossi per la stampa 3D; pignone da 20 denti, il motorino sta fuori dalle cassette
 N20 = dict(lato_a=12.0, lato_b=10.0, lungo=24.3 + 1.5, albero=3.0)   # motoriduttore N20 (senza encoder) + contatti
@@ -123,6 +123,8 @@ class Modello:
                 pts = [(self.R_O * math.cos(a - ag), self.R_O * math.sin(a - ag)), (self.R_O * math.cos(a + ag), self.R_O * math.sin(a + ag)),
                        ((self.R_O - 5.0) * math.cos(a), (self.R_O - 5.0) * math.sin(a))]
                 m += Manifold.extrude(CrossSection([ccw(pts)]), a1 - a0 + 0.01).translate([0, 0, a0 - 0.01])
+            for k in range(N):   # fessura in punta a ogni divisorio per la lamella di TPU
+                m -= ruota(scatola(self.R_O - 2.0, self.R_O + 1.0, -0.42, 0.42, a0, a1 + 1.0), -90.0 + off + PASSO / 2 + k * PASSO)
             if self.labbri:                               # bordo con aperture larghe 12 mm: tra un'uscita e l'altra c'e' pieno
                 lab = cil(self.R_O, a0 - 0.01, a1) - cil(self.R_O - 2.0, a0 - 1, a1 + 1)
                 for k in range(1, N):
@@ -133,6 +135,15 @@ class Modello:
         return m
 
     # ---------------- cassetta (locale)
+    def spazzole_locale(self):
+        """Lamelle di TPU in punta ai divisori: toccano l'anello fermo (0,15 mm di schiacciamento), cosi' tra ruota e anello
+        non passa niente e ogni scomparto resta chiuso finche' non arriva sull'uscita."""
+        a0, a1 = self.Z_TAS
+        m = Manifold()
+        for k in range(N):
+            m += ruota(scatola(self.R_O - 1.95, self.R_AN_T + 0.15, -0.38, 0.38, a0 + 0.2, a1 - 0.2), -90.0 + PASSO / 2 + k * PASSO)
+        return m
+
     def cassetta_locale(self):
         lati = [1] if self.ruote == 2 else [1, -1]
         m = Manifold()
@@ -487,6 +498,7 @@ class Modello:
             for s, n in ((-1, "sx"), (1, "dx")):
                 P["9_cassetta_" + n] = self.metti(self.cassetta_locale(), s)
                 P["10_ruota_" + n] = self.metti(self.ruota_locale(), s)
+                P["10_spazzole_" + n] = self.metti(self.spazzole_locale(), s)
                 P["11_coperchio_" + n] = self.metti(self.coperchio_locale(), s)
         else:
             P["9_cassetta"] = self.metti(self.cassetta_locale(), 0)

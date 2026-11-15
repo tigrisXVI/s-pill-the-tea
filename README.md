@@ -20,7 +20,7 @@ Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo
 
 **Cassette e coperchi:** la cassetta (l'anello attorno alla ruota) è stampata opaca; il coperchio trasparente è un disco piatto con tre linguette, tagliato al laser da una lastra di plexiglass da 1,5 mm (il PETG stampato viene solo traslucido). Si chiude a baionetta: linguette nelle tacche della cassetta, poi un giro di 30°. Al centro c'è un pomello stampato e incollato, che serve per girare il coperchio e per sfilare la cassetta.
 
-**Pillole piccole:** tutte le fessure lungo il percorso delle pillole sono di 0,6 mm o meno (ruota-anello 0,4, ruota-coperchio 0,3, cassetta-imbuto 0,6, imbuto-piattino 0,4, piattino-paratia 0,6), così anche una pillola da 3 × 1,6 mm non si incastra.
+**Pillole piccole:** in punta a ogni divisorio della ruota c'è una lamella di TPU (gomma stampabile) che tocca l'anello fermo: tra ruota e anello non passa niente e ogni scomparto resta chiuso finché non arriva sull'uscita. Le altre fessure lungo il percorso delle pillole sono di 0,6 mm o meno (gioco ruota-anello 0,3, ruota-coperchio 0,3, cassetta-imbuto 0,6, imbuto-piattino 0,4, piattino-paratia 0,6), così anche una pillola da 3 × 1,6 mm non si incastra.
 
 **Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 680). Baricentro a 5,2 cm da terra: si ribalta solo se inclinata di 44° di lato, 50° in avanti, 47° indietro. Sotto, quattro piedini di gomma.
 

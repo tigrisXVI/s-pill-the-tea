@@ -14,7 +14,8 @@ def controlla(k):
     tocco = {("5_piattino", "6_staffa_cella")}                           # perno della cerniera
     for a, b in itertools.combinations(P, 2):
         v = inter(P[a], P[b])
-        if v > (1.5 if (a, b) in tocco or (b, a) in tocco else 0.3): male(a, b, round(v, 1))
+        lam = "spazzole" in a + b and "cassetta" in a + b and a[-2:] == b[-2:]    # le lamelle di TPU premono sull'anello
+        if v > (40.0 if lam else 1.5 if (a, b) in tocco or (b, a) in tocco else 0.3): male(a, b, round(v, 1))
     print("2) componenti")
     sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio")}
     for c, m in C.items():
@@ -34,7 +35,7 @@ def controlla(k):
             for n in P:
                 if n == r or n.startswith("10_"): continue
                 v = inter(rr, P[n])
-                if v > 0.3: male(r, "a", g, "gradi contro", n, round(v, 1))
+                if v > (40.0 if "spazzole" in r and n == "9_cassetta" + r[-3:] else 0.3): male(r, "a", g, "gradi contro", n, round(v, 1))
     print("4) le cassette si sfilano di lato")
     gruppi = {"sx": [n for n in P if n.endswith("_sx") and n[:2] in ("9_", "10", "11")], "dx": [n for n in P if n.endswith("_dx") and n[:2] in ("9_", "10", "11")]} if M.ruote == 2 else {"tutta": [n for n in P if n[:2] in ("9_", "10", "11")]}
     for lato, nomi in gruppi.items():
@@ -61,7 +62,7 @@ def controlla(k):
             if inter(b, P[n]) > 0.2: male("bicchierino alzato e spostato di", dx, "contro", n, round(inter(b, P[n]), 1))
     print("6) percorso delle pillole")
     fin = M.APRE - 0.6
-    for r in ruote:
+    for r in [n for n in ruote if n.startswith("10_ruota")]:
         sgn = -1 if r.endswith("sx") else 1
         facce = [(sgn * (M.Y0 + M.Z_TAS[0] + 0.5), sgn * (M.Y0 + M.Z_TAS[1] - 0.5))] if M.ruote == 2 else [(-(M.Z_TAS[1] - 0.5), -(M.Z_TAS[0] + 0.5)), (M.Z_TAS[0] + 0.5, M.Z_TAS[1] - 0.5)]
         for fi, (ya, yb) in enumerate(facce):
@@ -123,7 +124,7 @@ def controlla(k):
     print("9) le pillole piccole non si incastrano (pillola minuscola: 3 mm x 1,6 mm)")
     xh, zh = M.perno_piattino(); pz = M.PIATTO
     zb = M.Z_PIATTO + 7.0
-    fessure = [("ruota - anello della cassetta", s8.G), ("ruota - coperchio trasparente", M.Z_COP[0] - M.TH),
+    fessure = [("lamelle di TPU - anello (gioco ruota-anello " + str(s8.G).replace(".", ",") + " mm)", 0.0), ("ruota - coperchio trasparente", M.Z_COP[0] - M.TH),
                ("cassetta - bordo dell'imbuto", M.Z_A - M.R_CASS - (M.Z_IMB0 + 0.5)),
                ("bocca dell'imbuto - pareti del piattino", (zb - 1.6) - (M.Z_PIATTO + 5.0)),
                ("piattino - paratia dietro", 0.6)]

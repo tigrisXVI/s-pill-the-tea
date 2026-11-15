@@ -76,7 +76,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.15';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.16';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -90,6 +90,7 @@ const MAT = {
   piede: () => new THREE.MeshPhysicalMaterial({ color: '#22252a', roughness: .62 }),
   bianco: () => new THREE.MeshPhysicalMaterial({ color: '#f4f2ec', roughness: .32, clearcoat: .2 }),
   vetro: () => new THREE.MeshPhysicalMaterial({ color: '#ffffff', transmission: .92, thickness: 2, roughness: .06, ior: 1.49, attenuationColor: '#bfe3ea', attenuationDistance: 25, specularIntensity: 1, clearcoat: 1, transparent: true }),
+  tpu: () => new THREE.MeshPhysicalMaterial({ color: '#4f7cac', roughness: .7 }),
   cassa: () => new THREE.MeshPhysicalMaterial({ color: '#eceae4', roughness: .38, clearcoat: .25 }),
   ceramica: () => new THREE.MeshPhysicalMaterial({ color: '#fbfbf8', roughness: .18, clearcoat: 1, clearcoatRoughness: .08 }),
   imbuto: () => new THREE.MeshPhysicalMaterial({ color: '#e8eef2', roughness: .25, transmission: .6, thickness: 1.2, transparent: true }),
@@ -107,7 +108,7 @@ const MAT = {
 const PEZZI = [
   [/^1_guscio/, 'Corpo', 'corpo'], [/^2_cappello/, 'Cappello colorato', 'cappello'], [/^3_piede/, 'Piede con zavorra', 'piede'], [/^4_imbuto/, 'Imbuto', 'imbuto'],
   [/^5_piattino/, 'Piattino pesato', 'arancio'], [/^6_staffa/, 'Staffa della cella', 'grigio'], [/^7_bicchierino/, 'Bicchierino', 'ceramica'], [/^12_tasto/, 'Tasto tondo', 'bianco'],
-  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^11_coperchio/, 'Coperchi a baionetta (plexiglass 1,5 mm, con pomello)', 'vetro'],
+  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_spazzole/, 'Lamelle di TPU sui divisori (toccano l\'anello)', 'tpu'], [/^11_coperchio/, 'Coperchi a baionetta (plexiglass 1,5 mm, con pomello)', 'vetro'],
   [/^c_motore_\d_pignone/, 'Pignoni da 26 denti', 'ottone'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
   [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi), driver, HX711', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
   [/^c_altoparlante/, 'Altoparlante 20 mm', 'ferro'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'pcbBlu'], [/^c_interruttore/, 'Interruttore del tasto', 'pcb'], [/^c_spina_usb/, 'Spina USB-C', 'nero'],
@@ -190,7 +191,7 @@ for (const n in PZ) {
 const radice = new THREE.Group(); scene.add(radice);
 const lati = [['sx', -1], ['dx', 1]].map(([s, sg]) => {
   const cas = new THREE.Group(), gira = new THREE.Group(); gira.position.z = P.Z_A; cas.add(gira); radice.add(cas);
-  cas.add(G['9_cassetta_' + s]); cas.add(G['11_coperchio_' + s]); gira.add(G['10_ruota_' + s]);
+  cas.add(G['9_cassetta_' + s]); cas.add(G['11_coperchio_' + s]); gira.add(G['10_ruota_' + s]); gira.add(G['10_spazzole_' + s]);
   return { s: sg, nome: s, cas, gira, giro: 0, meta: 0, fuori: 0, fuoriMeta: 0 };
 });
 for (const L of lati) {   // numeri delle dosi sul mozzo di ogni ruota (girano con la ruota)
@@ -281,8 +282,8 @@ for (const L of lati) {
   world.createCollider(cilY(P.R_GT, Y(P.Z_COR[0]), Y(P.Z_COR[1])), L.wB);                       // disco con la corona
   world.createCollider(cilY(P.R_I, Y(t0), Y(t1)), L.wB);                                          // mozzo
   for (let k = 0; k < P.N; k++) {                                                                 // divisori e scivoli
-    const a = -90 + PASSO / 2 + k * PASSO, rc = (P.R_I - .5 + P.R_O) / 2;
-    world.createCollider(blocco((P.R_O - P.R_I + .5) / 2, ha, P.SP_DIV / 2, rc * Math.cos(a * rad), ym, rc * Math.sin(a * rad), a), L.wB);
+    const a = -90 + PASSO / 2 + k * PASSO, rc = (P.R_I - .5 + P.R_AN_T - .05) / 2;   // divisorio + lamella di TPU fino all'anello
+    world.createCollider(blocco((P.R_AN_T - .05 - P.R_I + .5) / 2, ha, P.SP_DIV / 2, rc * Math.cos(a * rad), ym, rc * Math.sin(a * rad), a), L.wB);
     const ag = ((P.R_O * 2 * Math.PI / P.N - P.SP_DIV) / 2 - P.APRE + .4 + P.SP_DIV / 2) / P.R_O / rad;
     world.createCollider(guscioConvesso([Y(t0), Y(t1)].flatMap(y => [polare(P.R_O, a - ag, y), polare(P.R_O, a + ag, y), polare(P.R_O - 5, a, y)])), L.wB);
   }
