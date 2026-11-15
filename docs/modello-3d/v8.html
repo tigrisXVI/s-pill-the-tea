@@ -324,7 +324,7 @@ function logica(dt) {
   const fermeRuote = !lati.some(L => Math.abs(L.giro - L.meta) > .01), sotto = cup < .02;
   const Ld = lati[dose % 2 ? 0 : 1];
   if (fase === 'gira' && fermeRuote) {   // arrivata: si scuote avanti e indietro di pochi gradi, per staccare le pillole
-    if (scossa.length) Ld.meta = base + scossa.shift(); else { fase = 'cade'; attesa = 7; calma = 0; }
+    if (scossa.length) Ld.meta = base + scossa.shift(); else { fase = 'cade'; if (!scosse) attesa = 7; calma = 0; }
   }
   if (fase === 'cade') {
     attesa -= dt; calma = dosePill.every(p => sulPiatto(p) && !veloce(p)) ? calma + dt : 0;
@@ -468,7 +468,7 @@ function ciclo(ora) {
   if (n === 16) resto = 0;
   logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
-window.__v8 = { FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
+window.__v8 = { get scosse() { return scosse; }, FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
 requestAnimationFrame(ciclo);
 </script>
 </body>
