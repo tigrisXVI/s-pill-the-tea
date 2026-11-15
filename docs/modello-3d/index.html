@@ -49,6 +49,7 @@
     <button id="gira" aria-pressed="false">Rotate slowly</button>
     <button id="pillole" aria-pressed="true">Hide the pills</button>
     <button id="dentro" aria-pressed="false">See inside</button>
+    <button id="elettronica" aria-pressed="false">Show the electronics</button>
     <label class="esploso">Explode <input id="esploso" type="range" min="0" max="100" value="0" aria-label="Explode the parts"></label>
   </div>
 
@@ -61,7 +62,7 @@
     <li>At dose time the box beeps, the light bar blinks yellow and the display says it is time. The person presses the big button: a small servo lifts the door, whose skirt uncovers the opening in the wall. The plate vibrates and the pills slide down the chute and drop into the cup.</li>
     <li>It weighs again: if the plate is empty, the dose was delivered. The servo lowers its lever and the door closes under its own weight, so it cannot pinch fingers. The carousel only turns with the door closed.</li>
   </ol>
-  <p class="sotto" style="margin-top:8px">Try it: press “Next dose” twice, then “Press the big button”: the pills drop into the cup. “See inside” shows the mechanism; “Open the lid” is how you refill it.</p>
+  <p class="sotto" style="margin-top:8px">Try it: press “Next dose” twice, then “Press the big button”: the pills drop into the cup. “See inside” shows the mechanism, “Show the electronics” the boards, screws and wires, and “Open the lid” is how you refill it.</p>
 
   <h2>The parts</h2>
   <ul class="pezzi" id="legenda"></ul>
@@ -71,7 +72,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PAR, PEZZI } from './modello.js';
+import { PAR, PEZZI, ELETTRONICA, CAVI } from './modello.js';
 
 const COLORI = {
   '1_base': ['Base', '#c9ccd1'], '2_fondo_a_rampa': ['Ramp floor (fixed)', '#5aa0cf'], '3_piastra_pesata': ['Weighed vibrating plate', '#f0a030'],
@@ -120,6 +121,22 @@ G['8_sportello'] = pezzo('8_sportello'); perno.add(G['8_sportello']);
 for (const n of ['servo', 'display', 'tasto']) { G[n] = pezzo(n); scene.add(G[n]); }
 const pernoLeva = new THREE.Group(); pernoLeva.position.set(PAR.SERVO_X, 0, PAR.SERVO_Z); scene.add(pernoLeva);
 G['9_leva_servo'] = pezzo('9_leva_servo'); pernoLeva.add(G['9_leva_servo']);
+// elettronica, viti, perni e cavi: ognuno segue il pezzo a cui e' attaccato
+const IT = document.documentElement.lang === 'it';
+const GRUPPO = { '8_sportello': perno, '9_leva_servo': pernoLeva, '11_cofanetto': pernoCof, '4_mozzo': carosello };
+const ELE = [];
+for (const d of ELETTRONICA) {
+  const m = new THREE.Mesh(geometria(PEZZI[d.id]), new THREE.MeshStandardMaterial({ color: d.colore, roughness: .5, metalness: d.colore === '#8e949c' ? .6 : .1 }));
+  (GRUPPO[d.gruppo] || scene).add(m); ELE.push({ m, d }); COLORI[d.id] = [IT ? d.it : d.en, d.colore];
+}
+const cavi = new THREE.Group(); scene.add(cavi);
+for (const c of CAVI) {
+  const via = new THREE.CurvePath();
+  for (let i = 0; i + 1 < c.punti.length; i++) via.add(new THREE.LineCurve3(new THREE.Vector3(...c.punti[i]), new THREE.Vector3(...c.punti[i + 1])));
+  cavi.add(new THREE.Mesh(new THREE.TubeGeometry(via, c.punti.length * 8, c.r, 8), new THREE.MeshStandardMaterial({ color: c.colore, roughness: .7 })));
+}
+COLORI.cavi = ['Wires', '#c0392b'];
+const STRUTTURA = ['1_base', '2_fondo_a_rampa', '3_piastra_pesata', '3b_tappini_x2', '4_mozzo', '6_scivolo', '7_coperchio', '8_sportello', '9_leva_servo', '12_bicchierino'];
 // quello che si legge sul display: un piccolo disegno incollato sulla finestra
 const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128; const penna = tela.getContext('2d');
 const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
@@ -168,7 +185,7 @@ const pillole = [];
     scene.add(m); pillole.push({ m, k, da, r, h, uscita: 0, y: (da * r * rad) }); });
 
 // ---- stato
-let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0, cof = 0, trasparente = false;
+let theta = 0, meta = 0, continuo = false, esploso = 0, aperto = 0, apertoMeta = 0, vediPillole = true, senzaCoperchio = false, vibra = 0, cof = 0, trasparente = false, vediEle = false;
 const stato = document.getElementById('stato');
 const scompartoSulRipiano = () => ((Math.round(theta / PAR.PASSO) % PAR.N) + PAR.N) % PAR.N;
 function aggiorna(ora) {
@@ -182,8 +199,17 @@ function aggiorna(ora) {
   perno.rotation.y = -gradi * rad;
   pernoLeva.rotation.y = -(gradi * rad + Math.asin(4 * (1 - Math.cos(gradi * rad)) / PAR.BRACCIO));     // il perno scorre sotto la mensola
   pernoCof.rotation.y = -cof * 100 * rad;
-  const vel = trasparente ? .14 : Math.max(.14, 1 - esploso * 1.6);
+  const vel = vediEle ? .07 : trasparente ? .14 : Math.max(.14, 1 - esploso * 1.6);
   for (const n of ['10_guscio', '11_cofanetto']) { G[n].material.opacity = n === '11_cofanetto' ? Math.min(vel, cof > .02 ? 1 : vel) : vel; G[n].material.depthWrite = G[n].material.opacity > .99; }
+  const vetro = vediEle ? .13 : 1;
+  for (const mt of [...STRUTTURA.map(n => G[n].material), mPal]) { mt.transparent = vetro < 1; mt.opacity = vetro; mt.depthWrite = vetro > .99; }
+  for (const { m, d } of ELE) {
+    if (!GRUPPO[d.gruppo]) m.position.z = esploso * (ALZA[d.gruppo] || 0);
+    if (d.gruppo === '4_mozzo') m.position.z = esploso * ALZA['4_mozzo'];
+    if (d.gruppo === '3_piastra_pesata') m.position.x = tremo;
+    if (d.gruppo === 'servo') m.visible = cof < .5;
+  }
+  cavi.visible = esploso < .02;
   G['7_coperchio'].visible = cof < .5; perno.visible = cof < .5 || esploso > 0;
   G['servo'].visible = pernoLeva.visible = G['7_coperchio'].visible; schermo.visible = esploso < .02;
   const sc = scompartoSulRipiano();
@@ -191,7 +217,7 @@ function aggiorna(ora) {
   if (aperto > .5) scrivi('Take', 'your pills'); else if (aspetta) scrivi("It's time", 'press the button'); else scrivi('08:00', 'next 13:00');
   striscia.material.color.set(aperto > .5 ? '#ffffff' : aspetta ? (Math.floor(ora / 400) % 2 ? '#ffb000' : '#6b5a2a') : '#e6e8e7'); striscia.visible = schermo.visible;
   pillole.forEach(p => {
-    p.m.visible = vediPillole && esploso < .02;
+    p.m.visible = vediPillole && esploso < .02 && !vediEle;
     if (p.uscita > 0) {                                   // in discesa: ripiano -> scivolo -> bicchierino
       const u = Math.min(1, p.uscita), XE = PAR.X_FINE_SC, bx = PAR.CUP_X + p.da * 4 + (p.k - 2) * 3, by = (p.r - 56) * .9;
       let x, y, z, rot = 0;
@@ -231,6 +257,7 @@ const sportelloChiuso = () => apertoMeta === 0 && aperto < .02;
 $('avanti').onclick = () => { if (!sportelloChiuso()) { stato.textContent = 'The carousel only turns with the door closed'; return; } continuo = false; premi($('gira'), false, '', 'Rotate slowly'); meta = (Math.round(theta / PAR.PASSO) + 1) * PAR.PASSO; };
 $('gira').onclick = () => { if (!sportelloChiuso()) return; continuo = !continuo; premi($('gira'), continuo, 'Stop', 'Rotate slowly'); if (!continuo) meta = Math.ceil(theta / PAR.PASSO - .001) * PAR.PASSO; };
 $('coperchio').onclick = () => { senzaCoperchio = !senzaCoperchio; premi($('coperchio'), senzaCoperchio, 'Close the lid', 'Open the lid'); };
+$('elettronica').onclick = () => { vediEle = !vediEle; premi($('elettronica'), vediEle, "Back to normal", "Show the electronics"); };
 $('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Solid shell', 'See inside'); };
 $('sportello').onclick = () => {
   apertoMeta = apertoMeta ? 0 : 1; premi($('sportello'), !!apertoMeta, 'Close the door', 'Press the big button');
@@ -238,7 +265,8 @@ $('sportello').onclick = () => {
 };
 $('pillole').onclick = () => { vediPillole = !vediPillole; premi($('pillole'), vediPillole, 'Hide the pills', 'Show the pills'); };
 $('esploso').oninput = e => { esploso = e.target.value / 100; };
-$('legenda').innerHTML = Object.values(COLORI).filter(([n], i, a) => a.findIndex(x => x[1] === COLORI['3_piastra_pesata'][1] && n.startsWith('Plate caps')) !== i || !n.startsWith('Plate caps')).map(([n, c]) => `<li><i style="background:${c}"></i>${n}</li>`).join('');
+const visti = new Set();
+$('legenda').innerHTML = Object.values(COLORI).filter(([n]) => !visti.has(n) && visti.add(n)).map(([n, c]) => `<li><i style="background:${c}"></i>${n}</li>`).join('');
 
 let prima = performance.now();
 function ciclo(ora) {

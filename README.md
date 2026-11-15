@@ -36,7 +36,7 @@ La v0.5 riusa il meccanismo della v0.3 e della v0.4 (`cad/scatoletta_v3.py`, `ca
 
 | Cartella | Contenuto |
 |---|---|
-| `cad/` | Modello 3D parametrico in Python (manifold3d + trimesh), controlli di interferenza, render Blender, schede tecniche |
+| `cad/` | Modello 3D parametrico in Python (manifold3d + trimesh), elettronica, viti e cavi (`elettronica_v5.py`), controlli di interferenza, render Blender, schede tecniche |
 | `stl/stampa/` | Pezzi pronti per la stampa 3D |
 | `stl/assieme/` | Pezzi nella posizione di montaggio |
 | `firmware/` | Programma ESP32 (Arduino IDE) e istruzioni di taratura |
@@ -55,8 +55,20 @@ Una simulazione non sostituisce la prova vera: servono test con un prototipo sta
 ## Costruirla
 
 1. Stampa i pezzi di `stl/stampa/` (PLA o PETG). Il guscio va stampato in bianco, così la luce traspare; il cofanetto del colore che preferisci.
-2. Componenti: ESP32 DevKit, motore 28BYJ-48 con driver ULN2003, cella di carico da 100 g con HX711, motorino vibrante 8×2 mm con MOSFET, 2 sensori Hall A3144 con magneti, cicalino, micro servo SG90, display OLED I2C da 1,3\" (SH1106), barra di 8 LED WS2812, pulsante arcade da 30 mm a profilo basso, interruttore a bilanciere KCD11, presa USB-C da pannello, un perno da 2 mm (o un pezzo di filamento) per la cerniera del cofanetto. L'elenco completo e lo schema sono nelle schede tecniche.
-3. Firmware: segui `firmware/LEGGIMI.txt`. Copia `config.example.h` in `config.h` e scrivi lì le tue password: `config.h` non va mai pubblicato.
+2. Componenti: ESP32 DevKit, motore 28BYJ-48 con driver ULN2003, cella di carico da 100 g con HX711, motorino vibrante 8×2 mm con MOSFET, 2 sensori Hall A3144 con magneti, cicalino, micro servo SG90, display OLED I2C da 1,3\" (SH1106), barra di 8 LED WS2812, pulsante arcade da 30 mm a profilo basso, interruttore a bilanciere KCD11, presa USB-C da pannello, 2 magneti al neodimio (4×2 e 6×3 mm), 2 perni da 2 mm (o pezzi di filamento) per le cerniere di sportello e cofanetto.
+   Le schede (ESP32, ULN2003, HX711, MOSFET) e il cicalino vanno nel vano sotto il fondo, incollate con biadesivo spesso 3–4 mm; i fili passano dai tre fori nella parete davanti. Nel visore 3D, «Mostra l'elettronica» fa vedere dove va ogni cosa.
+3. Viti:
+
+   | Quante | Vite | Dove |
+   |---|---|---|
+   | 4 | M3×14 testa cilindrica | fondo sulla base |
+   | 2 + 2 dadi | M3×8 testa svasata + dadi M3 | motore sotto il fondo (testa a filo, sotto il mozzo) |
+   | 2 | M3×8 testa cilindrica | cella di carico sul fondo, da sotto |
+   | 2 | M3×6 testa bassa (2 mm) | piastra sulla cella; sopra vanno i tappini, incollati |
+   | 4 | M3×10 testa cilindrica | scivolo sulla base, da fuori |
+   | 2 | M2×6 | presa USB-C sul fianco |
+   | 2 + 1 | M2 del sacchetto del servo | servo sulla culla, leva sulla squadretta |
+4. Firmware: segui `firmware/LEGGIMI.txt`. Copia `config.example.h` in `config.h` e scrivi lì le tue password: `config.h` non va mai pubblicato.
 
 ## Contribuire
 

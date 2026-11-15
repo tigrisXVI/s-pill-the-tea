@@ -150,7 +150,8 @@ def base():
     m -= settore(R_INT - 1, R_EST + 3, VARCO, z_scivolo(R_EST + 3) - 3.6, Z_TOP + 1)
     a = HALL_SP["ang"]
     tor = ruota(scatola(R_EST - 1, R_EST + 3.2, -3.2, 3.2, Z_SOTTO_COP - 18, Z_TOP), a) - ruota(scatola(R_EST - 0.2, R_EST + 2.0, -2.2, 2.2, Z_TOP - 5.0, Z_TOP + 1), a)
-    tor -= ruota(cil_x(1.0, R_INT - 1, R_EST + 2.0, 0, Z_TOP - 4.0), a)
+    # v0.5: i fili del sensore escono di lato, verso fuori (prima il foro portava dentro, tra le palette)
+    tor -= ruota(cil_y(1.5, 0.0, 4.5, R_EST + 0.9, Z_TOP - 4.3), a)
     m += tor
     for y in (-Y_VITI_SC, Y_VITI_SC):
         for z in Z_VITI_SC:
@@ -162,6 +163,37 @@ def base():
     for ang in (100, 112, 124):                                                             # il cicalino si sente
         for k in range(4): m -= ruota(scatola(R_INT - 1, R_EST + 1, -0.8, 0.8, 8 + 3 * k, 9.6 + 3 * k), ang)
     for ang in (-40, 40, 75): m -= ruota(scatola(R_INT - 1, R_EST + 1, -9, 9, 4.0, Z_APPOGGIO - 3.0), ang)   # fili verso fascia e interruttore
+    return m
+
+
+# ---------------------------------------------------------------- correzioni trovate mettendo le viti nel modello
+def fondo_rampa():
+    """Come la v0.3, ma le viti del motore sono a testa svasata, a filo del disco: quelle a testa
+    cilindrica sporgevano di 2,2 mm sotto il mozzo (che passa a 0,4 mm dal disco)."""
+    m = v3.fondo_rampa()
+    z_fl = Z_DISCO - 2.4
+    pieno = cil(R_DISCO, 0, Z_DISCO) + solido_rampa(R_DISCO - 0.01, R_FONDO, Z_APPOGGIO)
+    for y in VITI_MOTORE_Y:
+        m += cil(3.4, z_fl + 1.8, Z_DISCO + 2, MOTORE_X, y) ^ pieno
+        m -= cil(1.7, z_fl - 1, Z_DISCO + 1, MOTORE_X, y)
+        m -= Manifold.cylinder(1.75, 1.65, 3.1, 48).translate([MOTORE_X, y, Z_DISCO - 1.7]) + cil(3.1, Z_DISCO - 0.01, Z_DISCO + 2, MOTORE_X, y)
+    return m
+VITI_MOTORE_Y = (-17.5, 17.5)
+
+def piastra():
+    """Come la v0.3, ma la svasatura sopra le viti e' profonda 4 mm (fondo piatto): 2 mm per la testa bassa e 2 per il
+    tappino (incollato). Prima era 1,7 mm e la testa della vite non ci stava sotto il tappino."""
+    m = v3.piastra()
+    for x in v3.FORI_CELLA_LIBERO:
+        m -= cil(3.1, z_fondo(0, x) - PROF_SVASO, Z_TOP, x, 0)          # fondo piatto: la testa appoggia tutta
+    return m
+PROF_SVASO = 4.0
+
+def coperchio():
+    """Come la v0.4, con lo spazio per le teste delle due viti del servo (prima finivano dentro la culla)."""
+    m = v4.coperchio()
+    for x in (SERVO["x"] - 18.9, SERVO["x"] + 8.2):
+        m -= cil_y(2.3, -27.35, -22.0, x, SERVO["z"]) + scatola(x - 2.3, x + 2.3, -27.35, -22.0, SERVO["z"], Z_TOP + 9)
     return m
 
 # ---------------------------------------------------------------- ingombri dei componenti (controlli e immagini)
@@ -186,7 +218,7 @@ def ingombro_interruttore():   # interruttore a bilanciere KCD11 e presa USB-C d
 def gradi_servo(gradi_sportello):
     return v4.gradi_servo(gradi_sportello)
 
-leva_a, sportello_aperto, sportello, leva_servo, coperchio, ingombro_servo = v4.leva_a, v4.sportello_aperto, v4.sportello, v4.leva_servo, v4.coperchio, v4.ingombro_servo
+leva_a, sportello_aperto, sportello, leva_servo, ingombro_servo = v4.leva_a, v4.sportello_aperto, v4.sportello, v4.leva_servo, v4.ingombro_servo
 
 PEZZI = {"1_base": base, "2_fondo_a_rampa": fondo_rampa, "3_piastra_pesata": piastra, "3b_tappini_x2": tappi_piastra, "4_mozzo": mozzo,
          "5_paletta_x29": paletta, "6_scivolo": scivolo, "7_coperchio": coperchio, "8_sportello": sportello, "9_leva_servo": leva_servo,
