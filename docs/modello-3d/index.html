@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Scatoletta Blistra: an open-source pill box that sorts a week of doses, weighs them and drops them into a cup when you press the button. Interactive 3D model.">
+<meta property="og:title" content="Scatoletta Blistra v0.5">
+<meta property="og:description" content="Scatoletta Blistra: an open-source pill box that sorts a week of doses, weighs them and drops them into a cup when you press the button. Interactive 3D model.">
+<meta property="og:image" content="https://tigrisxvi.github.io/scatoletta-blistra/immagini/v5_chiusa.png">
+<meta property="og:type" content="website">
 <title>Blistra pill box v0.5 – 3D model</title>
 <style>
   :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; }
@@ -36,7 +41,7 @@
   <h1>Blistra pill box v0.5</h1>
   <p class="sotto"><a href="it.html">Italiano</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">Source on GitHub</a></p>
   <p class="sotto">28 compartments: 4 doses a day for one week. Everything sits inside one shell with a hinged lid: a display and a big button on the front, and a cup below where the pills land. Drag to rotate, pinch (or scroll) to zoom.</p>
-  <div id="scena"><div id="stato" aria-live="polite"></div></div>
+  <div id="scena"><div id="stato" aria-live="polite">Loading the 3D model…</div><noscript><img src="../immagini/v5_chiusa.png" alt="The closed box: white shell, green lid, display and red button on the front, cup underneath" style="width:100%;height:100%;object-fit:contain"></noscript></div>
   <div class="comandi">
     <button class="primo" id="avanti">Next dose</button>
     <button id="sportello" aria-pressed="false">Press the big button</button>
@@ -75,7 +80,12 @@ const COLORI = {
 const ALZA = { '1_base': 0, '6_scivolo': 0, '10_guscio': 0, '12_bicchierino': 0, '11_cofanetto': 175, '2_fondo_a_rampa': 34, '3_piastra_pesata': 56, '3b_tappini_x2': 62, '5_paletta_x29': 82, '4_mozzo': 96, '7_coperchio': 120, '8_sportello': 134, '9_leva_servo': 126, 'servo': 120, 'display': 0, 'tasto': 0, 'luci': 0 };
 
 const box = document.getElementById('scena');
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+catch (e) {
+  box.innerHTML = '<img src="../immagini/v5_chiusa.png" alt="The closed box: white shell, green lid, display and red button on the front, cup underneath" style="width:100%;height:100%;object-fit:contain"><p style="position:absolute;left:10px;top:8px;margin:0;font-size:.85rem">Your browser can’t show 3D (WebGL is off). Here is a picture of the model.</p>';
+  throw e;
+}
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 box.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
@@ -86,8 +96,9 @@ const sole = new THREE.DirectionalLight(0xffffff, 1.9); sole.position.set(200, -
 function geometria(d) {
   const bin = s => Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(bin(d.v)), 3));
-  g.setIndex(new THREE.BufferAttribute(new Uint32Array(bin(d.i)), 1));
+  const v = Float32Array.from(new Int16Array(bin(d.v)), x => x * PAR.Q);   // centesimi di mm -> mm
+  g.setAttribute('position', new THREE.BufferAttribute(v, 3));
+  g.setIndex(new THREE.BufferAttribute(new Uint16Array(bin(d.i)), 1));
   const piatta = g.toNonIndexed(); piatta.computeVertexNormals(); return piatta;
 }
 const mat = n => new THREE.MeshStandardMaterial({ color: COLORI[n][1], roughness: .6, metalness: 0, side: THREE.DoubleSide });
