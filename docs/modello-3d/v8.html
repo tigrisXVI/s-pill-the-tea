@@ -252,7 +252,7 @@ const nomeDose = d => giorni[Math.floor((d - 1) / 4)] + ' ' + momenti[(d - 1) % 
 stato.textContent = 'Carico il motore fisico…';
 const mod = await import('./rapier.mjs'); const R = mod.default || mod; await R.init();
 const world = new R.World({ x: 0, y: 0, z: -981 });
-world.timestep = 1 / 400; world.integrationParameters.numSolverIterations = 10;   // passi piccoli: le pillole minuscole non attraversano le pareti sottili
+world.timestep = 1 / 300; world.integrationParameters.numSolverIterations = 10;   // passi piccoli: le pillole minuscole non attraversano le pareti sottili
 const FLAG = R.TriMeshFlags ? R.TriMeshFlags.FIX_INTERNAL_EDGES : undefined;
 function trimesh(n, dx = 0, dy = 0, dz = 0) {
   const { v, i } = GEO[n], w = new Float32Array(v.length);
@@ -305,19 +305,21 @@ function nelBicchiere(p) { const t = p.b.translation(), x = t.x / S - cup * 75, 
   return x > P.CUP.x0 && x < P.CUP.x1 && Math.abs(y) < P.CUP.y && z > P.Z_CUP && z < P.Z_CUP + P.CUP.alt + 4; }
 const veloce = p => { const v = p.b.linvel(); return Math.hypot(v.x, v.y, v.z) > 1.5; };
 
-function passo(h) {   // un passo di fisica: muove i pezzi cinematici, poi avanza il mondo
+function passo(h) {   // un passo di fisica: muove i pezzi cinematici solo se cambiano (cosi' le pillole ferme dormono), poi avanza il mondo
   for (const L of lati) {
+    const g0 = L.giro, f0 = L.fuori;
     L.giro = verso(L.giro, L.meta, 36 * h); L.fuori = verso(L.fuori, L.fuoriMeta, 1.2 * h);
-    const yc = L.s * L.fuori * 80;
-    L.cB.setNextKinematicTranslation({ x: 0, y: yc * S, z: 0 });
-    L.wB.setNextKinematicTranslation({ x: 0, y: yc * S, z: P.Z_A * S });
-    qY.setFromAxisAngle(asseY, L.giro * rad); L.wB.setNextKinematicRotation({ x: qY.x, y: qY.y, z: qY.z, w: qY.w });
+    if (L.fuori !== f0 || L.primo) { const yc = L.s * L.fuori * 80; L.cB.setNextKinematicTranslation({ x: 0, y: yc * S, z: 0 }); L.wB.setNextKinematicTranslation({ x: 0, y: yc * S, z: P.Z_A * S }); }
+    if (L.giro !== g0 || L.primo) { qY.setFromAxisAngle(asseY, L.giro * rad); L.wB.setNextKinematicRotation({ x: qY.x, y: qY.y, z: qY.z, w: qY.w }); }
+    L.primo = false;
   }
-  apre = verso(apre, apreMeta, 90 * h); qX.setFromAxisAngle(asseY, -apre * rad);
-  trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w });
-  cup = verso(cup, cupMeta, 1.4 * h); cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
+  const a0 = apre, c0 = cup;
+  apre = verso(apre, apreMeta, 90 * h); if (apre !== a0 || primo) { qX.setFromAxisAngle(asseY, -apre * rad); trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w }); }
+  cup = verso(cup, cupMeta, 1.4 * h); if (cup !== c0 || primo) cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
+  primo = false;
   world.step();
 }
+let primo = true;
 
 function logica(dt) {
   const vive = pillole.filter(p => p.stato !== 'tolta'), dosePill = vive.filter(p => p.d === dose);
@@ -415,7 +417,7 @@ function suoni() { if (faseSuonata === fase) return; faseSuonata = fase;
 const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
 function ricomincia() {
   dose = 0; fase = 'pronta'; apre = apreMeta = 0; cup = cupMeta = 0; prese = 0; avviso = '';
-  for (const L of lati) { L.giro = L.meta = 0; L.fuori = L.fuoriMeta = 0; }
+  for (const L of lati) { L.giro = L.meta = 0; L.fuori = L.fuoriMeta = 0; L.primo = true; } primo = true;
   for (let k = 0; k < 3; k++) passo(world.timestep);
   riempi();
   premi($('sx'), false, '', 'Sfila la cassetta di sinistra'); premi($('dx'), false, '', 'Sfila la cassetta di destra'); premi($('cup'), false, '', 'Prendi il bicchierino');
