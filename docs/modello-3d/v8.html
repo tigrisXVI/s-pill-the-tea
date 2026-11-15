@@ -29,6 +29,8 @@
   th { color:var(--soft); font-weight:500; width:38%; }
   ul.pezzi { list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; font-size:.88rem; }
   ul.pezzi i { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid var(--line); }
+  label.esploso { grid-column:1 / -1; display:flex; align-items:center; gap:10px; padding:6px 2px; color:var(--soft); font-size:.92rem; }
+  label.esploso input { flex:1; accent-color: var(--on); }
   .nota { margin-top:18px; font-size:.85rem; color:var(--soft); border-top:1px solid var(--line); padding-top:10px; }
   a { color: inherit; }
 </style>
@@ -50,6 +52,8 @@
     <button id="suona">Fai suonare la sveglia</button>
     <button id="foto">Salva una foto</button>
     <button id="mini" aria-pressed="false">Prova con pillole minuscole</button>
+    <button id="smonta" aria-pressed="false">Smonta tutto</button>
+    <label class="esploso">Smonta <input id="esploso" type="range" min="0" max="100" value="0" aria-label="Smonta i pezzi"></label>
   </div>
 
   <h2>Misure e stabilità</h2>
@@ -291,6 +295,7 @@ function riempi() {
 }
 
 // ---------------- stato della dose
+let esploso = 0, esplosoMeta = 0;
 let dose = 0, fase = 'pronta', apre = 0, apreMeta = 0, cup = 0, cupMeta = 0, trasparente = false, attesa = 0, prese = 0, avviso = '', calma = 0;
 const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
 function sulPiatto(p) { const t = p.b.translation(), x = t.x / S, y = t.y / S, z = t.z / S;
@@ -343,16 +348,34 @@ function logica(dt) {
   const g = x => (x / 1000).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   stato.textContent = (fase === 'sbagliata' ? avviso : (dose ? 'Dose ' + nomeDose(dose) + ' · piattino ' + g(peso) + ' g su ' + g(pesoGiusto(dose)) + ' g impostati' : 'Pronta: premi il tasto per la prima dose'))
     + ' · bicchierino ' + (sotto ? 'al suo posto' : 'tolto') + ' · dosi prese ' + prese + (fuori ? ' · ' + fuori + (fuori > 1 ? ' pillole cadute' : ' pillola caduta') + ' fuori dal bicchierino' : '');
-  $('tasto').disabled = !(fase === 'pronta' && dose < 28 && !lati.some(L => L.fuoriMeta || L.fuori > .01));
+  $('tasto').disabled = !(fase === 'pronta' && dose < 28 && esploso === 0 && esplosoMeta === 0 && !lati.some(L => L.fuoriMeta || L.fuori > .01));
 }
 
+// dove va ogni pezzo quando la scatola e' smontata (mm, a smontaggio completo)
+const VIA = [[/^2_cappello|^c_motore_\d$/, [0, 0, 75]], [/^12_tasto/, [0, 0, 105]], [/^c_interruttore/, [0, 0, 90]], [/^3_piede/, [0, 0, -45]], [/^c_piastra/, [0, 0, -80]],
+  [/^4_imbuto/, [70, 0, 25]], [/^6_staffa|^c_cella/, [75, 0, -5]], [/^c_servo/, [95, 0, 0]], [/^c_display/, [45, 0, 0]], [/^c_schede/, [-45, 0, 0]], [/^c_altoparlante/, [65, 0, -15]],
+  [/^c_amplificatore/, [55, 0, -25]], [/^c_sensore/, [-30, 0, 0]], [/^c_spina/, [-60, 0, 0]]];
+for (const n in G) { G[n].userData.base = G[n].position.clone(); const v = VIA.find(x => x[0].test(n)); G[n].userData.via = new THREE.Vector3(...(v ? v[1] : [0, 0, 0])); }
+const liscio = t => t * t * (3 - 2 * t);
 function disegna() {
-  for (const L of lati) { L.gira.rotation.y = L.giro * rad; L.cas.position.y = L.s * L.fuori * 80; }
-  pignoni.forEach((g, i) => { g.rotation.y = -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; });
-  perno.rotation.y = -apre * rad; cupG.position.x = cup * 75;
-  for (const p of pillole) { if (p.stato === 'tolta') continue; const t = p.b.translation(), q = p.b.rotation(); p.m.position.set(t.x / S, t.y / S, t.z / S); p.m.quaternion.set(q.x, q.y, q.z, q.w); }
+  const e = liscio(esploso);
+  for (const n in G) if (G[n].parent === radice) G[n].position.copy(G[n].userData.base).addScaledVector(G[n].userData.via, e);
+  for (const L of lati) {
+    L.gira.rotation.y = L.giro * rad; L.cas.position.y = L.s * (L.fuori * 80 + 70 * e);
+    L.gira.position.y = L.s * 38 * e; G['11_coperchio_' + L.nome].position.y = L.s * 70 * e;
+  }
+  pignoni.forEach((g, i) => { const c = P.PIGNONI['c_motore_' + (i + 1) + '_pignone']; g.rotation.y = -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; g.position.set(c[0], c[1], c[2] + 75 * e); });
+  perno.position.set(xh + 75 * e, 0, zh - 5 * e); perno.rotation.y = -apre * rad; cupG.position.x = cup * 75 + 100 * e;
+  for (const p of pillole) {
+    if (p.stato === 'tolta') continue; const t = p.b.translation(), q = p.b.rotation(); p.m.position.set(t.x / S, t.y / S, t.z / S); p.m.quaternion.set(q.x, q.y, q.z, q.w);
+    if (e > 0) {   // le pillole restano dove sono: nella ruota, nel bicchierino o sul piattino
+      if (nelBicchiere(p)) p.m.position.x += 100 * e;
+      else if (sulPiatto(p)) { p.m.position.x += 75 * e; p.m.position.z -= 5 * e; }
+      else if (Math.abs(t.y / S) > P.Y0 && t.z / S > P.Z_A - P.R_O - 6) p.m.position.y += Math.sign(t.y) * 108 * e;
+    }
+  }
   for (const n of ['1_guscio', '2_cappello', '3_piede']) { const m = G[n].material; m.transparent = trasparente; m.opacity = trasparente ? .12 : 1; m.depthWrite = !trasparente; G[n].castShadow = !trasparente; }
-  schermo.visible = !trasparente;
+  cavi.visible = G['nastro_cavi'].visible = e < .02; schermo.visible = !trasparente && e < .02;
 }
 
 // ---------------- camera
@@ -406,6 +429,8 @@ for (const [id, i, t] of [['sx', 0, 'sinistra'], ['dx', 1, 'destra']]) $(id).onc
 $('cup').onclick = () => { cupMeta = cupMeta ? 0 : 1; premi($('cup'), !!cupMeta, 'Rimetti il bicchierino', 'Prendi il bicchierino'); };
 $('dentro').onclick = () => { trasparente = !trasparente; premi($('dentro'), trasparente, 'Guscio pieno', 'Guarda dentro (cavi e schede)'); };
 $('ricarica').onclick = ricomincia;
+$('smonta').onclick = () => { esplosoMeta = esplosoMeta > .5 ? 0 : 1; premi($('smonta'), esplosoMeta > .5, 'Rimonta tutto', 'Smonta tutto'); };
+$('esploso').oninput = ev => { esploso = esplosoMeta = ev.target.value / 100; premi($('smonta'), esplosoMeta > .5, 'Rimonta tutto', 'Smonta tutto'); };
 $('mini').onclick = () => { conMini = !conMini; premi($('mini'), conMini, 'Togli le pillole minuscole', 'Prova con pillole minuscole'); ricomincia(); };
 $('suona').onclick = () => { try { sveglia(); } catch (e) {} };
 $('foto').onclick = () => {
@@ -432,6 +457,8 @@ ricomincia();
 let prima = performance.now(), resto = 0;
 function ciclo(ora) {
   const dt = Math.min(.05, (ora - prima) / 1000); prima = ora; resto += dt;
+  esploso = verso(esploso, esplosoMeta, .7 * dt); $('esploso').value = Math.round(esploso * 100);
+  if (esploso > 0) resto = 0;   // smontata: la fisica si ferma
   let n = 0; while (resto >= world.timestep && n < 10) { passo(world.timestep); resto -= world.timestep; n++; }
   if (n === 10) resto = 0;
   logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
