@@ -129,7 +129,7 @@ class Modello:
                 for k in range(N):
                     for sgn in (-1, 1):
                         m -= ruota(cil(0.6, a1 - 0.45, a1 + 1.0, self.R_O - 1.5, 0), -90.0 + PASSO / 2 + k * PASSO + sgn * 1.5)
-            for k in range(N):   # fessura in punta a ogni divisorio per la lamella di TPU
+            for k in range(N):   # fessura in punta a ogni divisorio per la lamella (PETG, si incastra e si puo' limare)
                 m -= ruota(scatola(self.R_O - 2.0, self.R_O + 1.0, -0.42, 0.42, a0, a1 + 1.0), -90.0 + off + PASSO / 2 + k * PASSO)
             if self.labbri:                               # bordo con aperture larghe 12 mm: tra un'uscita e l'altra c'e' pieno
                 lab = cil(self.R_O, a0 - 0.01, a1) - cil(self.R_O - 2.0, a0 - 1, a1 + 1)
@@ -143,19 +143,17 @@ class Modello:
             zm = (self.Z_TAS[0] + self.Z_TAS[1]) / 2
             for k in range(1, N):     # forellini da 1,2 mm dal mozzo (gel di silice) a ogni scomparto: passa l'aria, non le pillole
                 m -= ruota(cil_x(0.6, self.R_I - 2.4, self.R_I + 0.6, 0, zm), -90.0 + k * PASSO)
-            for k in range(N):        # scanalatura sopra ogni divisorio per la guarnizione di TPU
-                m -= ruota(scatola(self.R_I + 2.6, self.R_O + 0.01, -0.51, 0.51, self.TH - 0.4, self.TH + 1), -90.0 + PASSO / 2 + k * PASSO)
         return m
 
     # ---------------- cassetta (locale)
     def spazzole_locale(self):
-        """Lamelle di TPU in punta ai divisori: toccano l'anello fermo (0,15 mm di schiacciamento), cosi' tra ruota e anello
-        non passa niente e ogni scomparto resta chiuso finche' non arriva sull'uscita."""
+        """Lamelle di PETG (tutto un solo materiale) infilate in punta ai divisori: arrivano a 0,1 mm dall'anello fermo
+        senza toccarlo, cosi' tra ruota e anello non passa niente ma la ruota gira libera. Se la stampa viene un po' grossa
+        si limano; se viene corta si spingono fuori nella fessura (incastro a pressione)."""
         a0, a1 = self.Z_TAS
         m = Manifold()
         for k in range(N):
-            m += ruota(scatola(self.R_O - 1.95, self.R_AN_T + 0.15, -0.38, 0.38, a0 + 0.2, a1 - 0.2), -90.0 + PASSO / 2 + k * PASSO)
-            m += ruota(scatola(self.R_I + 2.65, self.R_O - 0.05, -0.49, 0.49, self.TH - 0.39, self.TH), -90.0 + PASSO / 2 + k * PASSO)   # guarnizione sotto gli sportellini
+            m += ruota(scatola(self.R_O - 1.95, self.R_AN_T - 0.1, -0.38, 0.38, a0 + 0.2, a1 - 0.2), -90.0 + PASSO / 2 + k * PASSO)
         return m
 
     def cassetta_locale(self):

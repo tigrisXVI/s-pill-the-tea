@@ -14,7 +14,7 @@ def controlla(k):
     tocco = {("5_piattino", "6_staffa_cella")}                           # perno della cerniera
     for a, b in itertools.combinations(P, 2):
         v = inter(P[a], P[b])
-        lam = "spazzole" in a + b and "cassetta" in a + b and a[-2:] == b[-2:]    # le lamelle di TPU premono sull'anello
+        lam = "spazzole" in a + b and "cassetta" in a + b and a[-2:] == b[-2:]    # le lamelle sfiorano l'anello
         if v > (40.0 if lam else 1.5 if (a, b) in tocco or (b, a) in tocco else 0.3): male(a, b, round(v, 1))
     print("2) componenti")
     sede = {("cella", "6_staffa_cella"), ("cella", "1_guscio"), ("piastra_acciaio", "3_piede"), ("sensore_bicchiere", "3_piede"), ("interruttore", "1_guscio"), ("rtc", "1_guscio"), ("hx711", "1_guscio"), ("servo_fermo_sx", "1_guscio"), ("servo_fermo_dx", "1_guscio"), ("sensori_ruote", "1_guscio"), ("strisce_sensori", "1_guscio"), ("magneti_ruote", "10_ruota_sx"), ("magneti_ruote", "10_ruota_dx")}
@@ -133,7 +133,7 @@ def controlla(k):
     print("9) le pillole piccole non si incastrano (pillola minuscola: 3 mm x 1,6 mm)")
     xh, zh = M.perno_piattino(); pz = M.PIATTO
     zb = M.Z_PIATTO + 7.0
-    fessure = [("lamelle di TPU - anello (gioco ruota-anello " + str(s8.G).replace(".", ",") + " mm)", 0.0), ("divisori - sportellini (si chiudono sopra)", 0.05),
+    fessure = [("lamelle - anello (gioco ruota-anello " + str(s8.G).replace(".", ",") + " mm)", 0.1), ("divisori - sportellini (si chiudono sopra)", 0.05),
                ("cassetta - bordo dell'imbuto", M.Z_A - M.R_CASS - (M.Z_IMB0 + 0.5)),
                ("bocca dell'imbuto - pareti del piattino", (zb - 1.6) - (M.Z_PIATTO + 5.0)),
                ("piattino - paratia dietro", 0.6)]

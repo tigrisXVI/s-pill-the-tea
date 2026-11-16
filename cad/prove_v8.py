@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pezzi di prova della v0.8, da stampare PRIMA della scatola intera (poche ore invece di un giorno e mezzo).
 
-  prova 1 - spicchio di ruota: un quarto di ruota con 3 scomparti, lamelle di TPU, sportellini, e il pezzo di cassetta
+  prova 1 - spicchio di ruota: un quarto di ruota con 3 scomparti, lamelle di PETG, sportellini, e il pezzo di cassetta
             con l'uscita e l'asse. Serve a vedere se le pillole minuscole passano tra ruota e anello, se lo scomparto
             dopo resta chiuso e quanta forza serve per girare con le lamelle.
   prova 2 - piattino pesato: piattino, staffa e una base che tiene la cella di carico come nella scatola.
@@ -23,7 +23,7 @@ def spicchio(m, loc=True):
 
 pezzi = {
     "prova1_ruota": spicchio(M.ruota_locale()),
-    "prova1_lamelle_TPU": spicchio(M.spazzole_locale()),
+    "prova1_lamelle": spicchio(M.spazzole_locale()),
     "prova1_sportellini": spicchio(M.sportellini_locale()),
     "prova1_cassetta": spicchio(M.cassetta_locale()),
 }
