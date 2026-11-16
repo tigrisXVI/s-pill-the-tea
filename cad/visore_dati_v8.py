@@ -13,7 +13,7 @@ def dati(m):
     return {"v": base64.b64encode(np.round(v / Q).astype(np.int16).tobytes()).decode(), "i": base64.b64encode(i.astype(np.uint16).tobytes()).decode()}
 
 # dai controlli (cad/controlli_v8.py): angolo a cui si ribalta, con e senza piastra; capacita' di uno scomparto
-STAB = {"2m": dict(lato=44, lato_senza=24, avanti=50, dietro=47, tasca=4.3, peso=682, zavorra=372, cg=52)}
+STAB = {"2m": dict(lato=40, lato_senza=26, avanti=45, dietro=41, tasca=4.3, peso=806, zavorra=372, cg=61)}
 
 tutto = {}
 for k in ("2m",):
@@ -37,6 +37,9 @@ for k in ("2m",):
         for i, (m, cx, cy, cz) in enumerate(M.croci()):
             C["motore_" + str(i + 1) + "_croce"] = m.translate([-cx, -cy, -cz])
             croci["c_motore_" + str(i + 1) + "_croce"] = dict(pivot=[cx, cy, cz], segno=1 if croce_check.angolo_ruota(M, i, 360) > 0 else -1)
+    import dettagli_visore
+    for n in dettagli_visore.SOSTITUITI: C.pop(n, None)               # nel visore si vedono i pezzi dettagliati
+    for n, m in dettagli_visore.dettagli(M).items(): pezzi[n] = dati(m)
     for n, m in C.items(): pezzi["c_" + n] = dati(m)
     pezzi["nastro_cavi"] = dati(M.nastro())
     if M.ruote == 2:
