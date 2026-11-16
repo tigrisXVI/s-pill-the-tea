@@ -36,7 +36,13 @@ L_TASCA = 24.0; PROF = 13.0; SP_DIV = 1.0; G = 0.3; PARETE = 1.2
 PAR_CAS = 1.2    # pareti della cassetta: 3 passate da 0,4 mm
 MOD = 1.0; Z_PIGNONE = 20; R_PIGNONE = Z_PIGNONE * MOD / 2   # modulo 1: denti abbastanza grossi per la stampa 3D; pignone da 20 denti, il motorino sta fuori dalle cassette
 N20 = dict(lato_a=12.0, lato_b=10.0, lungo=24.3 + 1.5, albero=3.0)   # motoriduttore N20 (senza encoder) + contatti
-ANG_MOT = {"2m": (62.0, 118.0), "1m": (135.0,)}   # motorino della ruota sinistra davanti in alto, della destra dietro in alto        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
+ANG_MOT = {"2m": (70.0, 110.0), "1m": (135.0,)}
+# v0.9 (due ruote): CROCE DI MALTA. Il motorino gira un ingranaggio da 24 denti con un perno e un disco di blocco;
+# il perno entra nelle 15 fessure sul retro della ruota e la fa avanzare di uno scomparto esatto (24 gradi) a ogni giro.
+# Per il resto del giro il disco di blocco tiene ferma la ruota: anche senza corrente non si sposta.
+ANG_CROCE = {"2m": (54.0, 126.0)}   # dove sta l'ingranaggio della croce (gradi): sulla bisettrice tra due fessure
+Z_PIGN_G, Z_CROCE = 10, 24          # pignone da 10 denti sul motorino, ingranaggio della croce da 24: 1 scomparto ogni 2,4 giri del motorino
+R_LOCK = 7.6                        # raggio del disco di blocco   # motorino della ruota sinistra davanti in alto, della destra dietro in alto        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
 
 MODELLI = {
     "2m": dict(nome="Due ruote, due motorini", R_I=23.0, ruote=2, labbri=False),
@@ -69,15 +75,18 @@ class Modello:
         self.R_CASS = self.R_AN_G + PAR_CAS
         self.APRE = 6.0 if self.labbri else 7.0           # mezza larghezza dell'uscita in basso: lo scomparto chiuso la copre con 3 mm di margine per lato
         if self.ruote == 2:
-            self.Z_COR = (0.0, 2.0); self.Z_TAS = (2.0, 2.0 + PROF)       # locale: corona dietro, tasche davanti
+            self.Z_COR = (0.0, 2.0); self.Z_TAS = (2.8, 2.8 + PROF)       # locale: croce di Malta dietro, fondo da 0,8 mm, tasche davanti
         else:
             self.Z_COR = (-1.2, 1.2); self.Z_TAS = (1.2, 1.2 + PROF)      # corona in mezzo, tasche sui due lati
         self.TH = self.Z_TAS[1]
         self.Z_COP = (self.TH + 0.3, self.TH + 1.8); self.Z_FL = (self.Z_COP[1], self.Z_COP[1] + 1.2)   # coperchio: plexiglass da 1,5 mm
         # in Y
         if self.ruote == 2:
-            self.Y0 = 0.95 + 1.4 + 0.3                   # parete centrale con il canale dei cavi (|y|<0,95) + fondo della cassetta + gioco
-            self.Y_PIGN = self.Y0 + sum(self.Z_COR) / 2
+            self.Y0 = 0.95 + 0.3 + 2.0 + 0.3             # parete centrale (|y|<0,95) + gioco + piano dell'ingranaggio della croce (2 mm, dentro il fondo della cassetta) + gioco
+            self.Y_PIGN = self.Y0 - 1.3                  # pignone nel piano dell'ingranaggio
+            self.R_GEN = self.R_GT                       # raggio esterno della croce (dove c'era la corona)
+            self.C_GEN = self.R_GEN / math.cos(math.pi / N)        # distanza tra l'asse della ruota e l'asse della croce
+            self.R_MAN = self.C_GEN * math.sin(math.pi / N)        # raggio del perno che entra nelle fessure
             self.Y_DX = -self.Y_PIGN + 1.3 + N20["lungo"] + PARETE + 0.4; self.Y_SX = -self.Y_DX
         else:
             self.Y0 = 0.0
@@ -91,13 +100,13 @@ class Modello:
         self.Z_CUP = self.Z_PIEDE
         self.Z_NICCHIA = self.Z_CUP + self.CUP["alt"] + 12.0   # il piattino si apre sopra il bicchierino
         self.Z_PIATTO = self.Z_NICCHIA + 11.0                  # sopra il tetto della nicchia: cella, staffa, vaschetta
-        self.Z_IMB0 = self.Z_PIATTO + 7.0 + (abs(self.Y_PIGN) + PROF + 4 - 6.5) * 1.0 + 4   # imbuto a ~45 gradi
+        self.Z_IMB0 = self.Z_PIATTO + 7.0 + ((self.Y0 + self.Z_TAS[1] - 3.5) if self.ruote == 2 else (abs(self.Y_PIGN) + PROF + 4 - 6.5)) * 1.0 + 4   # imbuto a ~45 gradi
         self.Z_A = self.Z_IMB0 + self.R_CASS + 1.1          # 0,6 mm tra cassetta e imbuto: le pillole non si incastrano
         self.Z_DISP = (self.Z_A + math.sqrt(max(0, (self.R_CASS + 1.4) ** 2 - (self.R_CASS - 3.8) ** 2)) + 0.5, 0)   # il display sta dove la ruota curva
         self.Z_DISP = (self.Z_DISP[0], self.Z_DISP[0] + 34.0)
         self.H = max(self.Z_A + self.R_CASS + 0.6, self.Z_A + self._z_motori(), self.Z_DISP[1]) + PARETE + 2.6
         self.Y_MID = min((self.Y_SX + self.Y_DX) / 2, self.Y_DX - R_SPIG - 0.3 - 17.7)   # il display non deve toccare gli spigoli arrotondati
-        self.PIEDE = dict(x0=-self.X_HALF, x1=self.X_HALF + 14.0, y=50.0, h=self.Z_PIEDE)
+        self.PIEDE = dict(x0=-self.X_HALF, x1=self.X_HALF + 14.0, y=54.0, h=self.Z_PIEDE)
 
     def _z_motori(self):
         r = self.R_GP + R_PIGNONE
@@ -107,7 +116,8 @@ class Modello:
     def ruota_locale(self, faccia_offset=0.0):
         m = Manifold()
         z0, z1 = self.Z_COR
-        m += Manifold.extrude(ingranaggio(self.Z_CORONA, MOD), z1 - z0).translate([0, 0, z0])   # corona dentata
+        if self.ruote == 2: m += self.croce_ruota_locale() + cil(self.R_O, z1 - 0.01, self.Z_TAS[0] + 0.01)   # croce di Malta + fondo delle tasche
+        else: m += Manifold.extrude(ingranaggio(self.Z_CORONA, MOD), z1 - z0).translate([0, 0, z0])   # corona dentata
         zs = [(self.Z_TAS[0], self.Z_TAS[1], 0.0)]
         if self.ruote == 1: zs.append((-self.Z_TAS[1], -self.Z_TAS[0], PASSO / 2))
         for a0, a1, off in zs:
@@ -161,9 +171,9 @@ class Modello:
         m = Manifold()
         zc0, zc1 = self.Z_COR
         if self.ruote == 2:
-            m += cil(self.R_CASS, zc0 - 1.4, zc0 - 0.4)                                        # fondo
+            m += cil(self.R_CASS, zc0 - 2.3, zc0 - 0.3)                                        # fondo (nello stesso piano c'e' l'ingranaggio della croce)
             m += cil(3.0, zc0 - 0.41, self.TH - 0.5)                                            # asse fisso
-        m += cil(self.R_CASS, zc0 - (1.4 if self.ruote == 2 else 0.4), zc1 + 0.4) - cil(self.R_AN_G, zc0 - 1, zc1 + 1)   # anello della corona
+        m += cil(self.R_CASS, zc0 - (2.3 if self.ruote == 2 else 0.4), zc1 + 0.4) - cil(self.R_AN_G, zc0 - 1, zc1 + 1)   # anello della corona
         for s in lati:
             a0, a1 = (self.Z_TAS[0], self.Z_FL[0]) if s > 0 else (-self.Z_FL[0], -self.Z_TAS[0])
             m += cil(self.R_CASS, a0, a1) - cil(self.R_AN_T, a0 - 1, a1 + 1)                    # anello delle tasche
@@ -174,7 +184,10 @@ class Modello:
             else:
                 m += cil(self.R_CASS + 1.0, fl[0], fl[1]) - cil(self.R_AN_T - 3.0, fl[0] - 1, fl[1] + 1)
             m -= scatola(-self.APRE, self.APRE, -self.R_CASS - 2, -self.R_AN_T + 1, min(self.Z_TAS[0] * s, self.Z_TAS[1] * s), max(self.Z_TAS[0] * s, self.Z_TAS[1] * s))  # uscita in basso
-        for a in ANG_MOT[self.k]:
+        if self.ruote == 2:
+            for a in ANG_CROCE[self.k]:                           # finestra per la croce: ingranaggio, perno e disco di blocco
+                m -= cil(Z_CROCE * MOD / 2 + MOD + 0.6, zc0 - 2.6, zc1 + 0.3, self.C_GEN * math.cos(math.radians(a)), self.C_GEN * math.sin(math.radians(a)))
+        for a in (ANG_MOT[self.k] if self.ruote == 1 else ()):
             m -= ruota(scatola(self.R_AN_G - 2, self.R_CASS + 3, -7.5, 7.5, zc0 - 0.3, zc1 + 0.3), a)   # finestra per il pignone
             if self.ruote == 1:                                   # la cassetta esce verso -Y (locale +Z): il pignone passa in una scanalatura
                 m -= ruota(scatola(self.R_GP - MOD - 0.6, self.R_CASS + 3, -7.5, 7.5, -self.Z_FL[1] - 1, zc1), a)
@@ -249,6 +262,44 @@ class Modello:
             return m if lato < 0 else m.mirror([0, 1, 0])
         return m.rotate([90, 0, 0]).translate([0, 0, self.Z_A])
 
+    # ---------------- croce di Malta (v0.9, due ruote)
+    def croce_ruota_locale(self):
+        """Retro della ruota: disco con 15 fessure radiali (una sotto ogni divisorio) e 15 incavi dove appoggia il disco di blocco."""
+        z0, z1 = self.Z_COR; rf = self.C_GEN - self.R_MAN - 0.6          # fondo delle fessure
+        m = cil(self.R_GEN, z0, z1)
+        for k in range(N):
+            d = -90.0 + PASSO / 2 + k * PASSO                                   # fessura sotto il divisorio: li' il materiale e' pieno
+            m -= ruota(scatola(rf, self.R_GEN + 1, -1.8, 1.8, z0 - 0.01, z1 + 0.01), d) + cil(1.8, z0 - 0.01, z1 + 0.01, rf * math.cos(math.radians(d)), rf * math.sin(math.radians(d)))
+            b = -90.0 + k * PASSO                                               # incavo di blocco sulla bisettrice (sotto lo scomparto)
+            m -= cil(R_LOCK + 0.3, z0 - 0.01, z1 + 0.01, self.C_GEN * math.cos(math.radians(b)), self.C_GEN * math.sin(math.radians(b)))
+        return m
+
+    def croce_driver_locale(self, i, phi=0.0):
+        """Ingranaggio da 24 denti + perno + disco di blocco, per la ruota i. phi = rotazione dal riposo (perno lontano dalla ruota)."""
+        a = ANG_CROCE[self.k][i]; dx, dy = self.C_GEN * math.cos(math.radians(a)), self.C_GEN * math.sin(math.radians(a))
+        am = ANG_MOT[self.k][i]; px, py = (self.R_GP + R_PIGNONE) * math.cos(math.radians(am)), (self.R_GP + R_PIGNONE) * math.sin(math.radians(am))
+        bgp = math.degrees(math.atan2(py - dy, px - dx))
+        g = Manifold.extrude(ingranaggio(Z_CROCE, MOD, bgp + 180.0 / Z_CROCE + phi), 2.0).translate([dx, dy, -2.3])
+        u = a + phi                                                                # direzione del perno
+        lock = cil(R_LOCK, -0.31, 1.85, dx, dy) - cil(self.R_GEN + 0.5, 0, 2.1, dx + self.C_GEN * math.cos(math.radians(u)), dx * 0 + dy + self.C_GEN * math.sin(math.radians(u)))
+        pin = cil(1.5, -0.31, 1.85, dx + self.R_MAN * math.cos(math.radians(u)), dy + self.R_MAN * math.sin(math.radians(u)))
+        m = g + lock + pin                                                         # il disco di blocco scende fino all'ingranaggio: niente mozzo a parte
+        return m - cil(1.1, -3, 3, dx, dy)                                         # foro per il perno (una vite M2 recuperata dall'hard disk)
+
+    def croci(self, phi=0.0):
+        out = []
+        for i, a in enumerate(ANG_CROCE[self.k]):
+            s = -1 if i == 0 else 1; cx, cz = self.C_GEN * math.cos(math.radians(a)), self.C_GEN * math.sin(math.radians(a))
+            out.append((self.metti(self.croce_driver_locale(i, phi), s), cx, s * (self.Y0 - 1.3), self.Z_A + cz))
+        return out
+
+    def viti_croce(self):
+        m = Manifold()
+        for i, a in enumerate(ANG_CROCE[self.k]):
+            cx, cy = self.C_GEN * math.cos(math.radians(a)), self.C_GEN * math.sin(math.radians(a))
+            m += self.metti(cil(1.0, 0.95 - self.Y0 + 0.01, 1.4, cx, cy), -1 if i == 0 else 1)
+        return m
+
     # ---------------- motorini con pignone
     def motori(self):
         out = []
@@ -267,9 +318,18 @@ class Modello:
             out.append(corpo + cil_y(N20["albero"] / 2, min(yp - 0.9, faccia), max(yp + 0.9, faccia), x, z))
         return out
 
-    def pignoni(self):
-        """Pignoni da 26 denti, in fase con la corona; ritorna (pezzo, centro x, y, z)."""
+    def pignoni(self, phi=0.0):
+        """Pignoni (2 ruote: 10 denti, ingranano con la croce di Malta; 1 ruota: 20 denti sulla corona); ritorna (pezzo, centro x, y, z)."""
         out = []
+        if self.ruote == 2:
+            for i, am in enumerate(ANG_MOT[self.k]):
+                s = -1 if i == 0 else 1; r = self.R_GP + R_PIGNONE
+                px, py = r * math.cos(math.radians(am)), r * math.sin(math.radians(am))
+                a = ANG_CROCE[self.k][i]; dx, dy = self.C_GEN * math.cos(math.radians(a)), self.C_GEN * math.sin(math.radians(a))
+                bpg = math.degrees(math.atan2(dy - py, dx - px))
+                m = Manifold.extrude(ingranaggio(Z_PIGN_G, MOD, bpg - phi * Z_CROCE / Z_PIGN_G), 2.0).translate([px, py, -2.3]) - cil(N20["albero"] / 2 + 0.05, -3, 3, px, py)
+                out.append((self.metti(m, s), px, s * self.Y_PIGN, self.Z_A + py))
+            return out
         pc, pp = 360.0 / self.Z_CORONA, 360.0 / Z_PIGNONE
         for i, a in enumerate(ANG_MOT[self.k]):
             s = -1 if i == 0 else 1; yp = s * self.Y_PIGN if self.ruote == 2 else 0.0
@@ -297,7 +357,7 @@ class Modello:
 
     # ---------------- imbuto, piattino pesato, servo, cella
     def imbuto(self):
-        ye = (abs(self.Y_PIGN) + PROF + 2.5) if self.ruote == 2 else min(self.Z_TAS[1] + 0.5, -self.Y_SX - PARETE - 1.9)
+        ye = (self.Y0 + self.Z_TAS[1] + 1.5) if self.ruote == 2 else min(self.Z_TAS[1] + 0.5, -self.Y_SX - PARETE - 1.9)
         larg = self.APRE + 2.0
         zb = self.Z_PIATTO + 7.0
         prof = [(6.5, zb - 1.6), (ye + 1.6, self.Z_IMB0 - 0.01), (ye + 1.6, self.Z_IMB0 + 0.5), (ye, self.Z_IMB0 + 0.5), (6.5, zb)]
@@ -604,6 +664,9 @@ class Modello:
             C["gel_silice"] = sum((self.metti(self.silice_locale(), sd) for sd in (-1, 1)), Manifold())
         for i, m in enumerate(self.motori()): C["motore_" + str(i + 1)] = m
         for i, (m, *_c) in enumerate(self.pignoni()): C["motore_" + str(i + 1) + "_pignone"] = m
+        if self.ruote == 2:
+            for i, (m, *_c) in enumerate(self.croci()): C["motore_" + str(i + 1) + "_croce"] = m
+            C["viti_croce"] = self.viti_croce()
         return C
 
     def misure(self):
@@ -634,6 +697,10 @@ def genera(chiave, cartella):
         mesh = a_mesh(m); mesh.export(os.path.join(cartella, "assieme", n + ".stl"))
         verso, area, st = stampa(mesh); b = st.bounds; st.apply_translation([-(b[0][0] + b[1][0]) / 2, -(b[0][1] + b[1][1]) / 2, 0]); st.export(os.path.join(cartella, "stampa", n + ".stl"))
     for n, m in C.items(): a_mesh(m).export(os.path.join(cartella, "componenti", n + ".stl"))
+    if M.ruote == 2:                                       # ingranaggi della croce e pignoni: si stampano anche loro
+        for i, lato in enumerate(("sx", "dx")):
+            for n, m in (("14_croce_" + lato, M.croci()[i][0]), ("15_pignone_" + lato, M.pignoni()[i][0])):
+                verso, area, st = stampa(a_mesh(m)); b = st.bounds; st.apply_translation([-(b[0][0] + b[1][0]) / 2, -(b[0][1] + b[1][1]) / 2, 0]); st.export(os.path.join(cartella, "stampa", n + ".stl"))
     return M, P, C
 
 if __name__ == "__main__":

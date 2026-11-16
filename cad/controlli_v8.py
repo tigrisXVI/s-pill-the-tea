@@ -36,6 +36,10 @@ def controlla(k):
                 if n == r or n.startswith("10_"): continue
                 v = inter(rr, P[n])
                 if v > (40.0 if "spazzole" in r and n == "9_cassetta" + r[-3:] else 0.3): male(r, "a", g, "gradi contro", n, round(v, 1))
+    if M.ruote == 2:
+        print("3b) croce di Malta: un giro dell'ingranaggio, uno scomparto; a riposo la ruota e' bloccata")
+        import croce_check
+        ok &= croce_check.controlla(M, P, C, stampa=print)
     print("4) le cassette si sfilano di lato")
     gruppi = {"sx": [n for n in P if n.endswith("_sx") and n[:2] in ("9_", "10", "11")], "dx": [n for n in P if n.endswith("_dx") and n[:2] in ("9_", "10", "11")]} if M.ruote == 2 else {"tutta": [n for n in P if n[:2] in ("9_", "10", "11")]}
     for lato, nomi in gruppi.items():

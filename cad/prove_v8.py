@@ -4,6 +4,9 @@
   prova 1 - spicchio di ruota: un quarto di ruota con 3 scomparti, lamelle di PETG, sportellini, e il pezzo di cassetta
             con l'uscita e l'asse. Serve a vedere se le pillole minuscole passano tra ruota e anello, se lo scomparto
             dopo resta chiuso e quanta forza serve per girare con le lamelle.
+  prova 3 - croce di Malta (v0.9): un pezzo di ruota con 4 fessure, l'ingranaggio con perno e disco di blocco, e una base
+            con i due perni alla distanza giusta. Giri l'ingranaggio con un dito: a ogni giro la ruota deve avanzare
+            di uno scomparto e, tra un giro e l'altro, non si deve poter girare a mano.
   prova 2 - piattino pesato: piattino, staffa e una base che tiene la cella di carico come nella scatola.
             Serve a vedere quanto e' precisa la bilancia con pillole vere (90 mg, 12 mg).
 Le STL vanno in v8/2m/prove/, gia' girate nel verso di stampa giusto.
@@ -34,6 +37,16 @@ for dx in (4.0, 12.0): base -= cil(1.4, cb[2] - 20, cb[2] + 1, cb[0] + dx, (cb[1
 pezzi["prova2_piattino"] = P["5_piattino"]
 pezzi["prova2_staffa"] = P["6_staffa_cella"]
 pezzi["prova2_base_cella"] = base
+
+# prova 3: croce di Malta
+a = s8.ANG_CROCE["2m"][0]; dx, dy = M.C_GEN * math.cos(math.radians(a)), M.C_GEN * math.sin(math.radians(a))
+fetta = s8.settore(0.0, 80.0, a - 40, a + 40, -1, 3)
+pezzi["prova3_croce_ruota"] = (M.croce_ruota_locale() ^ fetta) + cil(6.0, 0, 2) - cil(3.3, -1, 3)
+pezzi["prova3_croce_ingranaggio"] = M.croce_driver_locale(0)
+base = s8.settore(0.0, M.C_GEN + 16, a - 40, a + 40, -4.6, -2.6) + cil(8.0, -4.6, -2.6)
+base += cil(3.0, -2.61, 2.5) + cil(4.5, -2.61, 0.0)                      # asse della ruota e rondella
+base += cil(1.0, -2.61, 1.6, dx, dy) + cil(2.5, -2.61, -2.3, dx, dy)    # perno dell'ingranaggio e rondella
+pezzi["prova3_croce_base"] = base
 
 for n, m in pezzi.items():
     verso, area, st = s8.stampa(s8.a_mesh(m)); b = st.bounds

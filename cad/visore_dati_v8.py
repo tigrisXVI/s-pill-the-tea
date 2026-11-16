@@ -26,6 +26,12 @@ for k in ("2m",):
     piv = {}
     for i, (m, cx, cy, cz) in enumerate(M.pignoni()):
         C["motore_" + str(i + 1) + "_pignone"] = m.translate([-cx, -cy, -cz]); piv["c_motore_" + str(i + 1) + "_pignone"] = [cx, cy, cz]
+    croci = {}
+    if M.ruote == 2:
+        import croce_check
+        for i, (m, cx, cy, cz) in enumerate(M.croci()):
+            C["motore_" + str(i + 1) + "_croce"] = m.translate([-cx, -cy, -cz])
+            croci["c_motore_" + str(i + 1) + "_croce"] = dict(pivot=[cx, cy, cz], segno=1 if croce_check.angolo_ruota(M, i, 360) > 0 else -1)
     for n, m in C.items(): pezzi["c_" + n] = dati(m)
     pezzi["nastro_cavi"] = dati(M.nastro())
     if M.ruote == 2:
@@ -37,7 +43,7 @@ for k in ("2m",):
                                 Z_IMB0=M.Z_IMB0, Z_IMBB=M.Z_PIATTO + 7.0, Z_PIATTO=M.Z_PIATTO, PIATTO=M.PIATTO, PERNO=M.perno_piattino(), Z_CUP=M.Z_CUP, CUP=M.CUP,
                                 Z_DISP=M.Z_DISP, Y_MID=M.Y_MID, PIEDE=M.PIEDE, PROF=s.PROF, facce=facce, STAB=STAB[k],
                                 litri=round(L * W * H / 1e6, 2), ruota_d=round(2 * M.R_CASS),
-                                Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,
+                                Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, CROCI=croci, Z_PIGN_G=getattr(s, 'Z_PIGN_G', 10), Z_CROCE=getattr(s, 'Z_CROCE', 24), Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,
                                 CAVI=[dict(nome=n, colore=c, r=r, punti=p, attacchi=a) for n, c, r, p, a in M.cavi()],
                                 FERMO={'sx': M.fermo_perno(-1), 'dx': M.fermo_perno(1)}, TH=M.TH, MOD=s.MOD, R_AN_T=M.R_AN_T, R_GT=M.R_GT, R_CASS=M.R_CASS, Z_COR=M.Z_COR, Z_COP=M.Z_COP, SP_DIV=s.SP_DIV, N=s.N, STAMPA=[[n, *s.stampa(s.a_mesh(m))[:2]] for n, m in M.pezzi().items()]),
                     PEZZI=pezzi)

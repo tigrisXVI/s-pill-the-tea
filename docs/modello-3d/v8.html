@@ -61,7 +61,7 @@
 
   <h2>Come funziona</h2>
   <ol>
-    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Il bordo di ogni ruota è una corona dentata (modulo 1, denti abbastanza grossi da stampare in 3D); la muove il pignone di un motorino N20, nell'angolo in alto dove la ruota tonda lascia spazio (uno davanti, uno dietro).</li>
+    <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Dietro ogni ruota c'è una <b>croce di Malta</b>, il meccanismo dei vecchi proiettori e degli orologi: 15 fessure, una sotto ogni divisorio. Il motorino N20 gira un ingranaggio da 24 denti con un perno: a ogni giro il perno entra in una fessura e fa avanzare la ruota di uno scomparto esatto (24 gradi); per il resto del giro un disco di blocco la tiene ferma, anche senza corrente e anche se qualcuno prova a girarla a mano.</li>
     <li>All'ora giusta l'altoparlante davanti suona e il display si accende. La persona preme il tasto tondo sul cappello. La ruota avanza di uno scomparto: quello che arriva in basso si apre sull'uscita, le pillole cadono nell'imbuto e poi sul piattino.</li>
     <li>Ricarica: dall'app «Sblocca le cassette» (o tenendo premuto il tasto 10 secondi): un micro servo gira il fermo e la cassetta si sfila; quando la rimetti si richiude da sola. Ogni scomparto ha il suo sportellino trasparente con una linguetta: lo apri, metti le pillole, lo richiudi a scatto. Gli altri scomparti restano chiusi. Gli sportellini girano con la ruota, quindi le pillole non strisciano mai contro una parte ferma.</li>
     <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, il micro servo lo inclina all'indietro e le pillole scivolano verso il fondo della nicchia, dentro il bicchierino. Mentre pesa, dietro il bordo aperto c'è una paratia fissa a 0,6 mm: le pillole non scivolano via, ma la paratia non tocca il piattino e non falsa il peso. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
@@ -77,7 +77,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.22';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.9.0';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -112,7 +112,7 @@ const PEZZI = [
   [/^1_guscio/, 'Corpo', 'corpo'], [/^2_cappello/, 'Cappello colorato', 'cappello'], [/^3_piede/, 'Piede con zavorra', 'piede'], [/^4_imbuto/, 'Imbuto', 'imbuto'],
   [/^5_piattino/, 'Piattino pesato', 'arancio'], [/^6_staffa/, 'Staffa della cella', 'grigio'], [/^7_bicchierino/, 'Bicchierino', 'ceramica'], [/^12_tasto/, 'Tasto tondo', 'bianco'],
   [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'bianco'], [/^13_fermo/, 'Fermo della cassetta (lo gira un micro servo)', 'grigio'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'nero'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'kapton'], [/^c_magneti/, 'Magneti di riposo delle ruote', 'ferro'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'pcbBlu'], [/^c_hx711/, 'HX711 (legge la cella)', 'pcb'], [/^c_gel/, 'Gel di silice', 'silice'], [/^10_spazzole/, 'Lamelle di PETG sui divisori (a 0,1 mm dall\'anello)', 'bianco'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'vetro'],
-  [/^c_motore_\d_pignone/, 'Pignoni da 26 denti', 'ottone'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
+  [/^c_motore_\d_pignone/, 'Pignoni da 10 denti', 'ottone'], [/^c_motore_\d_croce/, 'Croce di Malta: ingranaggio da 24 denti con perno e disco di blocco', 'ottone'], [/^c_viti_croce/, 'Viti recuperate dagli hard disk (perni della croce)', 'metallo'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
   [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi) e driver DRV8833', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
   [/^c_altoparlante/, 'Altoparlante 20 mm', 'ferro'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'pcbBlu'], [/^c_interruttore/, 'Interruttore del tasto', 'pcb'], [/^c_spina_usb/, 'Spina USB-C', 'nero'],
   [/^nastro_cavi/, 'Fili nel canale della parete', 'nastro']];
@@ -215,6 +215,9 @@ const [xh, zh] = P.PERNO;
 const perno = new THREE.Group(); perno.position.set(xh, 0, zh); G['5_piattino'].position.set(-xh, 0, -zh); perno.add(G['5_piattino']); radice.add(perno);
 const cupG = new THREE.Group(); cupG.add(G['7_bicchierino']); radice.add(cupG);
 const pignoni = [1, 2].map(i => { const n = 'c_motore_' + i + '_pignone', g = new THREE.Group(); g.position.set(...P.PIGNONI[n]); g.add(G[n]); radice.add(g); return g; });
+const croci = P.CROCI ? [1, 2].map(i => { const n = 'c_motore_' + i + '_croce', g = new THREE.Group(); g.position.set(...P.CROCI[n].pivot); g.add(G[n]); radice.add(g); return g; }) : [];
+// croce di Malta: la ruota avanza di uno scomparto mentre l'ingranaggio fa da 102 a 258 gradi del suo giro; per il resto del giro la ruota sta ferma
+const angoloCroce = (giro, segno) => { const n = -giro / (segno * PASSO), k = Math.floor(n + 1e-6), f = n - k; return 360 * k + (f < 1e-4 ? 0 : 102 + 156 * f); };
 for (const n in G) if (!G[n].parent) radice.add(G[n]);
 const cavi = new THREE.Group(); radice.add(cavi);
 for (const c of P.CAVI) {
@@ -431,7 +434,9 @@ function disegna() {
     L.fermo.rotation.y = L.s * L.fermoA * Math.PI / 2; L.fermo.position.y = P.FERMO[L.nome][1] + L.s * 40 * e;
     L.gira.position.y = L.s * 38 * e; G['10_sportellini_' + L.nome].position.y = L.s * 30 * e;
   }
-  pignoni.forEach((g, i) => { const c = P.PIGNONI['c_motore_' + (i + 1) + '_pignone']; g.rotation.y = -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; g.position.set(c[0], c[1], c[2] + 75 * e); });
+  pignoni.forEach((g, i) => { const c = P.PIGNONI['c_motore_' + (i + 1) + '_pignone'], cr = P.CROCI && P.CROCI['c_motore_' + (i + 1) + '_croce'];
+    g.rotation.y = cr ? angoloCroce(lati[i].giro, cr.segno) * P.Z_CROCE / P.Z_PIGN_G * rad : -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; g.position.set(c[0], c[1], c[2] + 75 * e); });
+  croci.forEach((g, i) => { const cr = P.CROCI['c_motore_' + (i + 1) + '_croce']; g.rotation.y = -angoloCroce(lati[i].giro, cr.segno) * rad; g.position.set(cr.pivot[0], cr.pivot[1], cr.pivot[2] + 60 * e); });
   perno.position.set(xh + 75 * e, 0, zh - 5 * e); perno.rotation.y = -apre * rad; cupG.position.x = cup * 75 + 100 * e;
   for (const p of pillole) {
     if (p.stato === 'tolta') continue; const t = p.b.translation(), q = p.b.rotation(); p.m.position.set(t.x / S, t.y / S, t.z / S); p.m.quaternion.set(q.x, q.y, q.z, q.w);
@@ -510,7 +515,7 @@ const S2 = P.STAB, cm = x => (x / 10).toLocaleString('it-IT', { maximumFractionD
 $('tabella').innerHTML = [
   ['Ingombro (corpo)', cm(P.L) + ' × ' + cm(P.W) + ' × ' + cm(P.H) + ' cm (' + P.litri.toLocaleString('it-IT') + ' litri)'],
   ['Piede', cm(P.PIEDE.x1 - P.PIEDE.x0) + ' × ' + cm(2 * P.PIEDE.y) + ' cm, con dentro ' + S2.zavorra + ' g di ferro'],
-  ['Ruote', '2 da ' + cm(P.ruota_d) + ' cm, corona da ' + P.Z_CORONA + ' denti, pignone da ' + P.Z_PIGNONE + ' (modulo ' + String(P.MOD).replace('.', ',') + ')'],
+  ['Ruote', '2 da ' + cm(P.ruota_d) + ' cm, croce di Malta a ' + P.N + ' fessure, ingranaggio da ' + P.Z_CROCE + ' denti, pignone da ' + P.Z_PIGN_G + ' (modulo ' + String(P.MOD).replace('.', ',') + ')'],
   ['Peso', 'circa ' + S2.peso + ' g, baricentro a ' + cm(S2.cg) + ' cm da terra'],
   ['Si ribalta se inclinata', 'di lato ' + S2.lato + '°, in avanti ' + S2.avanti + '°, indietro ' + S2.dietro + '°'],
   ['Uno scomparto', S2.tasca.toLocaleString('it-IT') + ' cm³'],
