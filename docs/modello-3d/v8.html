@@ -16,6 +16,8 @@
   p.sotto { margin: 0 0 10px; color: var(--soft); font-size: .9rem; }
   #scena { width:100%; height:62vh; min-height:340px; border-radius:14px; overflow:hidden; background:radial-gradient(120% 90% at 50% 35%, var(--card), var(--bg)); border:1px solid var(--line); touch-action:none; position:relative; }
   #scena canvas { display:block; width:100%; height:100%; }
+  #didascalia { position:absolute; left:12px; right:12px; bottom:12px; font-size:1rem; line-height:1.35; color:#fff; background:rgba(15,20,28,.72); padding:8px 12px; border-radius:10px; opacity:0; transition:opacity .5s; pointer-events:none; }
+  #didascalia.on { opacity:1; }
   #stato { position:absolute; left:10px; top:8px; right:10px; font-size:.82rem; color:var(--soft); background:color-mix(in srgb, var(--card) 80%, transparent); padding:2px 8px; border-radius:8px; }
   .comandi { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
   button { font:inherit; padding:12px 10px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
@@ -40,8 +42,9 @@
   <h1>Scatoletta Blistra v0.9 – con la fisica vera</h1>
   <p class="sotto"><a href="it.html">v0.5</a> · <a href="v6.html">v0.6</a> · <a href="v7.html">v0.7</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a></p>
   <p class="sotto">Due ruote mosse da una croce di Malta, ricarica dall'alto pesata, tutto in PETG. Le pillole qui sono corpi rigidi simulati: cadono, rotolano e si appoggiano con la gravità e l'attrito, come farebbero davvero. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
-  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D e il motore fisico…</div></div>
+  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D e il motore fisico…</div><div id="didascalia" aria-live="polite"></div></div>
   <div class="comandi">
+    <button id="tour" aria-pressed="true">❚❚ Ferma la dimostrazione automatica</button>
     <button class="primo" id="tasto" disabled>Premi il tasto</button>
     <button id="cup" aria-pressed="false">Prendi il bicchierino</button>
     <button id="sbaglia">Prova: togli una pillola dalla prossima dose</button>
@@ -551,6 +554,40 @@ const visti = new Set();
 $('legenda').innerHTML = Object.keys(G).map(tipo).filter(t => !visti.has(t[1]) && visti.add(t[1])).map(t => `<li><i style="background:#${MAT[t[2]]().color.getHexString()}"></i>${t[1]}</li>`).join('');
 
 ricomincia();
+// ---------- dimostrazione automatica: parte da sola, si ferma appena tocchi il modello o un pulsante
+const TAPPE = [
+  { d: 6, cam: [0.25, 0.20, 600], txt: "Scatoletta Blistra v0.9: due ruote da 15 scomparti, una settimana di dosi. Tutti i pezzi si stampano in PETG." },
+  { d: 3, cam: [0.35, 0.18, 560], txt: "All'ora della dose la scatoletta suona e il display si accende.", fa: () => { try { sveglia(); } catch (e) {} } },
+  { d: 9, cam: [-0.25, 0.12, 520], txt: "La persona preme il tasto: la croce di Malta fa avanzare la ruota di uno scomparto esatto, le pillole cadono sul piattino pesato e, se il peso è giusto, scivolano nel bicchierino.", fa: () => { if (!$('tasto').disabled) $('tasto').click(); } },
+  { d: 4, cam: [-0.6, 0.10, 480], txt: "Si prende il bicchierino: un magnete e un sensore dicono alla famiglia che la dose è stata presa.", fa: () => { if (!cupMeta) $('cup').click(); } },
+  { d: 3, cam: [-0.6, 0.12, 520], txt: "Il bicchierino torna al suo posto.", fa: () => { if (cupMeta) $('cup').click(); } },
+  { d: 9, cam: [0.15, 0.85, 430], txt: "Ricarica dall'alto: le pillole di uno scomparto si pesano su una seconda bilancia. Chiudendo lo sportellino, il suo dito inclina la vaschetta e le pillole scivolano nella ruota. In uscita si ripesano: devono pesare uguale.", fa: () => { if (RIC) RIC.t = 0; } },
+  { d: 8, cam: [1.1, 0.25, 520], txt: "Dentro: ESP32 con il Wi-Fi, driver dei motorini, due celle di carico, orologio con pila. ♻ Viti e magneti vengono da due hard disk rotti.", fa: () => { if (!trasparente) $('dentro').click(); } },
+  { d: 8, cam: [0.6, 0.30, 700], txt: "Smontata: ogni pezzo stampabile, la croce di Malta dietro ogni ruota, gli scivoli della ricarica.", fa: () => { if (trasparente) $('dentro').click(); if (esplosoMeta < .5) $('smonta').click(); } },
+  { d: 5, cam: [-0.62, 0.26, 640], txt: "E si rimonta. Ogni misura è controllata dal computer prima di stampare.", fa: () => { if (esplosoMeta > .5) $('smonta').click(); } },
+];
+const tour = { on: false, t: 0, i: -1, dosi: 0 };
+function avviaTour(on) {
+  tour.on = on; tour.t = 0; tour.i = -1;
+  $('tour').setAttribute('aria-pressed', on ? 'true' : 'false'); $('tour').textContent = on ? '❚❚ Ferma la dimostrazione automatica' : '▶ Guarda la dimostrazione automatica';
+  $('didascalia').classList.toggle('on', on);
+}
+function aggiornaTour(dt) {
+  if (!tour.on) return;
+  tour.t -= dt;
+  if (tour.t <= 0) {
+    tour.i = (tour.i + 1) % TAPPE.length; const tp = TAPPE[tour.i]; tour.t = tp.d;
+    if (tour.i === 0 && dose >= 10) ricomincia();
+    $('didascalia').textContent = tp.txt; if (tp.fa) tp.fa();
+  }
+  const [a, e, d] = TAPPE[tour.i].cam, k = Math.min(1, dt * .9);
+  az += (a - az) * k; el += (e - el) * k; dist += (d - dist) * k;
+}
+$('tour').onclick = () => avviaTour(!tour.on);
+const fermaTour = () => { if (tour.on) avviaTour(false); };
+cv.addEventListener('pointerdown', fermaTour); cv.addEventListener('wheel', fermaTour, { passive: true });
+document.querySelectorAll('.comandi button, .comandi input').forEach(b => { if (b.id !== 'tour') b.addEventListener('pointerdown', fermaTour); });
+setTimeout(() => avviaTour(true), 2500);
 let prima = performance.now(), resto = 0;
 function ciclo(ora) {
   const dt = Math.min(.05, (ora - prima) / 1000); prima = ora; resto += dt;
@@ -558,7 +595,7 @@ function ciclo(ora) {
   if (esploso > 0) resto = 0;   // smontata: la fisica si ferma
   let n = 0; while (resto >= world.timestep && n < 16) { passo(world.timestep); resto -= world.timestep; n++; }
   if (n === 16) resto = 0;
-  logica(dt); suoni(); aggiornaRicarica(dt); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+  logica(dt); suoni(); aggiornaRicarica(dt); aggiornaTour(dt); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
 window.__v8 = { avanza(sec) { const h = world.timestep; let t = 0, k = 0; while (t < sec) { passo(h); t += h; if (++k % 5 === 0) logica(5 * h); } disegna(); }, get scosse() { return scosse; }, FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
 requestAnimationFrame(ciclo);
