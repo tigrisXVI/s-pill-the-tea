@@ -77,7 +77,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.20';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.8.21';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -111,9 +111,9 @@ const MAT = {
 const PEZZI = [
   [/^1_guscio/, 'Corpo', 'corpo'], [/^2_cappello/, 'Cappello colorato', 'cappello'], [/^3_piede/, 'Piede con zavorra', 'piede'], [/^4_imbuto/, 'Imbuto', 'imbuto'],
   [/^5_piattino/, 'Piattino pesato', 'arancio'], [/^6_staffa/, 'Staffa della cella', 'grigio'], [/^7_bicchierino/, 'Bicchierino', 'ceramica'], [/^12_tasto/, 'Tasto tondo', 'bianco'],
-  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'bianco'], [/^13_fermo/, 'Fermo della cassetta (lo gira un micro servo)', 'grigio'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'nero'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'kapton'], [/^c_magneti/, 'Magneti di riposo delle ruote', 'ferro'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'pcbBlu'], [/^c_gel/, 'Gel di silice', 'silice'], [/^10_spazzole/, 'Lamelle di TPU sui divisori (toccano l\'anello)', 'tpu'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'vetro'],
+  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'bianco'], [/^13_fermo/, 'Fermo della cassetta (lo gira un micro servo)', 'grigio'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'nero'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'kapton'], [/^c_magneti/, 'Magneti di riposo delle ruote', 'ferro'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'pcbBlu'], [/^c_hx711/, 'HX711 (legge la cella)', 'pcb'], [/^c_gel/, 'Gel di silice', 'silice'], [/^10_spazzole/, 'Lamelle di TPU sui divisori (toccano l\'anello)', 'tpu'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'vetro'],
   [/^c_motore_\d_pignone/, 'Pignoni da 26 denti', 'ottone'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
-  [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi), driver, HX711', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
+  [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi) e driver DRV8833', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
   [/^c_altoparlante/, 'Altoparlante 20 mm', 'ferro'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'pcbBlu'], [/^c_interruttore/, 'Interruttore del tasto', 'pcb'], [/^c_spina_usb/, 'Spina USB-C', 'nero'],
   [/^nastro_cavi/, 'Fili nel canale della parete', 'nastro']];
 const tipo = n => PEZZI.find(c => c[0].test(n)) || [null, n, 'grigio'];

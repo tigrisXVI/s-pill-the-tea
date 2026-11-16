@@ -499,10 +499,11 @@ class Modello:
         return scatola(x1 - PARETE - 4.2, x1 - PARETE - 0.2, self.Y_MID - 17.7, self.Y_MID + 17.7, self.Z_DISP[0], self.Z_DISP[1] - 1.5)
 
     def schede(self):
-        """Sotto: scheda con 2 x DRV8833 e HX711. Sopra: ESP32-S3 SuperMini, USB-C verso dietro e antenna verso il vuoto davanti."""
+        """Sotto: modulo DRV8833 (18,5 x 16,5, comanda tutti e due i motorini). Sopra: ESP32-S3 SuperMini (22,5 x 18),
+        USB-C verso dietro e antenna verso il vuoto davanti."""
         z = self.Z_PIATTO - 1.0
         xb = -self.X_HALF + PARETE + 0.5
-        return scatola(xb, xb + 18.5, -8, 8, z, z + 4) + scatola(xb, xb + 18.0, -11.25, 11.25, z + Z_ESP, z + Z_ESP + 4.5)
+        return scatola(xb, xb + 18.5, -8.25, 8.25, z, z + 4) + scatola(xb, xb + 18.0, -11.25, 11.25, z + Z_ESP, z + Z_ESP + 4.5)
 
     def antenna(self):
         """Zona dell'antenna dell'ESP32 (ultimi 4 mm della scheda): niente metallo entro 10 mm."""
@@ -545,7 +546,8 @@ class Modello:
             ("servo", "#e67e22", 0.9, [(19.2, 10.8, 53.0), (19.2, 17.5, 53.0), (-29.5, 17.5, 53.0), (-31.6, 5.0, zd + 2.0)], ["servo", "schede"]),
             ("amplificatore", "#8e44ad", 1.1, [(25.4, 6.0, 49.3), (20.0, 20.4, 50.6), (-29.0, 20.4, 51.0), (-31.8, 8.0, ze + 2.2)], ["amplificatore", "schede"]),
             ("altoparlante", "#7f8c8d", 0.7, [(46.6, 5.0, 60.0), (44.8, 5.0, 52.0), (42.5, 5.0, 51.4)], ["altoparlante", "amplificatore"]),
-            ("cella di carico", "#16a085", 1.0, [(-32.6, -17.9, 51.6), (-35.5, -12.0, 55.0), (-36.0, -8.6, zd + 1.5)], ["cella", "schede"]),
+            ("cella di carico", "#16a085", 1.0, [(-32.6, -17.9, 51.6), (-34.6, -17.9, 51.0), (-34.6, -15.0, 46.0), (-33.0, -13.0, 43.6)], ["cella", "hx711"]),
+            ("HX711 - ESP32", "#16a085", 0.8, [(-48.0, -10.0, 43.6), (-48.0, -10.0, 55.0), (-48.0, -11.9, ze + 0.8)], ["hx711", "schede"]),
             ("sensore del bicchiere", "#34495e", 0.8, [(self.CUP["x0"] - 3.8, 0, self.Z_CUP + 6.0), (-40.0, 0, self.Z_CUP + 12.0), (-40.0, 0, zd - 1.0)], ["sensore_bicchiere", "schede"]),
             ("servo del fermo sinistro", "#e67e22", 0.8, [(36.0, -14.5, 68.4), (33.0, -15.5, 58.0), (-29.0, -15.5, 58.0), (-31.6, -6.0, zd + 2.0)], ["servo_fermo_sx", "schede"]),
             ("servo del fermo destro", "#e67e22", 0.8, [(36.0, 14.5, 68.4), (33.0, 15.5, 58.0), (-29.0, 15.5, 58.0), (-31.6, 6.0, zd + 2.6)], ["servo_fermo_dx", "schede"]),
@@ -599,6 +601,7 @@ class Modello:
             C["strisce_sensori"] = scatola(self.X_CANALE + 3.0, -1.5, 0.71, 0.95, zs - 0.7, zs + 0.7) + scatola(self.X_CANALE + 3.0, -1.5, -0.95, -0.71, zs - 0.7, zs + 0.7)
             C["magneti_ruote"] = sum((self.metti(cil(1.5, self.Z_COR[0], self.Z_COR[0] + 1.0, 0, -R_MAGNETE), sd) for sd in (-1, 1)), Manifold())
             C["rtc"] = scatola(-51.3, -31.3, 6.0, 20.0, 28.0, 34.0)
+            C["hx711"] = scatola(-50.5, -26.5, -21.0, -5.0, 40.0, 43.0)       # modulo HX711 piccolo (24 x 16), nella camera dietro, vicino alla cella
             C["servo_fermo_sx"] = self.servo_fermo(-1); C["servo_fermo_dx"] = self.servo_fermo(1)
             C["gel_silice"] = sum((self.metti(self.silice_locale(), sd) for sd in (-1, 1)), Manifold())
         for i, m in enumerate(self.motori()): C["motore_" + str(i + 1)] = m
