@@ -32,3 +32,11 @@ Ogni fermo è un dente girato da un micro servo (90 gradi: chiuso / aperto).
 - **Durante la ricarica** non dà dosi. Quando le cassette sono di nuovo chiuse, azzera le ruote e ricontrolla i pesi.
 - **Sblocco senza app:** tenendo premuto il tasto per 10 secondi, la scatola chiede la conferma sul display e apre i fermi. Così si ricarica anche senza internet.
 - **Senza corrente** i servo restano dove sono. I servo vanno alimentati solo mentre si muovono, per non consumare e non scaldare.
+
+## Campi di stato che l'app v3.3.8 legge già
+
+La scatoletta li scrive in `status` del suo documento Firestore:
+
+- `locks: { sx: "closed"|"open", dx: ... }`: "open" mostra l'avviso "cassetta sbloccata".
+- `wheels: { sx: "ok"|"check", dx: ... }`: "check" quando la ruota non trova il magnete entro un giro (homing fallito).
+- `skipped: [{ time: "08:00", day: "16/11" }]`: le dosi non date per mancanza di corrente (al massimo le ultime 3).
