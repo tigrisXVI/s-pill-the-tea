@@ -12,6 +12,13 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 > ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
 
+## Novità della v0.9
+
+- **Croce di Malta.** Il meccanismo dei vecchi proiettori e degli orologi prende il posto di corona e pignone. Dietro ogni ruota ci sono 15 fessure, una sotto ogni divisorio. Il motorino gira un ingranaggio da 24 denti con un perno: a ogni giro il perno entra in una fessura e fa avanzare la ruota di uno scomparto esatto (24 gradi). Per il resto del giro un disco di blocco tiene ferma la ruota, anche senza corrente e anche se qualcuno prova a girarla a mano. `cad/croce_check.py` simula un giro intero dell'ingranaggio: nessun urto, 24,0 gradi esatti, ruota bloccata a riposo. Il perno dell'ingranaggio è una vite recuperata da un hard disk.
+- **Ricarica dall'alto, pesata in entrata.** Nel tetto, davanti, ci sono due sportellini. Le pillole di uno scomparto cadono su una vaschetta appesa a una seconda cella di carico (canale B dello stesso HX711), che le pesa. Quando si richiude lo sportellino, il suo dito inclina la vaschetta di 30–36 gradi e le pillole scivolano nello scivolo fino allo scomparto in alto davanti (54 gradi). Niente motori in più. Una vite dell'hard disk avvitata nella chiglia tiene la vaschetta dritta. `cad/ricarica_check.py` controlla il movimento.
+- **Entrata → uscita.** All'uscita la bilancia di sotto ripesa la dose: sono le stesse pillole, quindi deve pesare uguale. Nelle prove simulate (`firmware/test`) ferma il 100% degli scomparti sbagliati, anche con una pillola da 40 mg, senza falsi allarmi.
+- **Tutto in PETG**, un solo materiale.
+
 ## In prova: v0.8, due ruote e due motorini (la più compatta)
 
 Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Corpo scuro e cappello colorato a righine con gli spigoli tondi; tasto tondo da 21 mm sul cappello. Davanti, dietro una griglia, un altoparlante da 20 mm con amplificatore MAX98357A: suona la sveglia e può dire «È ora delle pillole». Ruote con corona dentata vera (modulo 1) e pignoni da 20 denti. I fili di sopra corrono sotto il tetto e scendono in un canale nella parete centrale; corrente da una presa USB-C dietro; l'antenna Wi-Fi dell'ESP32-S3 è a 15 mm dal metallo più vicino. Il visore simula le pillole con la fisica vera (Rapier).

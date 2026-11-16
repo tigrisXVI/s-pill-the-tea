@@ -49,6 +49,7 @@
     <button id="dx" aria-pressed="false">Sfila la cassetta di destra</button>
     <button id="dentro" aria-pressed="false">Guarda dentro (cavi e schede)</button>
     <button id="ricarica">Ricarica la settimana</button>
+    <button id="ricaricaAlto">Ricarica dall'alto (pesata)</button>
     <button id="suona">Fai suonare la sveglia</button>
     <button id="foto">Salva una foto</button>
     <button id="mini" aria-pressed="false">Prova con pillole minuscole</button>
@@ -62,6 +63,7 @@
   <h2>Come funziona</h2>
   <ol>
     <li>Le due ruote stanno in piedi e hanno 15 scomparti: 14 dosi e uno chiuso. Dietro ogni ruota c'è una <b>croce di Malta</b>, il meccanismo dei vecchi proiettori e degli orologi: 15 fessure, una sotto ogni divisorio. Il motorino N20 gira un ingranaggio da 24 denti con un perno: a ogni giro il perno entra in una fessura e fa avanzare la ruota di uno scomparto esatto (24 gradi); per il resto del giro un disco di blocco la tiene ferma, anche senza corrente e anche se qualcuno prova a girarla a mano.</li>
+    <li><b>Ricarica dall'alto, pesata.</b> Nel tetto, davanti, ci sono due sportellini. Apri quello della ruota che vuoi riempire e metti le pillole di uno scomparto: cadono su una vaschetta appesa a una seconda cella di carico, che le pesa e controlla che siano quelle della terapia. Quando richiudi lo sportellino, il suo dito inclina la vaschetta e le pillole scivolano nello scivolo fino allo scomparto in alto davanti. Niente motori in più. Quando poi la dose esce, la bilancia di sotto la ripesa: deve pesare uguale.</li>
     <li>All'ora giusta l'altoparlante davanti suona e il display si accende. La persona preme il tasto tondo sul cappello. La ruota avanza di uno scomparto: quello che arriva in basso si apre sull'uscita, le pillole cadono nell'imbuto e poi sul piattino.</li>
     <li>Ricarica: dall'app «Sblocca le cassette» (o tenendo premuto il tasto 10 secondi): un micro servo gira il fermo e la cassetta si sfila; quando la rimetti si richiude da sola. Ogni scomparto ha il suo sportellino trasparente con una linguetta: lo apri, metti le pillole, lo richiudi a scatto. Gli altri scomparti restano chiusi. Gli sportellini girano con la ruota, quindi le pillole non strisciano mai contro una parte ferma.</li>
     <li>Il piattino sta su una cella di carico: se il peso è quello impostato nell'app, il micro servo lo inclina all'indietro e le pillole scivolano verso il fondo della nicchia, dentro il bicchierino. Mentre pesa, dietro il bordo aperto c'è una paratia fissa a 0,6 mm: le pillole non scivolano via, ma la paratia non tocca il piattino e non falsa il peso. Se il peso è sbagliato resta chiuso e la scatola avvisa.</li>
@@ -77,7 +79,7 @@
 
 <script type="module">
 import * as THREE from './three.js';
-import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.9.0';
+import { PASSO, Q, MODELLI } from './modello_v8.js?v=0.9.1';
 
 const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
 const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
@@ -112,7 +114,7 @@ const PEZZI = [
   [/^1_guscio/, 'Corpo', 'corpo'], [/^2_cappello/, 'Cappello colorato', 'cappello'], [/^3_piede/, 'Piede con zavorra', 'piede'], [/^4_imbuto/, 'Imbuto', 'imbuto'],
   [/^5_piattino/, 'Piattino pesato', 'arancio'], [/^6_staffa/, 'Staffa della cella', 'grigio'], [/^7_bicchierino/, 'Bicchierino', 'ceramica'], [/^12_tasto/, 'Tasto tondo', 'bianco'],
   [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'cassa'], [/^10_ruota/, 'Ruote dentate', 'bianco'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'bianco'], [/^13_fermo/, 'Fermo della cassetta (lo gira un micro servo)', 'grigio'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'nero'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'kapton'], [/^c_magneti/, 'Magneti di riposo delle ruote', 'ferro'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'pcbBlu'], [/^c_hx711/, 'HX711 (legge la cella)', 'pcb'], [/^c_gel/, 'Gel di silice', 'silice'], [/^10_spazzole/, 'Lamelle di PETG sui divisori (a 0,1 mm dall\'anello)', 'bianco'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'vetro'],
-  [/^c_motore_\d_pignone/, 'Pignoni da 10 denti', 'ottone'], [/^c_motore_\d_croce/, 'Croce di Malta: ingranaggio da 24 denti con perno e disco di blocco', 'ottone'], [/^c_viti_croce/, 'Viti recuperate dagli hard disk (perni della croce)', 'metallo'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
+  [/^c_motore_\d_pignone/, 'Pignoni da 10 denti', 'ottone'], [/^16_vaschetta_alta/, 'Vaschetta pesata della ricarica (si inclina chiudendo lo sportellino)', 'bianco'], [/^17_staffa_alta/, 'Staffa della cella alta', 'bianco'], [/^18_scivolo/, 'Scivoli della ricarica (allo scomparto in alto davanti)', 'cassa'], [/^19_sportello/, 'Sportellini della ricarica nel tetto', 'bianco'], [/^c_motore_\d_croce/, 'Croce di Malta: ingranaggio da 24 denti con perno e disco di blocco', 'ottone'], [/^c_viti_croce/, 'Viti recuperate dagli hard disk (perni della croce)', 'metallo'], [/^c_motore/, 'Motorini N20', 'metallo'], [/^c_cella/, 'Cella di carico 100 g', 'alluminio'], [/^c_servo/, 'Micro servo', 'servo'],
   [/^c_display/, 'Display OLED 1,3"', 'nero'], [/^c_schede/, 'ESP32-S3 (Wi-Fi) e driver DRV8833', 'pcb'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'ferro'], [/^c_sensore/, 'Sensore di Hall', 'nero'],
   [/^c_altoparlante/, 'Altoparlante 20 mm', 'ferro'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'pcbBlu'], [/^c_interruttore/, 'Interruttore del tasto', 'pcb'], [/^c_spina_usb/, 'Spina USB-C', 'nero'],
   [/^nastro_cavi/, 'Fili nel canale della parete', 'nastro']];
@@ -217,6 +219,22 @@ const cupG = new THREE.Group(); cupG.add(G['7_bicchierino']); radice.add(cupG);
 const pignoni = [1, 2].map(i => { const n = 'c_motore_' + i + '_pignone', g = new THREE.Group(); g.position.set(...P.PIGNONI[n]); g.add(G[n]); radice.add(g); return g; });
 const croci = P.CROCI ? [1, 2].map(i => { const n = 'c_motore_' + i + '_croce', g = new THREE.Group(); g.position.set(...P.CROCI[n].pivot); g.add(G[n]); radice.add(g); return g; }) : [];
 // croce di Malta: la ruota avanza di uno scomparto mentre l'ingranaggio fa da 102 a 258 gradi del suo giro; per il resto del giro la ruota sta ferma
+// ricarica dall'alto: vaschetta pesata appesa al suo perno e due sportellini nel tetto
+const RIC = P.RICARICA && P.RICARICA.zp ? (() => {
+  const gr = (n, pos) => { const g = new THREE.Group(); g.position.set(...pos); g.add(G[n]); radice.add(g); return g; };
+  return { vas: gr('16_vaschetta_alta', [0, 0, P.RICARICA.zp]), sx: gr('19_sportello_sx', [0, -P.RICARICA.yh, P.RICARICA.zh]), dx: gr('19_sportello_dx', [0, P.RICARICA.yh, P.RICARICA.zh]), t: -1 };
+})() : null;
+const inclinaRic = (s, th) => { const tab = P.RICARICA.tilt[String(s)]; for (let i = 1; i < tab.length; i++) if (th <= tab[i][0]) { const [a0, b0] = tab[i - 1], [a1, b1] = tab[i]; return b0 + (b1 - b0) * (th - a0) / (a1 - a0); } return 0; };
+function aggiornaRicarica(dt) {
+  if (!RIC) return;
+  let thS = 0, thD = 0;
+  if (RIC.t >= 0) {
+    RIC.t += dt; const t = RIC.t, lid = u => u < 1 ? 80 * liscio(u) : u < 2.5 ? 80 : u < 3.3 ? 80 * (1 - liscio((u - 2.5) / .8)) : 0;
+    thS = lid(t); thD = t > 3.6 ? lid(t - 3.6) : 0; if (t > 7.5) RIC.t = -1;
+  }
+  RIC.sx.rotation.x = thS * rad; RIC.dx.rotation.x = -thD * rad;
+  RIC.vas.rotation.x = (inclinaRic(-1, thS) - inclinaRic(1, thD)) * rad;
+}
 const angoloCroce = (giro, segno) => { const n = -giro / (segno * PASSO), k = Math.floor(n + 1e-6), f = n - k; return 360 * k + (f < 1e-4 ? 0 : 102 + 156 * f); };
 for (const n in G) if (!G[n].parent) radice.add(G[n]);
 const cavi = new THREE.Group(); radice.add(cavi);
@@ -505,6 +523,7 @@ $('ricarica').onclick = ricomincia;
 $('smonta').onclick = () => { esplosoMeta = esplosoMeta > .5 ? 0 : 1; premi($('smonta'), esplosoMeta > .5, 'Rimonta tutto', 'Smonta tutto'); };
 $('esploso').oninput = ev => { esploso = esplosoMeta = ev.target.value / 100; premi($('smonta'), esplosoMeta > .5, 'Rimonta tutto', 'Smonta tutto'); };
 $('mini').onclick = () => { conMini = !conMini; premi($('mini'), conMini, 'Togli le pillole minuscole', 'Prova con pillole minuscole'); ricomincia(); };
+if ($('ricaricaAlto')) $('ricaricaAlto').onclick = () => { if (RIC) RIC.t = 0; };
 $('suona').onclick = () => { try { sveglia(); } catch (e) {} };
 $('foto').onclick = () => {
   const w = box.clientWidth, h = box.clientHeight; renderer.setPixelRatio(3); renderer.setSize(w, h, false); renderer.render(scene, camera);
@@ -534,7 +553,7 @@ function ciclo(ora) {
   if (esploso > 0) resto = 0;   // smontata: la fisica si ferma
   let n = 0; while (resto >= world.timestep && n < 16) { passo(world.timestep); resto -= world.timestep; n++; }
   if (n === 16) resto = 0;
-  logica(dt); suoni(); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+  logica(dt); suoni(); aggiornaRicarica(dt); disegna(); posaCamera(); renderer.render(scene, camera); requestAnimationFrame(ciclo);
 }
 window.__v8 = { avanza(sec) { const h = world.timestep; let t = 0, k = 0; while (t < sec) { passo(h); t += h; if (++k % 5 === 0) logica(5 * h); } disegna(); }, get scosse() { return scosse; }, FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
 requestAnimationFrame(ciclo);

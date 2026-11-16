@@ -20,6 +20,11 @@ for k in ("2m",):
     M = s.Modello(k); P = M.pezzi(); C = M.componenti()
     P["5_piattino"] = M.piattino(0)
     pezzi = {}
+    ric = {}
+    if M.ruote == 2:   # ricarica dall'alto: vaschetta e sportellini girano attorno ai loro perni
+        P["16_vaschetta_alta"] = P["16_vaschetta_alta"].translate([0, 0, -s.RA["zp"]])
+        for sd, nn in ((-1, "sx"), (1, "dx")): P["19_sportello_" + nn] = P["19_sportello_" + nn].translate([0, -sd * s.RA["yh"], -s.RA["zh"]])
+        ric = dict(zp=s.RA["zp"], yh=s.RA["yh"], zh=s.RA["zh"], tilt={"-1": [[0, 0], [5, 16], [10, 32], [15, 34], [20, 34], [25, 36], [30, 36], [35, 34], [40, 30], [45, 16], [50, 0], [55, 0], [60, 0], [65, 0], [70, 0], [75, 0], [80, 0]], "1": [[0, 0], [5, 16], [10, 32], [15, 34], [20, 34], [25, 36], [30, 36], [35, 34], [40, 30], [45, 16], [50, 0], [55, 0], [60, 0], [65, 0], [70, 0], [75, 0], [80, 0]]})
     for n, m in P.items():
         if n.startswith("10_"): m = m.translate([0, 0, -M.Z_A])            # le ruote girano attorno al loro asse
         pezzi[n] = dati(m)
@@ -43,7 +48,7 @@ for k in ("2m",):
                                 Z_IMB0=M.Z_IMB0, Z_IMBB=M.Z_PIATTO + 7.0, Z_PIATTO=M.Z_PIATTO, PIATTO=M.PIATTO, PERNO=M.perno_piattino(), Z_CUP=M.Z_CUP, CUP=M.CUP,
                                 Z_DISP=M.Z_DISP, Y_MID=M.Y_MID, PIEDE=M.PIEDE, PROF=s.PROF, facce=facce, STAB=STAB[k],
                                 litri=round(L * W * H / 1e6, 2), ruota_d=round(2 * M.R_CASS),
-                                Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, CROCI=croci, Z_PIGN_G=getattr(s, 'Z_PIGN_G', 10), Z_CROCE=getattr(s, 'Z_CROCE', 24), Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,
+                                Z_CORONA=M.Z_CORONA, Z_PIGNONE=s.Z_PIGNONE, PIGNONI=piv, CROCI=croci, RICARICA=ric, Z_PIGN_G=getattr(s, 'Z_PIGN_G', 10), Z_CROCE=getattr(s, 'Z_CROCE', 24), Y0=M.Y0, Z_TAS=M.Z_TAS, APRE=M.APRE,
                                 CAVI=[dict(nome=n, colore=c, r=r, punti=p, attacchi=a) for n, c, r, p, a in M.cavi()],
                                 FERMO={'sx': M.fermo_perno(-1), 'dx': M.fermo_perno(1)}, TH=M.TH, MOD=s.MOD, R_AN_T=M.R_AN_T, R_GT=M.R_GT, R_CASS=M.R_CASS, Z_COR=M.Z_COR, Z_COP=M.Z_COP, SP_DIV=s.SP_DIV, N=s.N, STAMPA=[[n, *s.stampa(s.a_mesh(m))[:2]] for n, m in M.pezzi().items()]),
                     PEZZI=pezzi)

@@ -40,6 +40,10 @@ def controlla(k):
         print("3b) croce di Malta: un giro dell'ingranaggio, uno scomparto; a riposo la ruota e' bloccata")
         import croce_check
         ok &= croce_check.controlla(M, P, C, stampa=print)
+    if M.ruote == 2:
+        print("3c) ricarica dall'alto: lo sportellino inclina la vaschetta pesata")
+        import ricarica_check
+        ok &= ricarica_check.controlla(M, P, C, stampa=print)
     print("4) le cassette si sfilano di lato")
     gruppi = {"sx": [n for n in P if n.endswith("_sx") and n[:2] in ("9_", "10", "11")], "dx": [n for n in P if n.endswith("_dx") and n[:2] in ("9_", "10", "11")]} if M.ruote == 2 else {"tutta": [n for n in P if n[:2] in ("9_", "10", "11")]}
     for lato, nomi in gruppi.items():
@@ -120,7 +124,7 @@ def controlla(k):
                 if v > lim: male("cavo", nome, "contro", c2, round(v, 2))
             for g in (20, 40, 60):
                 if inter(t, M.piattino(g)) > 0.05: male("cavo", nome, "contro il piattino aperto a", g)
-            for lato, nomi in (("sx", [n for n in P if n.endswith("_sx")]), ("dx", [n for n in P if n.endswith("_dx")])):
+            for lato, nomi in (("sx", [n for n in P if n.endswith("_sx") and n[:2] in ("9_", "10", "11")]), ("dx", [n for n in P if n.endswith("_dx") and n[:2] in ("9_", "10", "11")])):
                 sgn = -1 if lato == "sx" else 1
                 g0 = sum((P[n] for n in nomi), s8.Manifold())
                 for dy in (10, 40, 80):
