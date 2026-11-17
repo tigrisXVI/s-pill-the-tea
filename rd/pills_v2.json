@@ -1,0 +1,1064 @@
+[
+ {
+  "name": "Bisoprolol 3.75/7.5 mg (Bausch)",
+  "shape": "round",
+  "L": 8.0,
+  "W": 8.0,
+  "t": [
+   4.0,
+   4.0
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.171,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Bisoprolol%20Bausch%20Health%20film-coated%20tablet%20ENG%20SmPC_09001bee827312ef.pdf"
+ },
+ {
+  "name": "Levothyroxine 13-100 mcg (Medithyrox)",
+  "shape": "round",
+  "L": 6.5,
+  "W": 6.5,
+  "t": [
+   3.5,
+   3.5
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.099,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "yes",
+  "src": "https://docetp.mpa.se/LMF/Medithyrox%20tablet%20SmPC_09001bee8140e6bf.pdf"
+ },
+ {
+  "name": "Apixaban 5 mg (emc 13690)",
+  "shape": "oval",
+  "L": 10.0,
+  "W": 5.4,
+  "t": [
+   4.0,
+   4.0
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.144,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/13690/smpc"
+ },
+ {
+  "name": "Apixaban 5 mg (Prepixan)",
+  "shape": "oval",
+  "L": 10.0,
+  "W": 5.4,
+  "t": [
+   4.4,
+   4.4
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.159,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.geneesmiddeleninformatiebank.nl/smpc/h133117_smpc_en.pdf"
+ },
+ {
+  "name": "Apixaban 5 mg (Teva, max)",
+  "shape": "oval",
+  "L": 10.5,
+  "W": 5.6,
+  "t": [
+   4.8,
+   4.8
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.188,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://assets.hpra.ie/products/Human/36093/Licence_PA0436-049-002_26052026144142.pdf"
+ },
+ {
+  "name": "Metformin 1000 mg (Glucophage)",
+  "shape": "oval",
+  "L": 19.0,
+  "W": 10.5,
+  "t": [
+   6.4,
+   6.4
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.852,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://spc.fimea.fi/indox/english/html/nam/humspc/2/23189272.pdf"
+ },
+ {
+  "name": "Metformin 1000 mg SR",
+  "shape": "oval",
+  "L": 22.0,
+  "W": 10.0,
+  "t": [
+   8.0,
+   8.0
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 1.175,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/108079/spc"
+ },
+ {
+  "name": "Bisoprolol 1.25 mg",
+  "shape": "round",
+  "L": 5.0,
+  "W": 5.0,
+  "t": [
+   2.2,
+   2.8
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.042,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "yes",
+  "src": "https://docetp.mpa.se/LMF/Bisoprolol%20Medical%20Valley%20tablet%20ENG%20SmPC_09001bee807a1750.pdf"
+ },
+ {
+  "name": "Bisoprolol 2.5 mg",
+  "shape": "round",
+  "L": 7.0,
+  "W": 7.0,
+  "t": [
+   3.1,
+   3.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.116,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://docetp.mpa.se/LMF/Cardovia%20film-coated%20tablet%20ENG%20SmPC_09001bee847e6373.pdf"
+ },
+ {
+  "name": "Bisoprolol 10 mg (round)",
+  "shape": "round",
+  "L": 8.0,
+  "W": 8.0,
+  "t": [
+   3.6,
+   4.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.173,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/14906/smpc"
+ },
+ {
+  "name": "Bisoprolol 10 mg (oval)",
+  "shape": "oval",
+  "L": 9.0,
+  "W": 7.0,
+  "t": [
+   4.2,
+   6.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.215,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/13705/smpc"
+ },
+ {
+  "name": "Levothyroxine 25-175 mcg (Striroxin)",
+  "shape": "round",
+  "L": 7.0,
+  "W": 7.0,
+  "t": [
+   3.1,
+   3.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.116,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://docetp.mpa.se/LMF/Striroxin%20tablet%20ENG%20SmPC_09001bee84511527.pdf"
+ },
+ {
+  "name": "Levothyroxine 100 mcg (Eltroxin old)",
+  "shape": "round",
+  "L": 8.0,
+  "W": 8.0,
+  "t": [
+   3.6,
+   4.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.173,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://pharmac.govt.nz/assets/Eltroxin-Tablet-Guide-for-HCPs-May-2024.pdf"
+ },
+ {
+  "name": "Levothyroxine 100 mcg (Eltroxin new, flat)",
+  "shape": "flat",
+  "L": 6.5,
+  "W": 6.5,
+  "t": [
+   1.9,
+   2.6
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.064,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "yes",
+  "src": "https://pharmac.govt.nz/assets/Eltroxin-Tablet-Guide-for-HCPs-May-2024.pdf"
+ },
+ {
+  "name": "Atorvastatin 10 mg (round)",
+  "shape": "round",
+  "L": 6.0,
+  "W": 6.0,
+  "t": [
+   2.7,
+   3.4
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.073,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "yes",
+  "src": "https://docetp.mpa.se/LMF/Lipistad%20film-coated%20tablet%20SmPC_09001bee807a59d0.pdf"
+ },
+ {
+  "name": "Atorvastatin 20 mg (round)",
+  "shape": "round",
+  "L": 8.0,
+  "W": 8.0,
+  "t": [
+   3.6,
+   4.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.173,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Lipistad%20film-coated%20tablet%20SmPC_09001bee807a59d0.pdf"
+ },
+ {
+  "name": "Atorvastatin 40 mg (round)",
+  "shape": "round",
+  "L": 10.0,
+  "W": 10.0,
+  "t": [
+   4.5,
+   5.6
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.337,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Lipistad%20film-coated%20tablet%20SmPC_09001bee807a59d0.pdf"
+ },
+ {
+  "name": "Atorvastatin 80 mg (round)",
+  "shape": "round",
+  "L": 12.0,
+  "W": 12.0,
+  "t": [
+   5.4,
+   6.7
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.583,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Lipistad%20film-coated%20tablet%20SmPC_09001bee807a59d0.pdf"
+ },
+ {
+  "name": "Atorvastatin 10 mg (oval 8.1)",
+  "shape": "oval",
+  "L": 8.1,
+  "W": 5.1,
+  "t": [
+   3.1,
+   4.4
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.103,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://www.medicines.org.uk/emc/product/14003/smpc"
+ },
+ {
+  "name": "Atorvastatin 10 mg (oval 9.8)",
+  "shape": "oval",
+  "L": 9.8,
+  "W": 5.2,
+  "t": [
+   3.1,
+   4.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.129,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://www.medicines.org.uk/emc/product/13672/smpc"
+ },
+ {
+  "name": "Atorvastatin 20 mg (Teva)",
+  "shape": "oval",
+  "L": 10.0,
+  "W": 6.0,
+  "t": [
+   3.6,
+   5.2
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.175,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://assets.hpra.ie/products/Human/39414/Licence_PA1986-125-002_22122025152338.pdf"
+ },
+ {
+  "name": "Atorvastatin 30 mg",
+  "shape": "oval",
+  "L": 12.4,
+  "W": 6.4,
+  "t": [
+   3.8,
+   5.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.248,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/11753/smpc"
+ },
+ {
+  "name": "Atorvastatin 80 mg (12.3)",
+  "shape": "oval",
+  "L": 12.3,
+  "W": 6.5,
+  "t": [
+   3.9,
+   5.6
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.253,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/7051/smpc"
+ },
+ {
+  "name": "Atorvastatin 60 mg",
+  "shape": "oval",
+  "L": 16.0,
+  "W": 8.5,
+  "t": [
+   5.1,
+   7.3
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.563,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/14488/smpc"
+ },
+ {
+  "name": "Atorvastatin 40 mg (oval, 16.9)",
+  "shape": "oval",
+  "L": 16.9,
+  "W": 8.1,
+  "t": [
+   4.9,
+   7.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.54,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/4344/smpc"
+ },
+ {
+  "name": "Amlodipine 5 mg (Accord)",
+  "shape": "round",
+  "L": 6.6,
+  "W": 6.6,
+  "t": [
+   3.0,
+   3.7
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.097,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://docetp.mpa.se/LMF/Amlodipin%20Accord%20tablet%20ENG%20SmPC_09001bee807a28c5.pdf"
+ },
+ {
+  "name": "Amlodipine 10 mg (Accord)",
+  "shape": "round",
+  "L": 8.5,
+  "W": 8.5,
+  "t": [
+   3.8,
+   4.8
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.207,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Amlodipin%20Accord%20tablet%20ENG%20SmPC_09001bee807a28c5.pdf"
+ },
+ {
+  "name": "Amlodipine 5 mg (Medical Valley)",
+  "shape": "round",
+  "L": 8.83,
+  "W": 8.83,
+  "t": [
+   4.0,
+   4.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.232,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Amlodipin%20Medical%20Valley%20tablet%20ENG%20SmPC_09001bee807a28f3.pdf"
+ },
+ {
+  "name": "Amlodipine 10 mg (Medical Valley)",
+  "shape": "round",
+  "L": 10.6,
+  "W": 10.6,
+  "t": [
+   4.8,
+   5.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.402,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Amlodipin%20Medical%20Valley%20tablet%20ENG%20SmPC_09001bee807a28f3.pdf"
+ },
+ {
+  "name": "Amlodipine 5/10 mg (Vitabalans)",
+  "shape": "round",
+  "L": 9.0,
+  "W": 9.0,
+  "t": [
+   4.0,
+   5.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.246,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Amlodipine%20Vitabalans%20tablet%20ENG%20SmPC_09001bee807a2918.pdf"
+ },
+ {
+  "name": "Amlodipine/valsartan 5/160 mg",
+  "shape": "oval",
+  "L": 13.5,
+  "W": 7.0,
+  "t": [
+   4.2,
+   6.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.322,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Amlodipin_Valsartan%20Teva%20film-coated%20tablet%20ENG%20SmPC_09001bee827efc52.pdf"
+ },
+ {
+  "name": "Ramipril 1.25-5 mg (oblong)",
+  "shape": "oval",
+  "L": 8.0,
+  "W": 4.0,
+  "t": [
+   2.4,
+   3.4
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.062,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "yes",
+  "src": "https://www.medicines.org.uk/emc/product/8064/smpc/print"
+ },
+ {
+  "name": "Ramipril 10 mg (oblong)",
+  "shape": "oval",
+  "L": 7.0,
+  "W": 4.5,
+  "t": [
+   2.7,
+   3.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.069,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://www.medicines.org.uk/emc/product/2757/smpc"
+ },
+ {
+  "name": "Ramipril 2.5-10 mg (round)",
+  "shape": "round",
+  "L": 7.0,
+  "W": 7.0,
+  "t": [
+   3.1,
+   3.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.116,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://docetp.mpa.se/LMF/Ramiliv%20tablet%20ENG%20SmPC_09001bee83e94ca1.pdf"
+ },
+ {
+  "name": "Pantoprazole 20 mg",
+  "shape": "oval",
+  "L": 8.8,
+  "W": 4.6,
+  "t": [
+   2.8,
+   4.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.091,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "depends",
+  "src": "https://www.medicines.org.uk/emc/product/14643/smpc"
+ },
+ {
+  "name": "Pantoprazole 40 mg",
+  "shape": "oval",
+  "L": 11.9,
+  "W": 6.2,
+  "t": [
+   3.7,
+   5.3
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.223,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Pantoprazol%20Orion%20gastro-resistant%20tablet%20ENG%20SmPC_09001bee807a5af4.pdf"
+ },
+ {
+  "name": "Allopurinol 100 mg",
+  "shape": "round",
+  "L": 8.0,
+  "W": 8.0,
+  "t": [
+   3.6,
+   4.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.173,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Allopurinol%20Accord%20tablet%20ENG%20SmPC_09001bee84da7190.pdf"
+ },
+ {
+  "name": "Allopurinol 300 mg",
+  "shape": "round",
+  "L": 11.2,
+  "W": 11.2,
+  "t": [
+   5.0,
+   6.3
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.474,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://docetp.mpa.se/LMF/Allopurinol%20Accord%20tablet%20ENG%20SmPC_09001bee84da7190.pdf"
+ },
+ {
+  "name": "Furosemide 500 mg (flat)",
+  "shape": "flat",
+  "L": 13.0,
+  "W": 13.0,
+  "t": [
+   3.9,
+   5.2
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.513,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://products.tevauk.com/media/download/39977"
+ },
+ {
+  "name": "Metformin 850 mg",
+  "shape": "oval",
+  "L": 19.0,
+  "W": 9.0,
+  "t": [
+   5.4,
+   7.7
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.75,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/10760/smpc"
+ },
+ {
+  "name": "Metformin 1000 mg (19x10)",
+  "shape": "oval",
+  "L": 19.0,
+  "W": 10.0,
+  "t": [
+   6.0,
+   8.6
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.926,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/101269/smpc"
+ },
+ {
+  "name": "Metformin 1000 mg (Accord)",
+  "shape": "oval",
+  "L": 19.0,
+  "W": 10.8,
+  "t": [
+   6.5,
+   9.3
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 1.08,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://fass.se/health/product/20200601000070/stock-status"
+ },
+ {
+  "name": "Metformin 1000 mg PR (21.1)",
+  "shape": "oval",
+  "L": 21.1,
+  "W": 10.1,
+  "t": [
+   6.1,
+   8.7
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 1.049,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/42623/spc"
+ },
+ {
+  "name": "Metformin 1000 mg PR (22.6)",
+  "shape": "oval",
+  "L": 22.6,
+  "W": 10.6,
+  "t": [
+   6.4,
+   9.1
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 1.238,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/102232/smpc"
+ },
+ {
+  "name": "Amoxicillin 500 mg",
+  "shape": "oval",
+  "L": 16.5,
+  "W": 8.0,
+  "t": [
+   4.8,
+   6.9
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.515,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/103426/spc"
+ },
+ {
+  "name": "Co-amoxiclav 500/125 mg",
+  "shape": "oval",
+  "L": 20.2,
+  "W": 9.8,
+  "t": [
+   5.9,
+   8.4
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.945,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://assets.hpra.ie/products/Human/30797/Licence_PA2315-001-001_23022023084313.pdf"
+ },
+ {
+  "name": "Co-amoxiclav 875/125 mg",
+  "shape": "oval",
+  "L": 22.0,
+  "W": 10.0,
+  "t": [
+   6.0,
+   8.6
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 1.072,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://www.geneesmiddeleninformatiebank.nl/smpc/h122310_smpc_en.pdf"
+ },
+ {
+  "name": "Calcium/Mg chewable 13 mm (flat)",
+  "shape": "flat",
+  "L": 13.0,
+  "W": 13.0,
+  "t": [
+   3.9,
+   5.2
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.513,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://fass.se/product/20200527000086/pl"
+ },
+ {
+  "name": "Calcium/D3 chewable 14 mm",
+  "shape": "chew",
+  "L": 14.0,
+  "W": 14.0,
+  "t": [
+   5.3,
+   7.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 0.806,
+  "comp": false,
+  "comp_any": false,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://fass.se/product/20010629000118/stock-status"
+ },
+ {
+  "name": "Calcium/D3 chewable 17 mm",
+  "shape": "chew",
+  "L": 17.0,
+  "W": 17.0,
+  "t": [
+   6.5,
+   8.5
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 1.443,
+  "comp": false,
+  "comp_any": false,
+  "exit": false,
+  "exit_any": false,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/24306"
+ },
+ {
+  "name": "Calcium 1 g chewable 18 mm",
+  "shape": "chew",
+  "L": 18.0,
+  "W": 18.0,
+  "t": [
+   6.8,
+   9.0
+  ],
+  "t_ev": "HYP",
+  "vol_cm3": 1.713,
+  "comp": false,
+  "comp_any": false,
+  "exit": false,
+  "exit_any": false,
+  "top": "no",
+  "src": "https://fass.se/health/product/19970425000139/stock-status"
+ },
+ {
+  "name": "Hard capsule size 000",
+  "shape": "capsule",
+  "L": 26.14,
+  "W": 9.91,
+  "t": [
+   9.9,
+   9.9
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 1.761,
+  "comp": false,
+  "comp_any": false,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 00",
+  "shape": "capsule",
+  "L": 23.3,
+  "W": 8.53,
+  "t": [
+   8.5,
+   8.5
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 1.169,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 0",
+  "shape": "capsule",
+  "L": 21.7,
+  "W": 7.65,
+  "t": [
+   7.7,
+   7.7
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.88,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 1",
+  "shape": "capsule",
+  "L": 19.4,
+  "W": 6.91,
+  "t": [
+   6.9,
+   6.9
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.641,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 2",
+  "shape": "capsule",
+  "L": 18.0,
+  "W": 6.35,
+  "t": [
+   6.3,
+   6.3
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.503,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 3",
+  "shape": "capsule",
+  "L": 15.9,
+  "W": 5.82,
+  "t": [
+   5.8,
+   5.8
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.371,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 4",
+  "shape": "capsule",
+  "L": 14.3,
+  "W": 5.31,
+  "t": [
+   5.3,
+   5.3
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.277,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 5",
+  "shape": "capsule",
+  "L": 11.1,
+  "W": 4.91,
+  "t": [
+   4.9,
+   4.9
+  ],
+  "t_ev": "DS",
+  "vol_cm3": 0.179,
+  "comp": true,
+  "comp_any": true,
+  "exit": true,
+  "exit_any": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ }
+]
