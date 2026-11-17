@@ -39,7 +39,7 @@ VANO = 22.0
 SP_PALETTA = 1.2
 SCIVOLO_GRADI, L_SCIVOLO, SVASO = 40.0, 26.0, 10.0
 L_VASCA, PEND_VASCA, BORDINO_V = 40.0, 15.0, 7.0
-SEG = 192
+SEG = int(__import__("os").environ.get("BLISTRA_SEG", "192"))   # 192 per le STL; meno per i file STEP
 
 # ---------------------------------------------------------------- quote derivate
 TAN = math.tan(math.radians(PENDENZA))

@@ -2,3 +2,6 @@
 firmware/scatoletta_blistra/config.h
 __pycache__/
 *.blend1
+v9/step/
+rd/batch/stato.json
+rd/batch/risultati/
