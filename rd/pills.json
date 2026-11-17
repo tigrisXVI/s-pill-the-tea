@@ -1,0 +1,434 @@
+[
+ {
+  "name": "Bisoprolol 1.25 mg",
+  "shape": "round",
+  "L": 5.0,
+  "W": 5.0,
+  "t": [
+   2.0,
+   2.5
+  ],
+  "t_est": true,
+  "vol": 0.038,
+  "comp": true,
+  "exit": true,
+  "top": "yes",
+  "src": "https://www.medicines.org.uk/emc/medicine/43515/spc"
+ },
+ {
+  "name": "Bisoprolol 5 mg",
+  "shape": "round",
+  "L": 7.0,
+  "W": 7.0,
+  "t": [
+   2.8,
+   3.5
+  ],
+  "t_est": true,
+  "vol": 0.103,
+  "comp": true,
+  "exit": true,
+  "top": "yes",
+  "src": "https://www.medicines.org.uk/emc/product/101896/smpc"
+ },
+ {
+  "name": "Levothyroxine 25 mcg",
+  "shape": "round",
+  "L": 7.0,
+  "W": 7.0,
+  "t": [
+   2.8,
+   3.5
+  ],
+  "t_est": true,
+  "vol": 0.103,
+  "comp": true,
+  "exit": true,
+  "top": "yes",
+  "src": "https://www.medicines.org.uk/emc/product/100043/smpc"
+ },
+ {
+  "name": "Rivaroxaban 20 mg (A)",
+  "shape": "round",
+  "L": 6.1,
+  "W": 6.1,
+  "t": [
+   2.4,
+   3.0
+  ],
+  "t_est": true,
+  "vol": 0.068,
+  "comp": true,
+  "exit": true,
+  "top": "yes",
+  "src": "https://www.medicines.org.uk/emc/product/15725/smpc"
+ },
+ {
+  "name": "Rivaroxaban 20 mg (B)",
+  "shape": "round",
+  "L": 7.0,
+  "W": 7.0,
+  "t": [
+   2.8,
+   3.5
+  ],
+  "t_est": true,
+  "vol": 0.103,
+  "comp": true,
+  "exit": true,
+  "top": "yes",
+  "src": "https://www.medicines.org.uk/emc/product/15714/smpc"
+ },
+ {
+  "name": "Rivaroxaban 20 mg (C)",
+  "shape": "round",
+  "L": 10.5,
+  "W": 10.5,
+  "t": [
+   4.2,
+   5.2
+  ],
+  "t_est": true,
+  "vol": 0.348,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/15820/smpc"
+ },
+ {
+  "name": "Atorvastatin 40 mg (round)",
+  "shape": "round",
+  "L": 8.5,
+  "W": 8.5,
+  "t": [
+   3.4,
+   4.2
+  ],
+  "t_est": true,
+  "vol": 0.184,
+  "comp": true,
+  "exit": true,
+  "top": "depends",
+  "src": "https://www.medicines.org.uk/emc/product/12904/smpc"
+ },
+ {
+  "name": "Atorvastatin 40 mg (round, 11)",
+  "shape": "round",
+  "L": 11.0,
+  "W": 11.0,
+  "t": [
+   4.4,
+   5.5
+  ],
+  "t_est": true,
+  "vol": 0.4,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/13505/smpc/print"
+ },
+ {
+  "name": "Atorvastatin 40 mg (oval)",
+  "shape": "oval",
+  "L": 14.6,
+  "W": 7.3,
+  "t": [
+   3.6,
+   5.5
+  ],
+  "t_est": true,
+  "vol": 0.325,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/14006/smpc"
+ },
+ {
+  "name": "Atorvastatin 40 mg (oval, 16.9)",
+  "shape": "oval",
+  "L": 16.9,
+  "W": 8.1,
+  "t": [
+   4.0,
+   6.1
+  ],
+  "t_est": true,
+  "vol": 0.463,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/4344/smpc"
+ },
+ {
+  "name": "Apixaban 5 mg",
+  "shape": "oval",
+  "L": 10.0,
+  "W": 5.4,
+  "t": [
+   4.0,
+   4.0
+  ],
+  "t_est": false,
+  "vol": 0.144,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/13690/smpc"
+ },
+ {
+  "name": "Co-amoxiclav 250/125 mg",
+  "shape": "oval",
+  "L": 18.1,
+  "W": 8.6,
+  "t": [
+   4.3,
+   6.4
+  ],
+  "t_est": true,
+  "vol": 0.559,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/11485/smpc"
+ },
+ {
+  "name": "Co-amoxiclav 500/125 mg",
+  "shape": "oval",
+  "L": 21.0,
+  "W": 10.0,
+  "t": [
+   5.0,
+   7.5
+  ],
+  "t_est": true,
+  "vol": 0.876,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/21728"
+ },
+ {
+  "name": "Metformin 1000 mg (film)",
+  "shape": "oval",
+  "L": 19.0,
+  "W": 10.0,
+  "t": [
+   5.0,
+   7.5
+  ],
+  "t_est": true,
+  "vol": 0.793,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/101269/smpc"
+ },
+ {
+  "name": "Metformin 1000 mg SR",
+  "shape": "oval",
+  "L": 22.0,
+  "W": 10.0,
+  "t": [
+   8.0,
+   8.0
+  ],
+  "t_est": false,
+  "vol": 1.175,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/108079/spc"
+ },
+ {
+  "name": "Metformin 1000 mg PR",
+  "shape": "oval",
+  "L": 22.6,
+  "W": 10.6,
+  "t": [
+   5.3,
+   7.9
+  ],
+  "t_est": true,
+  "vol": 1.06,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/product/102232/smpc"
+ },
+ {
+  "name": "Calcium/D3 chewable 17 mm",
+  "shape": "round",
+  "L": 17.0,
+  "W": 17.0,
+  "t": [
+   6.8,
+   8.5
+  ],
+  "t_est": true,
+  "vol": 1.476,
+  "comp": false,
+  "exit": false,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/24306"
+ },
+ {
+  "name": "Calcium/D3 chewable 18 mm",
+  "shape": "round",
+  "L": 18.0,
+  "W": 18.0,
+  "t": [
+   7.2,
+   9.0
+  ],
+  "t_est": true,
+  "vol": 1.752,
+  "comp": false,
+  "exit": false,
+  "top": "no",
+  "src": "https://www.medicines.org.uk/emc/medicine/40234/spc"
+ },
+ {
+  "name": "Placebo mini-tablet",
+  "shape": "round",
+  "L": 2.3,
+  "W": 2.3,
+  "t": [
+   0.9,
+   1.1
+  ],
+  "t_est": true,
+  "vol": 0.004,
+  "comp": true,
+  "exit": true,
+  "top": "yes",
+  "src": "https://www.researchgate.net/publication/370187382"
+ },
+ {
+  "name": "Hard capsule size 000",
+  "shape": "capsule",
+  "L": 26.14,
+  "W": 9.91,
+  "t": [
+   9.9,
+   9.9
+  ],
+  "t_est": false,
+  "vol": 1.761,
+  "comp": false,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 00",
+  "shape": "capsule",
+  "L": 23.3,
+  "W": 8.53,
+  "t": [
+   8.5,
+   8.5
+  ],
+  "t_est": false,
+  "vol": 1.169,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 0",
+  "shape": "capsule",
+  "L": 21.7,
+  "W": 7.65,
+  "t": [
+   7.7,
+   7.7
+  ],
+  "t_est": false,
+  "vol": 0.88,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 1",
+  "shape": "capsule",
+  "L": 19.4,
+  "W": 6.91,
+  "t": [
+   6.9,
+   6.9
+  ],
+  "t_est": false,
+  "vol": 0.641,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 2",
+  "shape": "capsule",
+  "L": 18.0,
+  "W": 6.35,
+  "t": [
+   6.3,
+   6.3
+  ],
+  "t_est": false,
+  "vol": 0.503,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 3",
+  "shape": "capsule",
+  "L": 15.9,
+  "W": 5.82,
+  "t": [
+   5.8,
+   5.8
+  ],
+  "t_est": false,
+  "vol": 0.371,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 4",
+  "shape": "capsule",
+  "L": 14.3,
+  "W": 5.31,
+  "t": [
+   5.3,
+   5.3
+  ],
+  "t_est": false,
+  "vol": 0.277,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ },
+ {
+  "name": "Hard capsule size 5",
+  "shape": "capsule",
+  "L": 11.1,
+  "W": 4.91,
+  "t": [
+   4.9,
+   4.9
+  ],
+  "t_est": false,
+  "vol": 0.179,
+  "comp": true,
+  "exit": true,
+  "top": "no",
+  "src": "https://cache.erowid.org/archive/rhodium/pdf/gelcap.sizechart.pdf"
+ }
+]
