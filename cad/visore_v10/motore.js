@@ -1,0 +1,668 @@
+
+import * as THREE from './three.js';
+import { PASSO, Q, MODELLI } from './modello_v10.js?v=1.0';
+
+const P = MODELLI['2m'].PAR, PZ = MODELLI['2m'].PEZZI;
+
+// ---------------- lingua: inglese di default, italiano con ?lang=it
+const LANG = (() => { const q = new URLSearchParams(location.search).get('lang'); if (q === 'it' || q === 'en') { try { localStorage.setItem('blistra-lang', q); } catch (e) {} return q; }
+  try { return localStorage.getItem('blistra-lang') === 'it' ? 'it' : 'en'; } catch (e) { return 'en'; } })();
+const IT = LANG === 'it', NUM = IT ? 'it-IT' : 'en-GB';
+const TX = {
+  en: { title: 'Blistra pill box v1.0 – interactive 3D model', h1: 'Blistra pill box v1.0 – interactive 3D model',
+    intro: 'Two pill wheels moved by Geneva drives, a weighed top refill, every printed part in PETG. The pills are simulated rigid bodies: they fall, roll and settle with gravity and friction. Drag to rotate, pinch or scroll to zoom, and tap any part to see what it is.',
+    lingua: 'Italiano', carico: 'Loading the 3D model and the physics engine…', caricoFis: 'Loading the physics engine…', noWebgl: 'Your browser cannot show 3D graphics (WebGL is off).',
+    tourOn: '❚❚ Stop the automatic demo', tourOff: '▶ Watch the automatic demo', tasto: 'Press the button',
+    cupOut: 'Take the cup', cupIn: 'Put the cup back', sbaglia: 'Test: remove one pill from the next dose', sbagliaFatto: d => 'Removed one pill from ' + d,
+    out: s => 'Pull out the ' + s + ' cassette', in: s => 'Put the ' + s + ' cassette back', sx: 'left', dx: 'right',
+    dentroOn: 'Solid shell', dentroOff: 'Look inside (wires and boards)', ricarica: 'Refill the week', ricaricaAlto: 'Refill from the top (weighed)',
+    suona: 'Ring the alarm', foto: 'Save a picture', miniOn: 'Remove the tiny pills', miniOff: 'Try with tiny pills', smontaOn: 'Put it back together', smontaOff: 'Take it apart', esplosoLbl: 'Take apart',
+    partiTit: 'Explore every part', partiAiuto: 'Pick a part, or tap it in the 3D view: everything else turns see-through, so you can see the parts hidden inside. Tap it again, or "Show the whole box", to go back.',
+    tutto: 'Show the whole box', misureTit: 'Sizes and stability', comeTit: 'How it works',
+    occupata: 'One moment: the box is preparing a dose.', rimonto: 'Putting the box back together first…', rimetto: 'Putting the cassettes back first…', bicchiere: 'Putting the cup back first…',
+    liberata: 'A caregiver checked the dose: the tray opens.', fineSett: 'The week is finished: refilling the wheels.', aspettaCas: 'Wait until this dose is finished, then pull the cassette out.',
+    aspettaProva: 'Wait until the box is ready for the next dose.', nessuna: 'There are no pills left in the next dose.', prendiPrima: 'Take the cup to finish this dose.', scelto: (g, n) => g + ': ' + n,
+    giorni: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], momenti: ['morning', 'noon', 'afternoon', 'evening'],
+    oled: { fine: ['Done', 'refill'], pronta: ['Dose time', 'press the button'], gira: ['One moment', 'preparing'], cade: ['One moment', 'preparing'], pesa: ['Weighing…', ''],
+      aspetta_cup: ['Put back', 'the cup'], apre: ['Ready', ''], chiude: ['Ready', ''], prendi: ['Take', 'the cup'], presa: ['Done ✓', 'put it back'], sbagliata: ['Warning', 'check the dose'] },
+    bloccate: n => n + (n > 1 ? ' pills did not reach' : ' pill did not reach') + ' the tray. ', pesoSb: (a, b) => 'Weight ' + a + ' mg instead of ' + b + ' mg: the tray stays closed and the app alerts the family. Press the button to release it after checking.',
+    statoDose: (n, a, b) => 'Dose ' + n + ' · tray ' + a + ' g of ' + b + ' g set', statoPronta: 'Ready: press the button for the first dose', cup: c => ' · cup ' + (c ? 'in place' : 'taken'), prese: n => ' · doses taken ' + n,
+    cadute: n => ' · ' + n + (n > 1 ? ' pills' : ' pill') + ' fell outside the cup',
+    righe: (cm, P, S2) => [['Size (body)', cm(P.L) + ' × ' + cm(P.W) + ' × ' + cm(P.H) + ' cm (' + P.litri.toLocaleString(NUM) + ' litres)'], ['Foot', cm(P.PIEDE.x1 - P.PIEDE.x0) + ' × ' + cm(2 * P.PIEDE.y) + ' cm, with ' + S2.zavorra + ' g of steel inside'],
+      ['Wheels', '2 of ' + cm(P.ruota_d) + ' cm, Geneva drive with ' + P.N + ' slots, ' + P.Z_CROCE + '-tooth gear, ' + P.Z_PIGN_G + '-tooth pinion (module ' + P.MOD + ')'], ['Weight', 'about ' + S2.peso + ' g, centre of mass ' + cm(S2.cg) + ' cm above the table'],
+      ['Tips over only past', S2.lato + '° sideways, ' + S2.avanti + '° forwards, ' + S2.dietro + '° backwards'], ['One compartment', S2.tasca.toLocaleString(NUM) + ' cm³'], ['Power', 'USB-C 5 V at the back (2 A supply)'],
+      ['Internet', '2.4 GHz Wi-Fi of the ESP32-S3; antenna 15 mm from the nearest metal'], ['3D printing', P.STAMPA.length + ' parts in PETG (0.4 mm nozzle, 1.2 mm walls = 3 lines, 0.3–0.4 mm clearances); most print with few or no supports']],
+    TAPPE: ["Blistra pill box v1.0: two wheels with 15 compartments each, a week of doses. Every printed part is PETG.", "At dose time the box rings and the display lights up.",
+      "The person presses the button: the Geneva drive advances the wheel by exactly one compartment, the pills fall onto the weighing tray and, if the weight is right, slide into the cup.",
+      "The cup is taken: a magnet and a sensor tell the family that the dose was taken.", "The cup goes back in its place.",
+      "Top refill: the pills for one compartment are weighed on a second scale. Closing the lid tips the floor and the pills slide into the wheel. On the way out they are weighed again: the weights must match.",
+      "Inside: the ESP32 with Wi-Fi, the motor driver, two load cells and a clock with a battery. ♻ Screws and magnets come from two broken hard disks.",
+      "Taken apart: every printable part, the Geneva drive behind each wheel, the refill chutes. Use \"Explore every part\" below to look at any of them.", "And back together. Every measurement is checked by the computer before printing."] },
+  it: { title: 'Scatoletta Blistra v1.0 – modello 3D interattivo', h1: 'Scatoletta Blistra v1.0 – modello 3D interattivo',
+    intro: 'Due ruote mosse da una croce di Malta, ricarica dall\'alto pesata, tutto in PETG. Le pillole sono corpi rigidi simulati: cadono, rotolano e si appoggiano con la gravità e l\'attrito. Trascina per girarla, pizzica (o rotella) per avvicinarti e tocca un pezzo per sapere cos\'è.',
+    lingua: 'English', carico: 'Carico il modello 3D e il motore fisico…', caricoFis: 'Carico il motore fisico…', noWebgl: 'Il tuo browser non riesce a mostrare il 3D (WebGL spento).',
+    tourOn: '❚❚ Ferma la dimostrazione automatica', tourOff: '▶ Guarda la dimostrazione automatica', tasto: 'Premi il tasto',
+    cupOut: 'Prendi il bicchierino', cupIn: 'Rimetti il bicchierino', sbaglia: 'Prova: togli una pillola dalla prossima dose', sbagliaFatto: d => 'Tolta una pillola da ' + d,
+    out: s => 'Sfila la cassetta di ' + s, in: s => 'Rimetti la cassetta di ' + s, sx: 'sinistra', dx: 'destra',
+    dentroOn: 'Guscio pieno', dentroOff: 'Guarda dentro (cavi e schede)', ricarica: 'Ricarica la settimana', ricaricaAlto: 'Ricarica dall\'alto (pesata)',
+    suona: 'Fai suonare la sveglia', foto: 'Salva una foto', miniOn: 'Togli le pillole minuscole', miniOff: 'Prova con pillole minuscole', smontaOn: 'Rimonta tutto', smontaOff: 'Smonta tutto', esplosoLbl: 'Smonta',
+    partiTit: 'Esplora ogni pezzo', partiAiuto: 'Scegli un pezzo, o toccalo nel 3D: tutto il resto diventa trasparente e vedi anche i pezzi nascosti dentro. Toccalo di nuovo, o «Mostra tutta la scatola», per tornare indietro.',
+    tutto: 'Mostra tutta la scatola', misureTit: 'Misure e stabilità', comeTit: 'Come funziona',
+    occupata: 'Un attimo: la scatola sta preparando una dose.', rimonto: 'Prima la rimonto…', rimetto: 'Prima rimetto le cassette…', bicchiere: 'Prima rimetto il bicchierino…',
+    liberata: 'Un familiare ha controllato la dose: il piattino si apre.', fineSett: 'Settimana finita: ricarico le ruote.', aspettaCas: 'Aspetta che finisca questa dose, poi sfila la cassetta.',
+    aspettaProva: 'Aspetta che la scatola sia pronta per la prossima dose.', nessuna: 'Nella prossima dose non ci sono più pillole.', prendiPrima: 'Prendi il bicchierino per finire questa dose.', scelto: (g, n) => g + ': ' + n,
+    giorni: ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'], momenti: ['mattina', 'mezzogiorno', 'pomeriggio', 'sera'],
+    oled: { fine: ['Fine', 'ricarica'], pronta: ["E' ora", 'premi il tasto'], gira: ['Un attimo', 'preparo la dose'], cade: ['Un attimo', 'preparo la dose'], pesa: ['Peso…', ''],
+      aspetta_cup: ['Metti', 'il bicchierino'], apre: ['Pronto', ''], chiude: ['Pronto', ''], prendi: ['Prendi', 'il bicchierino'], presa: ['Fatto ✓', 'rimettilo giù'], sbagliata: ['Attenzione', 'controlla la dose'] },
+    bloccate: n => n + (n > 1 ? ' pillole non sono arrivate' : ' pillola non è arrivata') + ' sul piattino. ', pesoSb: (a, b) => 'Peso ' + a + ' mg invece di ' + b + ' mg: il piattino resta chiuso e l\'app avvisa la famiglia. Premi il tasto per liberarlo dopo aver controllato.',
+    statoDose: (n, a, b) => 'Dose ' + n + ' · piattino ' + a + ' g su ' + b + ' g impostati', statoPronta: 'Pronta: premi il tasto per la prima dose', cup: c => ' · bicchierino ' + (c ? 'al suo posto' : 'tolto'), prese: n => ' · dosi prese ' + n,
+    cadute: n => ' · ' + n + (n > 1 ? ' pillole cadute' : ' pillola caduta') + ' fuori dal bicchierino',
+    righe: (cm, P, S2) => [['Ingombro (corpo)', cm(P.L) + ' × ' + cm(P.W) + ' × ' + cm(P.H) + ' cm (' + P.litri.toLocaleString(NUM) + ' litri)'], ['Piede', cm(P.PIEDE.x1 - P.PIEDE.x0) + ' × ' + cm(2 * P.PIEDE.y) + ' cm, con dentro ' + S2.zavorra + ' g di ferro'],
+      ['Ruote', '2 da ' + cm(P.ruota_d) + ' cm, croce di Malta a ' + P.N + ' fessure, ingranaggio da ' + P.Z_CROCE + ' denti, pignone da ' + P.Z_PIGN_G + ' (modulo ' + String(P.MOD).replace('.', ',') + ')'], ['Peso', 'circa ' + S2.peso + ' g, baricentro a ' + cm(S2.cg) + ' cm da terra'],
+      ['Si ribalta se inclinata', 'di lato ' + S2.lato + '°, in avanti ' + S2.avanti + '°, indietro ' + S2.dietro + '°'], ['Uno scomparto', S2.tasca.toLocaleString(NUM) + ' cm³'], ['Corrente', 'USB-C 5 V dietro (alimentatore da 2 A)'],
+      ['Internet', 'Wi-Fi 2,4 GHz dell\'ESP32-S3; antenna a 15 mm dal metallo più vicino'], ['Stampa 3D', P.STAMPA.length + ' pezzi in PETG (ugello 0,4 mm, pareti 1,2 mm = 3 passate, giochi 0,3–0,4 mm); quasi tutti si stampano senza o con pochi supporti']],
+    TAPPE: ["Scatoletta Blistra v1.0: due ruote da 15 scomparti, una settimana di dosi. Tutti i pezzi si stampano in PETG.", "All'ora della dose la scatoletta suona e il display si accende.",
+      "La persona preme il tasto: la croce di Malta fa avanzare la ruota di uno scomparto esatto, le pillole cadono sul piattino pesato e, se il peso è giusto, scivolano nel bicchierino.",
+      "Si prende il bicchierino: un magnete e un sensore dicono alla famiglia che la dose è stata presa.", "Il bicchierino torna al suo posto.",
+      "Ricarica dall'alto: le pillole di uno scomparto si pesano su una seconda bilancia. Chiudendo lo sportellino, il fondo si abbassa e le pillole scivolano nella ruota. In uscita si ripesano: devono pesare uguale.",
+      "Dentro: ESP32 con il Wi-Fi, driver dei motorini, due celle di carico, orologio con pila. ♻ Viti e magneti vengono da due hard disk rotti.",
+      "Smontata: ogni pezzo stampabile, la croce di Malta dietro ogni ruota, gli scivoli della ricarica. Con «Esplora ogni pezzo», qui sotto, puoi guardarli uno per uno.", "E si rimonta. Ogni misura è controllata dal computer prima di stampare."] } };
+const t = k => TX[LANG][k];
+document.documentElement.lang = LANG; document.title = t('title');
+document.querySelectorAll('[data-t]').forEach(e => { e.textContent = t(e.dataset.t); });
+document.querySelectorAll('[data-lang]').forEach(e => { e.hidden = e.dataset.lang !== LANG; });
+document.getElementById('lingua').textContent = t('lingua'); document.getElementById('lingua').lang = IT ? 'en' : 'it';
+document.getElementById('lingua').onclick = () => { const u = new URL(location.href); u.searchParams.set('lang', IT ? 'en' : 'it'); location.href = u.toString(); };
+document.getElementById('stato').textContent = t('carico');
+const rad = Math.PI / 180, S = 0.1;            // la scena e' in mm, la fisica in cm
+const box = document.getElementById('scena'), stato = document.getElementById('stato');
+const $ = id => document.getElementById(id);
+
+// ---------------- materiali
+const MAT = {
+  corpo: () => new THREE.MeshPhysicalMaterial({ color: '#2d3137', roughness: .42, clearcoat: .35, clearcoatRoughness: .35 }),
+  cappello: () => new THREE.MeshPhysicalMaterial({ color: '#a9d6c4', roughness: .5, clearcoat: .2, clearcoatRoughness: .5, sheen: .3, sheenColor: '#ffffff' }),
+  piede: () => new THREE.MeshPhysicalMaterial({ color: '#22252a', roughness: .62 }),
+  bianco: () => new THREE.MeshPhysicalMaterial({ color: '#f4f2ec', roughness: .32, clearcoat: .2 }),
+  vetro: () => new THREE.MeshPhysicalMaterial({ color: '#ffffff', transmission: .92, thickness: 2, roughness: .06, ior: 1.49, attenuationColor: '#bfe3ea', attenuationDistance: 25, specularIntensity: 1, clearcoat: 1, transparent: true }),
+  kapton: () => new THREE.MeshPhysicalMaterial({ color: '#d9822b', roughness: .4 }),
+  silice: () => new THREE.MeshPhysicalMaterial({ color: '#d6ecf7', roughness: .8 }),
+  tpu: () => new THREE.MeshPhysicalMaterial({ color: '#4f7cac', roughness: .7 }),
+  cassa: () => new THREE.MeshPhysicalMaterial({ color: '#eceae4', roughness: .38, clearcoat: .25 }),
+  ceramica: () => new THREE.MeshPhysicalMaterial({ color: '#fbfbf8', roughness: .18, clearcoat: 1, clearcoatRoughness: .08 }),
+  imbuto: () => new THREE.MeshPhysicalMaterial({ color: '#e8eef2', roughness: .25, transmission: .6, thickness: 1.2, transparent: true }),
+  arancio: () => new THREE.MeshPhysicalMaterial({ color: '#e99a2c', roughness: .4 }),
+  grigio: () => new THREE.MeshPhysicalMaterial({ color: '#8f99a6', roughness: .45 }),
+  metallo: () => new THREE.MeshPhysicalMaterial({ color: '#c9ccd1', metalness: 1, roughness: .32 }),
+  ottone: () => new THREE.MeshPhysicalMaterial({ color: '#c8a24a', metalness: 1, roughness: .35 }),
+  ferro: () => new THREE.MeshPhysicalMaterial({ color: '#5b6068', metalness: .9, roughness: .55 }),
+  pcb: () => new THREE.MeshPhysicalMaterial({ color: '#1f6b3a', roughness: .5, clearcoat: .4 }),
+  pcbBlu: () => new THREE.MeshPhysicalMaterial({ color: '#1f4fa8', roughness: .5, clearcoat: .4 }),
+  nero: () => new THREE.MeshPhysicalMaterial({ color: '#111316', roughness: .3, clearcoat: .6 }),
+  servo: () => new THREE.MeshPhysicalMaterial({ color: '#2f63c9', roughness: .5 }),
+  alluminio: () => new THREE.MeshPhysicalMaterial({ color: '#cfd3d8', metalness: 1, roughness: .45 }),
+  nastro: () => new THREE.MeshPhysicalMaterial({ color: '#9aa3ad', roughness: .6 }),
+  magnete: () => new THREE.MeshPhysicalMaterial({ color: '#dfe3e8', metalness: 1, roughness: .15, clearcoat: 1 }) };
+// [nome, italiano, inglese, materiale, gruppo]
+const GRUPPI = { case: ['Involucro', 'Case'], mech: ['Ruote e croce di Malta', 'Wheels and Geneva drive'], dose: ['Erogazione e bilancia', 'Dispensing and scale'], refill: ['Ricarica dall\'alto', 'Top refill'], elec: ['Elettronica e sensori', 'Electronics and sensors'], recov: ['♻ Pezzi di recupero', '♻ Recovered parts'] };
+const PEZZI = [
+  [/^d_esp32/, 'ESP32-S3 SuperMini: Wi-Fi e cervello della scatola', 'ESP32-S3 SuperMini: Wi-Fi and brain of the box', 'nero', 'elec'], [/^d_drv8833/, 'Driver DRV8833: muove i due motorini', 'DRV8833 driver: runs the two motors', 'pcbBlu', 'elec'], [/^d_hx711/, 'HX711: legge le due celle di carico', 'HX711: reads the two load cells', 'pcb', 'elec'],
+  [/^d_rtc/, 'Orologio DS3231 con pila a bottone', 'DS3231 clock with coin cell', 'pcbBlu', 'elec'], [/^d_amplificatore/, 'Amplificatore MAX98357A', 'MAX98357A audio amplifier', 'pcbBlu', 'elec'], [/^d_motore/, 'Motorini N20 con riduttore', 'N20 gear motors', 'metallo', 'mech'],
+  [/^d_celle/, 'Celle di carico (in basso: dose in uscita; in alto: ricarica)', 'Load cells (bottom: dose going out; top: refill coming in)', 'alluminio', 'dose'], [/^d_viti/, '♻ Viti con filettatura, da due hard disk', '♻ Threaded screws from two hard disks', 'metallo', 'recov'], [/^d_magneti/, '♻ Magneti al neodimio, recuperati', '♻ Neodymium magnets, recovered', 'magnete', 'recov'],
+  [/^1_guscio/, 'Corpo', 'Body', 'corpo', 'case'], [/^2_cappello/, 'Cappello colorato', 'Coloured top', 'cappello', 'case'], [/^3_piede/, 'Piede con zavorra', 'Weighted foot', 'piede', 'case'], [/^c_piastra/, 'Piastra di ferro (zavorra)', 'Steel ballast plate', 'ferro', 'case'], [/^12_tasto/, 'Tasto tondo', 'Round button', 'bianco', 'case'],
+  [/^4_imbuto/, 'Imbuto', 'Funnel', 'imbuto', 'dose'], [/^5_piattino/, 'Piattino pesato', 'Weighing tray', 'arancio', 'dose'], [/^6_staffa/, 'Staffa della cella', 'Load cell bracket', 'grigio', 'dose'], [/^7_bicchierino/, 'Bicchierino', 'Cup', 'ceramica', 'dose'],
+  [/^9_cassetta/, 'Cassette (anello attorno alla ruota)', 'Cassettes (ring around the wheel)', 'cassa', 'mech'], [/^10_ruota/, 'Ruote portapillole', 'Pill wheels', 'bianco', 'mech'], [/^10_tappo/, 'Tappo del mozzo (sotto: gel di silice)', 'Hub cap (silica gel underneath)', 'bianco', 'mech'],
+  [/^13_fermo/, 'Fermo della cassetta (lo gira un micro servo)', 'Cassette lock (turned by a micro servo)', 'grigio', 'mech'], [/^c_sensori_ruote/, 'Sensori di Hall delle ruote', 'Wheel Hall sensors', 'nero', 'elec'], [/^c_strisce/, 'Strisce flessibili dei sensori', 'Flexible sensor strips', 'kapton', 'elec'],
+  [/^c_magneti/, 'Magneti di riposo delle ruote', 'Wheel home magnets', 'ferro', 'mech'], [/^c_rtc/, 'Orologio con pila (DS3231)', 'Clock with battery (DS3231)', 'pcbBlu', 'elec'], [/^c_hx711/, 'HX711 (legge la cella)', 'HX711 (reads the load cell)', 'pcb', 'elec'], [/^c_gel/, 'Gel di silice', 'Silica gel', 'silice', 'mech'],
+  [/^10_spazzole/, 'Lamelle di PETG da 1,2 mm sui divisori (a 0,3 mm dall\'anello)', '1.2 mm PETG wiper blades on the dividers (0.3 mm from the ring)', 'bianco', 'mech'], [/^10_sportellini/, 'Sportellini trasparenti, uno per scomparto', 'Clear flaps, one per compartment', 'vetro', 'mech'],
+  [/^c_motore_\d_pignone/, 'Pignoni da 10 denti', '10-tooth pinions', 'ottone', 'mech'], [/^16_fondo/, 'Fondi ribaltabili della ricarica (con levetta e mollina)', 'Tipping floors of the refill (with lever and small spring)', 'bianco', 'refill'], [/^17_staffa_alta/, 'Canaletta pesata della ricarica, larga 6,5 mm', 'Weighed refill channel, 6.5 mm wide', 'bianco', 'refill'],
+  [/^18_scivolo/, 'Guide verso lo scomparto', 'Guides into the compartment', 'cassa', 'refill'], [/^19_sportello/, 'Sportellini della ricarica nel tetto', 'Refill lids in the roof', 'bianco', 'refill'], [/^c_motore_\d_croce/, 'Croce di Malta: ingranaggio da 24 denti con perno d\'acciaio e disco di blocco', 'Geneva drive: 24-tooth gear with steel pin and locking disc', 'ottone', 'mech'],
+  [/^c_viti_croce/, '♻ Viti recuperate (perni della croce)', '♻ Recovered screws (Geneva pins)', 'metallo', 'recov'], [/^c_motore/, 'Motorini N20', 'N20 motors', 'metallo', 'mech'], [/^c_cella/, 'Cella di carico 100 g', '100 g load cell', 'alluminio', 'dose'], [/^c_servo/, 'Micro servo', 'Micro servos', 'servo', 'elec'],
+  [/^c_display/, 'Display OLED 1,3"', '1.3" OLED display', 'nero', 'elec'], [/^c_schede/, 'ESP32-S3 (Wi-Fi) e driver DRV8833', 'ESP32-S3 (Wi-Fi) and DRV8833 driver', 'pcb', 'elec'], [/^c_sensore_umidita/, 'Sensore di umidità AHT20 (quando cambiare il gel)', 'AHT20 humidity sensor (when to change the gel)', 'pcbBlu', 'elec'], [/^c_assi_acciaio/, 'Assi d\'acciaio 6 × 16 mm (foro della ruota alesato)', 'Steel axles 6 × 16 mm (wheel bore reamed)', 'metallo', 'mech'], [/^c_sensore/, 'Sensore di Hall del bicchierino', 'Cup Hall sensor', 'nero', 'elec'],
+  [/^c_altoparlante/, 'Altoparlante 20 mm', '20 mm speaker', 'ferro', 'elec'], [/^c_amplificatore/, 'Amplificatore MAX98357A', 'MAX98357A amplifier', 'pcbBlu', 'elec'], [/^c_interruttore/, 'Interruttore del tasto', 'Button switch', 'pcb', 'elec'], [/^c_spina_usb/, 'Presa USB-C', 'USB-C socket', 'nero', 'elec'],
+  [/^nastro_cavi/, 'Fili nel canale della parete', 'Wires in the wall channel', 'nastro', 'elec']];
+const tipo = n => { const r = PEZZI.find(c => c[0].test(n)) || [null, n, n, 'grigio', 'case'], m = n.match(/__([A-Za-z]+)$/);
+  return { nome: IT ? r[1] : r[2], mat: m && MAT[m[1]] ? m[1] : r[3], gr: r[4] }; };   // d_<pezzo>__<materiale>: pezzi dettagliati
+
+// ---------------- geometrie: dati compressi -> normali morbide (spigoli vivi sopra i 35 gradi)
+function decodifica(d) {
+  const bin = s => Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;
+  return { v: Float32Array.from(new Int16Array(bin(d.v)), x => x * Q), i: new Uint16Array(bin(d.i)) };
+}
+function morbida({ v, i }, gradi = 35) {
+  const nt = i.length / 3, fn = new Float32Array(nt * 3), cosT = Math.cos(gradi * rad), quale = new Map(), id = new Int32Array(v.length / 3);
+  for (let k = 0; k < v.length / 3; k++) { const key = v[3 * k] + ',' + v[3 * k + 1] + ',' + v[3 * k + 2]; if (!quale.has(key)) quale.set(key, quale.size); id[k] = quale.get(key); }
+  const lista = Array.from({ length: quale.size }, () => []);
+  for (let t = 0; t < nt; t++) {
+    const a = i[3 * t] * 3, b = i[3 * t + 1] * 3, c = i[3 * t + 2] * 3;
+    const ux = v[b] - v[a], uy = v[b + 1] - v[a + 1], uz = v[b + 2] - v[a + 2], wx = v[c] - v[a], wy = v[c + 1] - v[a + 1], wz = v[c + 2] - v[a + 2];
+    fn[3 * t] = uy * wz - uz * wy; fn[3 * t + 1] = uz * wx - ux * wz; fn[3 * t + 2] = ux * wy - uy * wx;
+    for (let j = 0; j < 3; j++) lista[id[i[3 * t + j]]].push(t);
+  }
+  const pos = new Float32Array(nt * 9), nor = new Float32Array(nt * 9);
+  for (let t = 0; t < nt; t++) {
+    const l0 = Math.hypot(fn[3 * t], fn[3 * t + 1], fn[3 * t + 2]) || 1;
+    for (let j = 0; j < 3; j++) {
+      const vi = i[3 * t + j]; let sx = 0, sy = 0, sz = 0;
+      for (const u of lista[id[vi]]) {
+        const l = Math.hypot(fn[3 * u], fn[3 * u + 1], fn[3 * u + 2]) || 1;
+        if ((fn[3 * t] * fn[3 * u] + fn[3 * t + 1] * fn[3 * u + 1] + fn[3 * t + 2] * fn[3 * u + 2]) / (l0 * l) > cosT) { sx += fn[3 * u]; sy += fn[3 * u + 1]; sz += fn[3 * u + 2]; }
+      }
+      const l = Math.hypot(sx, sy, sz) || 1, o = 9 * t + 3 * j;
+      pos[o] = v[3 * vi]; pos[o + 1] = v[3 * vi + 1]; pos[o + 2] = v[3 * vi + 2]; nor[o] = sx / l; nor[o + 1] = sy / l; nor[o + 2] = sz / l;
+    }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); return g;
+}
+
+// ---------------- scena
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); }
+catch (e) { box.innerHTML = '<p style="padding:12px">' + t('noWebgl') + '</p>'; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+box.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, 10, 4000); camera.up.set(0, 0, 1);
+
+// ambiente da studio fotografico (pannelli luminosi), per riflessi credibili
+(function studio() {
+  const env = new THREE.Scene();
+  env.add(new THREE.Mesh(new THREE.BoxGeometry(20, 20, 20), new THREE.MeshStandardMaterial({ color: '#7d8186', side: THREE.BackSide })));
+  const pannello = (w, h, x, y, z, rx, ry, k) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k), side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.set(rx, ry, 0); env.add(m); };
+  pannello(10, 10, 0, 0, 9.5, 0, 0, 6);                  // soffitto (z in alto)
+  pannello(6, 8, -9.5, 0, 2, 0, Math.PI / 2, 3);          // dietro
+  pannello(6, 8, 0, -9.5, 2, Math.PI / 2, 0, 2.2);        // sinistra
+  pannello(8, 4, 9.5, 2, 1, 0, Math.PI / 2, 1.6);         // davanti
+  env.add(new THREE.AmbientLight(0xffffff, .6));
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(env, .03).texture;
+})();
+scene.add(new THREE.HemisphereLight(0xffffff, 0x6d6257, .35));
+const sole = new THREE.DirectionalLight(0xfff4e6, 2.4); sole.position.set(260, -200, 420); sole.castShadow = true;
+Object.assign(sole.shadow.camera, { left: -170, right: 170, top: 170, bottom: -170, near: 100, far: 1100 }); sole.shadow.mapSize.set(2048, 2048);
+sole.shadow.bias = -0.0004; sole.shadow.normalBias = .6; sole.shadow.radius = 5; scene.add(sole);
+(function tavolo() {   // tavolo chiaro che sfuma ai bordi
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const r = g.createRadialGradient(128, 128, 20, 128, 128, 128); r.addColorStop(0, '#fff'); r.addColorStop(.75, '#888'); r.addColorStop(1, '#000');
+  g.fillStyle = r; g.fillRect(0, 0, 256, 256);
+  const t = new THREE.Mesh(new THREE.CircleGeometry(420, 96), new THREE.MeshStandardMaterial({ color: '#d9d2c8', roughness: .82, alphaMap: new THREE.CanvasTexture(c), transparent: true }));
+  t.position.set(10, 0, -.05); t.receiveShadow = true; scene.add(t);
+})();
+
+// ---------------- pezzi
+const G = {}, GEO = {};
+for (const n in PZ) {
+  GEO[n] = decodifica(PZ[n]);
+  const tp = tipo(n), m = new THREE.Mesh(morbida(GEO[n]), MAT[tp.mat]());
+  m.castShadow = tp.mat !== 'vetro' && tp.mat !== 'imbuto'; m.userData.nome = n; m.receiveShadow = true; G[n] = m;
+}
+const radice = new THREE.Group(); scene.add(radice);
+const lati = [['sx', -1], ['dx', 1]].map(([s, sg]) => {
+  const cas = new THREE.Group(), gira = new THREE.Group(); gira.position.z = P.Z_A; cas.add(gira); radice.add(cas);
+  cas.add(G['9_cassetta_' + s]); gira.add(G['10_ruota_' + s]); gira.add(G['10_spazzole_' + s]); gira.add(G['10_sportellini_' + s]); gira.add(G['10_tappo_mozzo_' + s]);
+  const fermo = new THREE.Group(); fermo.position.set(...P.FERMO[s]); G['13_fermo_' + s].position.set(-P.FERMO[s][0], -P.FERMO[s][1], -P.FERMO[s][2]); fermo.add(G['13_fermo_' + s]); radice.add(fermo);
+  return { s: sg, nome: s, cas, gira, fermo, fermoA: 0, giro: 0, meta: 0, fuori: 0, fuoriMeta: 0 };
+});
+for (const L of lati) {   // numeri delle dosi sul mozzo di ogni ruota (girano con la ruota)
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = '#f4f2ec'; g.beginPath(); g.arc(256, 256, 256, 0, 7); g.fill();
+  g.fillStyle = '#1f6f5c'; g.beginPath(); g.arc(256, 256, 70, 0, 7); g.fill();
+  g.font = 'bold 50px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (let k = 0; k <= 14; k++) {
+    const a = (-90 + k * PASSO) * (L.s < 0 ? 1 : -1) * rad, x = 256 + 190 * Math.cos(a), y = 256 - 190 * Math.sin(a);
+    g.fillStyle = k ? '#1c2430' : '#e8590c'; g.fillText(k ? String(L.s < 0 ? 2 * k - 1 : 2 * k) : '●', x, y);
+  }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  const d = new THREE.Mesh(new THREE.CircleGeometry(P.R_I - 0.6, 64), new THREE.MeshPhysicalMaterial({ map: tex, roughness: .35 }));
+  d.rotation.x = L.s < 0 ? Math.PI / 2 : -Math.PI / 2; d.position.y = L.s * (P.Y0 + P.TH + 1.31); L.gira.add(d); L.disco = d;
+}
+const [xh, zh] = P.PERNO;
+const perno = new THREE.Group(); perno.position.set(xh, 0, zh); G['5_piattino'].position.set(-xh, 0, -zh); perno.add(G['5_piattino']); radice.add(perno);
+const cupG = new THREE.Group(); cupG.add(G['7_bicchierino']); radice.add(cupG);
+const pignoni = [1, 2].map(i => { const n = 'c_motore_' + i + '_pignone', g = new THREE.Group(); g.position.set(...P.PIGNONI[n]); g.add(G[n]); radice.add(g); return g; });
+const croci = P.CROCI ? [1, 2].map(i => { const n = 'c_motore_' + i + '_croce', g = new THREE.Group(); g.position.set(...P.CROCI[n].pivot); g.add(G[n]); radice.add(g); return g; }) : [];
+// croce di Malta: la ruota avanza di uno scomparto mentre l'ingranaggio fa da 102 a 258 gradi del suo giro; per il resto del giro la ruota sta ferma
+// ricarica dall'alto: vaschetta pesata appesa al suo perno e due sportellini nel tetto
+const RIC = P.RICARICA && P.RICARICA.zp ? (() => {
+  const gr = (n, pos) => { const g = new THREE.Group(); g.position.set(...pos); g.add(G[n]); radice.add(g); return g; };
+  return { fs: gr('16_fondo_sx', [0, -P.RICARICA.yp, P.RICARICA.zp]), fd: gr('16_fondo_dx', [0, P.RICARICA.yp, P.RICARICA.zp]), sx: gr('19_sportello_sx', [0, -P.RICARICA.yh, P.RICARICA.zh]), dx: gr('19_sportello_dx', [0, P.RICARICA.yh, P.RICARICA.zh]), t: -1 };
+})() : null;
+const inclinaRic = (s, th) => { const tab = P.RICARICA.tilt[String(s)]; for (let i = 1; i < tab.length; i++) if (th <= tab[i][0]) { const [a0, b0] = tab[i - 1], [a1, b1] = tab[i]; return b0 + (b1 - b0) * (th - a0) / (a1 - a0); } return 0; };
+function aggiornaRicarica(dt) {
+  if (!RIC) return;
+  let thS = 0, thD = 0;
+  if (RIC.t >= 0) {
+    RIC.t += dt; const t = RIC.t, lid = u => u < 1 ? 80 * liscio(u) : u < 2.5 ? 80 : u < 3.3 ? 80 * (1 - liscio((u - 2.5) / .8)) : 0;
+    thS = lid(t); thD = t > 3.6 ? lid(t - 3.6) : 0; if (t > 7.5) RIC.t = -1;
+  }
+  RIC.sx.rotation.x = thS * rad; RIC.dx.rotation.x = -thD * rad;
+  RIC.fs.rotation.x = -inclinaRic(-1, thS) * rad; RIC.fd.rotation.x = inclinaRic(1, thD) * rad;   // v1.0: due fondi, ognuno sulla sua cerniera
+}
+const angoloCroce = (giro, segno) => { const n = -giro / (segno * PASSO), k = Math.floor(n + 1e-6), f = n - k; return 360 * k + (f < 1e-4 ? 0 : 102 + 156 * f); };
+for (const n in G) if (!G[n].parent) radice.add(G[n]);
+const cavi = new THREE.Group(); radice.add(cavi);
+for (const c of P.CAVI) {
+  const curva = new THREE.CurvePath(); const v = c.punti.map(p => new THREE.Vector3(...p));   // tratti diritti, come nei controlli: i fili restano dentro
+  for (let k = 0; k + 1 < v.length; k++) curva.add(new THREE.LineCurve3(v[k], v[k + 1]));
+  const m = new THREE.Mesh(new THREE.TubeGeometry(curva, c.punti.length * 8, c.r, 12, false), new THREE.MeshPhysicalMaterial({ color: c.colore, roughness: .55, clearcoat: .2 }));
+  m.castShadow = true; m.userData.nome = 'cavo'; cavi.add(m);
+}
+const tela = document.createElement('canvas'); tela.width = 256; tela.height = 128;
+const trama = new THREE.CanvasTexture(tela); trama.colorSpace = THREE.SRGBColorSpace;
+const schermo = new THREE.Mesh(new THREE.PlaneGeometry(23, 11.5), new THREE.MeshBasicMaterial({ map: trama, toneMapped: false }));
+schermo.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)));
+schermo.position.set(P.X_HALF - 1.15, P.Y_MID, (P.Z_DISP[0] + P.Z_DISP[1]) / 2); radice.add(schermo);
+let scritto = '';
+function scrivi(a, b) { if (a + b === scritto) return; scritto = a + b; const p = tela.getContext('2d');
+  p.fillStyle = '#020304'; p.fillRect(0, 0, 256, 128); p.fillStyle = '#d8ecff'; p.textAlign = 'center';
+  p.font = 'bold 44px system-ui, sans-serif'; p.fillText(a, 128, 58); p.font = 'bold 24px system-ui, sans-serif'; p.fillText(b, 128, 100); trama.needsUpdate = true; }
+
+// ---------------- pillole (forme vere: compresse con lo spigolo arrotondato, ovali, capsule bicolori)
+function compressa(R, T) {
+  const e = Math.min(T * .42, R * .35), pts = [new THREE.Vector2(0, -T / 2)];
+  for (let k = 0; k <= 8; k++) { const a = -Math.PI / 2 + k / 8 * Math.PI / 2; pts.push(new THREE.Vector2(R - e + e * Math.cos(a), -T / 2 + e + e * Math.sin(a))); }
+  for (let k = 0; k <= 8; k++) { const a = k / 8 * Math.PI / 2; pts.push(new THREE.Vector2(R - e + e * Math.cos(a), T / 2 - e + e * Math.sin(a))); }
+  pts.push(new THREE.Vector2(0, T / 2));
+  return new THREE.LatheGeometry(pts, 36);
+}
+function bicolore(g, a, b) { const p = g.attributes.position, col = new Float32Array(p.count * 3), A = new THREE.Color(a), B = new THREE.Color(b);
+  for (let k = 0; k < p.count; k++) { const c = p.getX(k) > 0 ? A : B; col.set([c.r, c.g, c.b], 3 * k); } g.setAttribute('color', new THREE.BufferAttribute(col, 3)); return g; }
+const FORME = {
+  grande: { geo: () => { const g = new THREE.CapsuleGeometry(5.2, 11.5, 8, 24); g.rotateZ(Math.PI / 2); g.scale(1, .72, 1); return g; }, h: 3.75, mg: 1150 },
+  capsula: { geo: () => { const g = new THREE.CapsuleGeometry(3.4, 12.6, 8, 24); g.rotateZ(Math.PI / 2); return g; }, h: 3.4, mg: 480 },
+  tonda: { geo: () => compressa(4.5, 3.5), h: 1.75, mg: 250 },
+  piccola: { geo: () => compressa(2.5, 2.5), h: 1.25, mg: 90 },
+  mini: { geo: () => compressa(1.5, 1.6), h: 0.8, mg: 12 } };
+let conMini = false;
+const ricetta = d => [...ricetta0(d), ...(conMini ? [['mini', '#ff9eb5']] : [])];
+const ricetta0 = d => { const m = (d - 1) % 4; return m === 0 ? [['grande', '#ffffff'], ['piccola', '#f4d35e']] : m === 1 ? [['tonda', '#e8505b']] : m === 2 ? [['capsula', '#f4d35e', '#e8505b'], ['tonda', '#ffffff']] : [['piccola', '#ffffff'], ['tonda', '#7fb7e6']]; };
+const pesoGiusto = d => ricetta(d).reduce((t, [f]) => t + FORME[f].mg, 0);
+const giorni = t('giorni'), momenti = t('momenti');
+const nomeDose = d => giorni[Math.floor((d - 1) / 4)] + ' ' + momenti[(d - 1) % 4];
+
+// ---------------- fisica (Rapier, in cm)
+stato.textContent = t('caricoFis');
+const mod = await import('./rapier.mjs'); const R = mod.default || mod; await R.init();
+const world = new R.World({ x: 0, y: 0, z: -981 });
+world.timestep = 1 / 300; world.integrationParameters.numSolverIterations = 10;   // passi piccoli: le pillole minuscole non attraversano le pareti sottili
+const FLAG = R.TriMeshFlags ? R.TriMeshFlags.FIX_INTERNAL_EDGES : undefined;
+function trimesh(n, dx = 0, dy = 0, dz = 0) {
+  const { v, i } = GEO[n], w = new Float32Array(v.length);
+  for (let k = 0; k < v.length; k += 3) { w[k] = (v[k] - dx) * S; w[k + 1] = (v[k + 1] - dy) * S; w[k + 2] = (v[k + 2] - dz) * S; }
+  const d = FLAG !== undefined ? R.ColliderDesc.trimesh(w, Uint32Array.from(i), FLAG) : R.ColliderDesc.trimesh(w, Uint32Array.from(i));
+  if (d.setContactSkin) d.setContactSkin(.005);
+  return d.setFriction(.45).setRestitution(.1);
+}
+const fisso = world.createRigidBody(R.RigidBodyDesc.fixed());
+for (const n of ['1_guscio', '3_piede', '4_imbuto', '6_staffa_cella']) world.createCollider(trimesh(n), fisso);
+world.createCollider(R.ColliderDesc.cuboid(80, 80, 1).setTranslation(0, 0, -1).setFriction(.6), fisso);
+const kin = (x, y, z) => world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased().setTranslation(x, y, z));
+// ruote, cassette, piattino e bicchierino: blocchi solidi (non superfici sottili), cosi' una pillola non li puo' attraversare
+const qRot = deg => { const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -deg * rad); return { x: q.x, y: q.y, z: q.z, w: q.w }; };
+const solido = d => d.setFriction(.45).setRestitution(.1);
+const blocco = (hx, hy, hz, cx, cy, cz, gradi = 0) => solido(R.ColliderDesc.cuboid(hx * S, hy * S, hz * S).setTranslation(cx * S, cy * S, cz * S).setRotation(qRot(gradi)));
+const cilY = (r, ya, yb, cx = 0, cz = 0) => solido(R.ColliderDesc.cylinder(Math.abs(yb - ya) / 2 * S, r * S).setTranslation(cx * S, (ya + yb) / 2 * S, cz * S));
+const guscioConvesso = pts => solido(R.ColliderDesc.convexHull(Float32Array.from(pts.flat(), v => v * S)));
+const polare = (r, gradi, y, z0 = 0) => [r * Math.cos(gradi * rad), y, z0 + r * Math.sin(gradi * rad)];
+for (const L of lati) {
+  const s = L.s, Y = z => s * (P.Y0 + z), t0 = P.Z_TAS[0], t1 = P.Z_TAS[1], ym = Y((t0 + t1) / 2), ha = (t1 - t0) / 2;
+  L.wB = kin(0, 0, P.Z_A * S);
+  world.createCollider(cilY(P.R_GT, Y(P.Z_COR[0]), Y(P.Z_COR[1])), L.wB);                       // disco con la corona
+  world.createCollider(cilY(P.R_I, Y(t0), Y(t1)), L.wB);                                          // mozzo
+  for (let k = 0; k < P.N; k++) {                                                                 // divisori e scivoli
+    const a = -90 + PASSO / 2 + k * PASSO, rc = (P.R_I - .5 + P.R_AN_T - .05) / 2;   // divisorio + lamella di PETG fino all'anello
+    world.createCollider(blocco((P.R_AN_T - .05 - P.R_I + .5) / 2, ha, P.SP_DIV / 2, rc * Math.cos(a * rad), ym, rc * Math.sin(a * rad), a), L.wB);
+    const ag = ((P.R_O * 2 * Math.PI / P.N - P.SP_DIV) / 2 - P.APRE + .4 + P.SP_DIV / 2) / P.R_O / rad;
+    world.createCollider(guscioConvesso([Y(t0), Y(t1)].flatMap(y => [polare(P.R_O, a - ag, y), polare(P.R_O, a + ag, y), polare(P.R_O - 5, a, y)])), L.wB);
+  }
+  for (let k = 1; k < P.N; k++) {                                                                 // sportellini, uno per scomparto
+    const c = -90 + k * PASSO, sp = [];
+    for (const a of [c - PASSO / 2 + .6, c, c + PASSO / 2 - .6]) for (const y of [Y(t1 + .05), Y(t1 + 1.25)]) sp.push(polare(P.R_I + 2.6, a, y), polare(P.R_O - .3, a, y));
+    world.createCollider(guscioConvesso(sp), L.wB);
+  }
+  const chiuso = [];                                                                              // scomparto chiuso
+  for (let j = 0; j <= 6; j++) { const a = -90 - PASSO / 2 + j * PASSO / 6; for (const y of [Y(t0), Y(t1)]) chiuso.push(polare(P.R_I - .5, a, y), polare(P.R_O, a, y)); }
+  world.createCollider(guscioConvesso(chiuso), L.wB);
+  L.cB = kin(0, 0, 0);
+  const apre = Math.asin(P.APRE / P.R_AN_T) / rad;
+  for (let k = 0; k < 144; k++) {                                                                 // anello della cassetta, con l'uscita in basso
+    const c = k * 2.5; if (Math.abs(((c - 270 + 540) % 360) - 180) <= apre + 0.3) continue;
+    const rc = P.R_AN_T + 1.5, ya = Y(P.Z_COR[1]), yb = Y(P.Z_COP[1]);
+    world.createCollider(blocco(1.5, Math.abs(yb - ya) / 2, P.R_AN_T * Math.PI / 144 * 1.15, rc * Math.cos(c * rad), (ya + yb) / 2, P.Z_A + rc * Math.sin(c * rad), c), L.cB);
+  }
+}
+const trayB = kin(xh * S, 0, zh * S), pz = P.PIATTO, zp = P.Z_PIATTO;
+world.createCollider(blocco((pz.x1 - pz.x0) / 2, pz.y, .6, (pz.x0 + pz.x1) / 2 - xh, 0, zp + .6 - zh), trayB);
+world.createCollider(blocco(.6, pz.y, 2.5, pz.x1 - .6 - xh, 0, zp + 2.5 - zh), trayB);
+for (const sy of [-1, 1]) world.createCollider(blocco((pz.x1 - pz.x0) / 2, .6, 2.5, (pz.x0 + pz.x1) / 2 - xh, sy * (pz.y - .6), zp + 2.5 - zh), trayB);
+const cupB = kin(0, 0, 0), C = P.CUP, zc = P.Z_CUP, xm = (C.x0 + C.x1) / 2, lx = (C.x1 - C.x0) / 2;
+world.createCollider(blocco(lx, C.y, 1.1, xm, 0, zc + 1.1), cupB);
+for (const sx of [-1, 1]) world.createCollider(blocco(C.parete / 2, C.y, C.alt / 2, xm + sx * (lx - C.parete / 2), 0, zc + C.alt / 2), cupB);
+for (const sy of [-1, 1]) world.createCollider(blocco(lx, C.parete / 2, C.alt / 2, xm, sy * (C.y - C.parete / 2), zc + C.alt / 2), cupB);
+for (const sx of [-1, 1]) world.createCollider(blocco(1.25, C.y, .8, xm + sx * (lx - C.parete - 1.25), 0, zc + C.alt - .8), cupB);   // bordo che rientra
+for (const sy of [-1, 1]) world.createCollider(blocco(lx, 1.25, .8, xm, sy * (C.y - C.parete - 1.25), zc + C.alt - .8), cupB);
+const qY = new THREE.Quaternion(), qX = new THREE.Quaternion(), asseY = new THREE.Vector3(0, 1, 0), asseX = new THREE.Vector3(1, 0, 0);
+
+let pillole = [];
+function riempi() {
+  for (const p of pillole) { if (p.stato !== 'tolta') world.removeRigidBody(p.b); scene.remove(p.m); } pillole = [];
+  for (let d = 1; d <= 28; d++) {
+    const L = lati[d % 2 ? 0 : 1], k = Math.ceil(d / 2), a = (-90 + k * PASSO) * rad, r = (P.R_I + P.R_O) / 2;
+    let primo0 = 0;
+    ricetta(d).forEach(([forma, c1, c2], i) => {
+      const F = FORME[forma], geo = F.geo();
+      if (c2) bicolore(geo, c1, c2);
+      const m = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: c2 ? '#ffffff' : c1, vertexColors: !!c2, roughness: .38, clearcoat: .55, clearcoatRoughness: .25 }));
+      m.castShadow = true; m.receiveShadow = true;
+      // la prima pillola sta sul fondo dello scomparto; le altre sopra, una verso il centro e una verso il bordo: nessuna nasce sovrapposta
+      if (i === 0) primo0 = 2 * F.h;
+      const prof = i === 0 ? 0 : primo0 + .6, rr = i === 0 ? r : r + (i === 1 ? -5.5 : 5.5);
+      const y = L.s * (P.Y0 + P.Z_TAS[0] + prof + F.h + .35);
+      const pos = new THREE.Vector3(rr * Math.cos(a), y, P.Z_A + rr * Math.sin(a)), q = new THREE.Quaternion().setFromAxisAngle(asseY, -a);
+      const punti = Float32Array.from(geo.attributes.position.array, x => x * S);
+      const b = world.createRigidBody(R.RigidBodyDesc.dynamic().setTranslation(pos.x * S, pos.y * S, pos.z * S).setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }).setCcdEnabled(true).setLinearDamping(4).setAngularDamping(4));
+      world.createCollider(R.ColliderDesc.convexHull(punti).setDensity(1.2).setFriction(.42).setRestitution(.15), b);
+      m.position.copy(pos); m.quaternion.copy(q);
+      scene.add(m); pillole.push({ m, b, d, L, mg: F.mg, stato: 'ruota' });
+    });
+  }
+  for (let k = 0; k < 360; k++) world.step();   // si assestano piano nei loro scomparti
+  for (const p of pillole) { p.b.setLinearDamping(.05); p.b.setAngularDamping(.3); p.b.setLinvel({ x: 0, y: 0, z: 0 }, true); p.b.setAngvel({ x: 0, y: 0, z: 0 }, true); }
+}
+
+// ---------------- stato della dose
+let esploso = 0, esplosoMeta = 0, scossa = [], base = 0, scosse = 0;
+let dose = 0, fase = 'pronta', apre = 0, apreMeta = 0, cup = 0, cupMeta = 0, trasparente = false, attesa = 0, prese = 0, avviso = '', calma = 0;
+const verso = (v, m, k) => v + Math.sign(m - v) * Math.min(Math.abs(m - v), k);
+function sulPiatto(p) { const t = p.b.translation(), x = t.x / S, y = t.y / S, z = t.z / S;
+  return x > P.PIATTO.x0 - 1 && x < P.PIATTO.x1 + 1 && Math.abs(y) < P.PIATTO.y + 1 && z > P.Z_PIATTO && z < P.Z_PIATTO + 14; }
+function nelBicchiere(p) { const t = p.b.translation(), x = t.x / S - cup * 75, y = t.y / S, z = t.z / S;
+  return x > P.CUP.x0 && x < P.CUP.x1 && Math.abs(y) < P.CUP.y && z > P.Z_CUP && z < P.Z_CUP + P.CUP.alt + 4; }
+const veloce = p => { const v = p.b.linvel(); return Math.hypot(v.x, v.y, v.z) > 1.5; };
+
+function passo(h) {   // un passo di fisica: muove i pezzi cinematici solo se cambiano (cosi' le pillole ferme dormono), poi avanza il mondo
+  for (const L of lati) {
+    const g0 = L.giro, f0 = L.fuori;
+    L.giro = verso(L.giro, L.meta, 36 * h);
+    L.fermoA = verso(L.fermoA, L.fuoriMeta || L.fuori > 0 ? 1 : 0, 2.5 * h);   // prima si gira il fermo, poi la cassetta esce
+    L.fuori = verso(L.fuori, L.fuoriMeta && L.fermoA >= 1 ? 1 : 0, 1.2 * h);
+    if (L.fuori !== f0 || L.primo) { const yc = L.s * L.fuori * 80; L.cB.setNextKinematicTranslation({ x: 0, y: yc * S, z: 0 }); L.wB.setNextKinematicTranslation({ x: 0, y: yc * S, z: P.Z_A * S }); }
+    if (L.giro !== g0 || L.primo) { qY.setFromAxisAngle(asseY, L.giro * rad); L.wB.setNextKinematicRotation({ x: qY.x, y: qY.y, z: qY.z, w: qY.w }); }
+    L.primo = false;
+  }
+  const a0 = apre, c0 = cup;
+  apre = verso(apre, apreMeta, 90 * h); if (apre !== a0 || primo) { qX.setFromAxisAngle(asseY, -apre * rad); trayB.setNextKinematicRotation({ x: qX.x, y: qX.y, z: qX.z, w: qX.w }); }
+  cupT = verso(cupT, cupMeta, .9 * h); cup = liscio(cupT); if (cup !== c0 || primo) cupB.setNextKinematicTranslation({ x: cup * 75 * S, y: 0, z: 0 });
+  primo = false;
+  world.step();
+  for (const p of pillole) {   // limite di velocita' realistico: una pillola che cade da 10 cm non supera 1,4 m/s
+    if (p.stato === 'tolta') continue; const v = p.b.linvel(), n = Math.hypot(v.x, v.y, v.z);
+    if (n > 140) p.b.setLinvel({ x: v.x * 140 / n, y: v.y * 140 / n, z: v.z * 140 / n }, true);
+    const w = p.b.angvel(), m = Math.hypot(w.x, w.y, w.z);
+    if (m > 40) p.b.setAngvel({ x: w.x * 40 / m, y: w.y * 40 / m, z: w.z * 40 / m }, true);
+  }
+}
+let primo = true, cupT = 0;
+
+function logica(dt) {
+  const vive = pillole.filter(p => p.stato !== 'tolta'), dosePill = vive.filter(p => p.d === dose);
+  const fermeRuote = !lati.some(L => Math.abs(L.giro - L.meta) > .01), sotto = cup < .02;
+  const Ld = lati[dose % 2 ? 0 : 1], ferma = esploso > 0 || esplosoMeta > 0;   // smontata: la fisica e la dose si fermano, poi riprendono
+  if (!ferma && fase === 'gira' && fermeRuote) {   // arrivata: si scuote solo all'indietro (verso lo scomparto gia' vuoto), per staccare le pillole senza aprire quello dopo
+    if (scossa.length) Ld.meta = base + scossa.shift(); else { fase = 'cade'; if (!scosse) attesa = 7; calma = 0; }
+  }
+  if (!ferma && fase === 'cade') {
+    attesa -= dt; calma = dosePill.every(p => sulPiatto(p) && !veloce(p)) ? calma + dt : 0;
+    if (attesa < 4.5 && scosse < 2 && dosePill.some(p => !sulPiatto(p) && !veloce(p))) { scosse++; scossa = [-5, 0, -4, 0]; fase = 'gira'; }
+    if (calma > .5 || attesa <= 0) { fase = 'pesa'; attesa = .6; }
+  }
+  const peso = vive.filter(sulPiatto).reduce((t, p) => t + p.mg, 0);
+  if (!ferma && fase === 'pesa' && (attesa -= dt) <= 0) {
+    const bloccate = dosePill.filter(p => !sulPiatto(p)).length;
+    if (Math.abs(peso - pesoGiusto(dose)) <= 20) fase = 'aspetta_cup';
+    else { fase = 'sbagliata'; avviso = (bloccate ? t('bloccate')(bloccate) : '') + t('pesoSb')(peso, pesoGiusto(dose)); }
+  }
+  if (!ferma && fase === 'aspetta_cup' && sotto) { fase = 'apre'; apreMeta = 60; attesa = 1.6; }
+  if (!ferma && fase === 'apre' && apre >= 59.9 && (attesa -= dt) <= 0) { apreMeta = 0; fase = 'chiude'; }
+  if (fase === 'chiude' && apre <= .01) fase = 'prendi';
+  if (fase === 'prendi' && cup > .5) { fase = 'presa'; prese++; }
+  const fuori = vive.filter(p => p.b.translation().z / S < P.Z_CUP + P.CUP.alt + 2 && !nelBicchiere(p)).length;
+  if (fase === 'presa' && cupMeta === 0 && sotto) {
+    for (const p of vive) if (nelBicchiere(p)) { world.removeRigidBody(p.b); scene.remove(p.m); p.stato = 'tolta'; }
+    fase = 'pronta';
+  }
+  const ox = t('oled'); scrivi(...(fase === 'pronta' && dose >= 28 ? ox.fine : ox[fase]));
+  const g = x => (x / 1000).toLocaleString(NUM, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  stato.textContent = (fase === 'sbagliata' ? avviso : (dose ? t('statoDose')(nomeDose(dose), g(peso), g(pesoGiusto(dose))) : t('statoPronta')))
+    + t('cup')(sotto) + t('prese')(prese) + (fuori ? t('cadute')(fuori) : '');
+  if (vuole && pronta()) { vuole = false; eroga(); }
+}
+
+// dove va ogni pezzo quando la scatola e' smontata (mm, a smontaggio completo)
+const VIA = [[/^2_cappello|^c_motore_\d$/, [0, 0, 75]], [/^12_tasto/, [0, 0, 105]], [/^c_interruttore/, [0, 0, 90]], [/^3_piede/, [0, 0, -45]], [/^c_piastra/, [0, 0, -80]],
+  [/^4_imbuto/, [70, 0, 25]], [/^6_staffa|^c_cella/, [75, 0, -5]], [/^c_servo/, [95, 0, 0]], [/^c_display/, [45, 0, 0]], [/^c_schede/, [-45, 0, 0]], [/^c_altoparlante/, [65, 0, -15]],
+  [/^c_amplificatore/, [55, 0, -25]], [/^c_sensore/, [-30, 0, 0]], [/^c_spina/, [-60, 0, 0]]];
+for (const n in G) { G[n].userData.base = G[n].position.clone(); const v = VIA.find(x => x[0].test(n)); G[n].userData.via = new THREE.Vector3(...(v ? v[1] : [0, 0, 0])); }
+const liscio = t => t * t * (3 - 2 * t);
+function disegna() {
+  const e = liscio(esploso);
+  for (const n in G) if (G[n].parent === radice) G[n].position.copy(G[n].userData.base).addScaledVector(G[n].userData.via, e);
+  for (const L of lati) {
+    L.gira.rotation.y = L.giro * rad; L.cas.position.y = L.s * (L.fuori * 80 + 70 * e);
+    L.fermo.rotation.y = L.s * L.fermoA * Math.PI / 2; L.fermo.position.y = P.FERMO[L.nome][1] + L.s * 40 * e;
+    L.gira.position.y = L.s * 38 * e; G['10_sportellini_' + L.nome].position.y = L.s * 30 * e;
+  }
+  pignoni.forEach((g, i) => { const c = P.PIGNONI['c_motore_' + (i + 1) + '_pignone'], cr = P.CROCI && P.CROCI['c_motore_' + (i + 1) + '_croce'];
+    g.rotation.y = cr ? angoloCroce(lati[i].giro, cr.segno) * P.Z_CROCE / P.Z_PIGN_G * rad : -lati[i].giro * P.Z_CORONA / P.Z_PIGNONE * rad; g.position.set(c[0], c[1], c[2] + 75 * e); });
+  croci.forEach((g, i) => { const cr = P.CROCI['c_motore_' + (i + 1) + '_croce']; g.rotation.y = -angoloCroce(lati[i].giro, cr.segno) * rad; g.position.set(cr.pivot[0], cr.pivot[1], cr.pivot[2] + 60 * e); });
+  perno.position.set(xh + 75 * e, 0, zh - 5 * e); perno.rotation.y = -apre * rad; cupG.position.x = cup * 75 + 100 * e;
+  for (const p of pillole) {
+    if (p.stato === 'tolta') continue; const t = p.b.translation(), q = p.b.rotation(); p.m.position.set(t.x / S, t.y / S, t.z / S); p.m.quaternion.set(q.x, q.y, q.z, q.w);
+    if (e > 0) {   // le pillole restano dove sono: nella ruota, nel bicchierino o sul piattino
+      if (nelBicchiere(p)) p.m.position.x += 100 * e;
+      else if (sulPiatto(p)) { p.m.position.x += 75 * e; p.m.position.z -= 5 * e; }
+      else if (Math.abs(t.y / S) > P.Y0 && t.z / S > P.Z_A - P.R_O - 6) p.m.position.y += Math.sign(t.y) * 108 * e;
+    }
+  }
+  aspetto();
+  const caviScelti = scelta && scelta.chiave === 'cavi';
+  cavi.visible = e < .02 || caviScelti; G['nastro_cavi'].visible = (e < .02 && !scelta) || (!!scelta && scelta.mesh.has(G['nastro_cavi'])); schermo.visible = !trasparente && !scelta && e < .02;
+}
+
+// ---------------- camera
+let az = -0.62, el = 0.26, dist = 640, distMeta = null, azMeta = null;
+const CENTRO0 = new THREE.Vector3(8, 0, P.H * .46), c = CENTRO0.clone(), cMeta = CENTRO0.clone(), scatola = new THREE.Box3(), tmpB = new THREE.Box3();
+function posaCamera(dt = 0) {
+  if (scelta) { scatola.makeEmpty(); for (const m of scelta.mesh) if (m.visible !== false) { tmpB.setFromObject(m); if (!tmpB.isEmpty()) scatola.union(tmpB); } if (!scatola.isEmpty()) scatola.getCenter(cMeta); } else cMeta.copy(CENTRO0);
+  const k = Math.min(1, dt * 3); c.lerp(cMeta, k); if (distMeta !== null) { dist += (distMeta - dist) * k; if (Math.abs(distMeta - dist) < 1) distMeta = null; }
+  if (azMeta !== null) { const d = Math.atan2(Math.sin(azMeta - az), Math.cos(azMeta - az)); az += d * k; el += (.3 - el) * k; if (Math.abs(d) < .01) azMeta = null; }
+  camera.position.set(c.x + dist * Math.cos(el) * Math.cos(az), dist * Math.cos(el) * Math.sin(az), c.z + dist * Math.sin(el)); camera.lookAt(c); }
+const punt = new Map(); let pizzico = 0; const cv = renderer.domElement;
+let giu = null;
+cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); punt.set(e.pointerId, [e.clientX, e.clientY]); pizzico = 0; giu = punt.size === 1 ? [e.clientX, e.clientY] : null; });
+cv.addEventListener('pointermove', e => { if (!punt.has(e.pointerId)) return; const p = punt.get(e.pointerId);
+  if (punt.size === 1) { azMeta = null; az -= (e.clientX - p[0]) * .008; el = Math.min(1.45, Math.max(-.05, el + (e.clientY - p[1]) * .008)); }
+  punt.set(e.pointerId, [e.clientX, e.clientY]);
+  if (punt.size === 2) { const [a, b] = [...punt.values()], dd = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pizzico) { distMeta = null; } if (pizzico) dist = Math.min(1300, Math.max(140, dist * pizzico / dd)); pizzico = dd; } });
+const via = e => { punt.delete(e.pointerId); pizzico = 0; }; cv.addEventListener('pointercancel', e => { giu = null; via(e); });
+cv.addEventListener('pointerup', e => { const tocco = giu && Math.hypot(e.clientX - giu[0], e.clientY - giu[1]) < 6; giu = null; via(e); if (tocco) tocca(e); });
+cv.addEventListener('wheel', e => { e.preventDefault(); distMeta = azMeta = null; dist = Math.min(1300, Math.max(140, dist * (1 + e.deltaY * .001))); }, { passive: false });
+function misura() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(misura).observe(box); misura();
+
+// ---------------- suoni (le stesse note dell'altoparlante)
+let audio;
+function nota(f, t0, dur, vol = .18) {
+  audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+  const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime + t0;
+  o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(audio.destination); o.start(t); o.stop(t + dur + .05);
+}
+const sveglia = () => [[659, 0], [784, .22], [988, .44], [659, .9], [784, 1.12], [988, 1.34]].forEach(([f, t]) => nota(f, t, .35));
+let faseSuonata = '';
+function suoni() { if (faseSuonata === fase) return; faseSuonata = fase;
+  try { if (fase === 'prendi') [[784, 0], [1047, .16]].forEach(([f, t]) => nota(f, t, .3)); if (fase === 'sbagliata') [[330, 0], [262, .3]].forEach(([f, t]) => nota(f, t, .45, .22)); } catch (e) {} }
+
+// ---------------- comandi: ogni pulsante risponde sempre; se qualcosa lo impedisce lo sistema da solo o dice perche'
+const premi = (b, on, a, c) => { b.setAttribute('aria-pressed', on); b.textContent = on ? a : c; };
+let vuole = false, avvisoT = 0;
+function avvisa(msg) { const d = $('didascalia'); d.textContent = msg; d.classList.add('on'); avvisoT = 3.2; }
+const pronta = () => fase === 'pronta' && dose < 28 && esploso === 0 && esplosoMeta === 0 && !lati.some(L => L.fuoriMeta || L.fuori > .01 || L.fermoA > .01);
+const etichette = () => {
+  for (const L of lati) premi($(L.nome), !!L.fuoriMeta, t('in')(t(L.nome)), t('out')(t(L.nome)));
+  premi($('cup'), !!cupMeta, t('cupIn'), t('cupOut')); premi($('smonta'), esplosoMeta > .5, t('smontaOn'), t('smontaOff'));
+  premi($('dentro'), trasparente, t('dentroOn'), t('dentroOff')); premi($('mini'), conMini, t('miniOn'), t('miniOff'));
+};
+function ricomincia() {
+  dose = 0; fase = 'pronta'; apre = apreMeta = 0; cup = cupMeta = cupT = 0; prese = 0; avviso = ''; vuole = false;
+  for (const L of lati) { L.giro = L.meta = 0; L.fuori = L.fuoriMeta = 0; L.fermoA = 0; L.primo = true; } primo = true;
+  for (let k = 0; k < 3; k++) passo(world.timestep);
+  riempi(); etichette(); $('sbaglia').textContent = t('sbaglia');
+}
+function eroga() { dose++; const L = lati[dose % 2 ? 0 : 1]; base = L.meta = Math.ceil(dose / 2) * PASSO; scossa = [-4, 0, -3, 0]; scosse = 0; fase = 'gira'; }
+$('tasto').onclick = () => {
+  if (['gira', 'cade', 'pesa', 'apre', 'chiude'].includes(fase)) return avvisa(t('occupata'));
+  if (fase === 'sbagliata') { fase = 'aspetta_cup'; return avvisa(t('liberata')); }
+  if (fase === 'aspetta_cup') { cupMeta = 0; etichette(); return avvisa(t('bicchiere')); }
+  if (fase === 'prendi') { cupMeta = 1; etichette(); return; }
+  if (fase === 'presa') { cupMeta = 0; etichette(); }
+  if (dose >= 28) { avvisa(t('fineSett')); ricomincia(); }
+  if (esploso > 0 || esplosoMeta > 0) { esplosoMeta = 0; avvisa(t('rimonto')); }
+  if (lati.some(L => L.fuoriMeta)) { for (const L of lati) L.fuoriMeta = 0; avvisa(t('rimetto')); }
+  if (scelta) scegli(null);
+  etichette(); vuole = true;
+};
+$('sbaglia').onclick = () => {
+  if (fase !== 'pronta' || dose >= 28) return avvisa(t('aspettaProva')); const d = dose + 1;
+  const p = pillole.find(q => q.d === d && q.stato === 'ruota'); if (!p) return avvisa(t('nessuna'));
+  world.removeRigidBody(p.b); scene.remove(p.m); p.stato = 'tolta'; $('sbaglia').textContent = t('sbagliaFatto')(nomeDose(d));
+};
+for (const [id, i] of [['sx', 0], ['dx', 1]]) $(id).onclick = () => {
+  if (!['pronta', 'sbagliata', 'presa', 'prendi'].includes(fase)) return avvisa(t('aspettaCas'));
+  const L = lati[i]; L.fuoriMeta = L.fuoriMeta ? 0 : 1; vuole = false; etichette();
+};
+$('cup').onclick = () => { cupMeta = cupMeta ? 0 : 1; etichette(); };
+$('dentro').onclick = () => { trasparente = !trasparente; etichette(); };
+$('ricarica').onclick = ricomincia;
+$('smonta').onclick = () => { esplosoMeta = esplosoMeta > .5 ? 0 : 1; etichette(); };
+$('esploso').oninput = ev => { esploso = esplosoMeta = ev.target.value / 100; etichette(); };
+$('mini').onclick = () => { conMini = !conMini; ricomincia(); };
+$('ricaricaAlto').onclick = () => { if (RIC) RIC.t = 0; };
+$('suona').onclick = () => { try { sveglia(); } catch (e) {} };
+$('foto').onclick = () => {
+  const w = box.clientWidth, h = box.clientHeight, pr = Math.min(3, 4096 / Math.max(w, h)); renderer.setPixelRatio(pr); renderer.setSize(w, h, false); renderer.render(scene, camera);
+  const a = document.createElement('a'); a.download = 'blistra-pill-box-v09.png'; a.href = renderer.domElement.toDataURL('image/png'); a.click();
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); misura();
+};
+
+// ---------------- esplora ogni pezzo: scegli dall'elenco o tocca nel 3D, il resto diventa trasparente
+const VOCI = new Map();
+const aggiungi = (chiave, nome, gr, mat, mesh) => { if (!VOCI.has(chiave)) VOCI.set(chiave, { chiave, nome, gr, mat, mesh: new Set() }); for (const m of mesh) { VOCI.get(chiave).mesh.add(m); m.userData.voce = chiave; } };
+for (const n in G) { const tp = tipo(n); aggiungi(tp.nome, tp.nome, tp.gr, tp.mat, [G[n]]); if (/^c_display/.test(n)) aggiungi(tp.nome, tp.nome, tp.gr, tp.mat, [schermo]); }
+aggiungi('cavi', IT ? 'Fili e cavi' : 'Wires and cables', 'elec', 'nastro', [...cavi.children, G['nastro_cavi']]);
+const TUTTE = [...Object.values(G), ...cavi.children, schermo];
+for (const m of TUTTE) { const x = m.material; x.userData.o = { tr: x.transparent, op: x.opacity, dw: x.depthWrite, em: x.emissive ? x.emissive.clone() : null, ei: x.emissiveIntensity }; }
+const VERDE = new THREE.Color('#2fbf8f');
+// quando guardi un pezzo da solo, del guscio resta solo il profilo: si capisce dove sta il pezzo
+const PROFILI = ['1_guscio', '2_cappello', '3_piede'].map(n => { const l = new THREE.LineSegments(new THREE.EdgesGeometry(G[n].geometry, 40), new THREE.LineBasicMaterial({ color: '#7d8794', transparent: true, opacity: .35, depthWrite: false })); l.visible = false; radice.add(l); return [G[n], l]; });
+let scelta = null;
+const GUSCIO = new Set(['1_guscio', '2_cappello', '3_piede']), CASSE = new Set(['9_cassetta_sx', '9_cassetta_dx']);
+function aspetto() {
+  for (const m of TUTTE) {
+    const x = m.material, o = x.userData.o, n = m.userData.nome; let tr = o.tr, op = o.op, dw = o.dw, acceso = false;
+    if (trasparente && GUSCIO.has(n)) { tr = true; op = .12; dw = false; }
+    if (trasparente && CASSE.has(n)) { tr = true; op = .35; dw = false; }
+    let vis = true;   // scelto: si vede solo il pezzo, dentro il guscio quasi invisibile
+    if (scelta) { if (scelta.mesh.has(m)) { tr = o.tr; op = o.op; dw = o.dw; acceso = true; } else vis = false; }
+    m.visible = vis; x.transparent = tr; x.opacity = op; x.depthWrite = dw; m.castShadow = op > .5 && o.op > .5;
+    if (x.emissive) { if (acceso) { x.emissive.copy(VERDE); x.emissiveIntensity = .28 + .12 * Math.sin(performance.now() / 300); } else { x.emissive.copy(o.em); x.emissiveIntensity = o.ei; } }
+  }
+  for (const p of pillole) if (p.stato !== 'tolta') p.m.visible = !scelta;
+  for (const [m, l] of PROFILI) { l.visible = !!scelta && !scelta.mesh.has(m); l.position.copy(m.position); l.quaternion.copy(m.quaternion); }
+  for (const L of lati) L.disco.visible = !scelta;
+}
+function scegli(chiave, daTocco = false) {
+  scelta = chiave && VOCI.has(chiave) && (!scelta || scelta.chiave !== chiave) ? VOCI.get(chiave) : null;
+  document.querySelectorAll('#parti button').forEach(b => b.setAttribute('aria-pressed', scelta && b.dataset.k === scelta.chiave ? 'true' : 'false'));
+  $('tutto').hidden = !scelta;
+  if (scelta) {
+    scatola.makeEmpty(); for (const m of scelta.mesh) { tmpB.setFromObject(m); if (!tmpB.isEmpty()) scatola.union(tmpB); }
+    const r = scatola.isEmpty() ? 60 : scatola.getSize(new THREE.Vector3()).length() / 2; distMeta = Math.min(900, Math.max(contesto ? 280 : 170, r * 4.2));
+    const sz = scatola.getSize(new THREE.Vector3()), cc = scatola.getCenter(new THREE.Vector3());   // guarda il pezzo di faccia, non di taglio
+    azMeta = sz.y < sz.x * .6 ? (cc.y < 0 ? -1 : 1) * Math.PI / 2 * .85 : sz.x < sz.y * .6 ? .15 : null;
+    avvisa(t('scelto')(GRUPPI[scelta.gr][IT ? 0 : 1], scelta.nome));
+    if (!daTocco) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else { distMeta = 640; $('didascalia').classList.remove('on'); }
+}
+const raggio = new THREE.Raycaster(), mouse = new THREE.Vector2();
+function tocca(e) {
+  const r = cv.getBoundingClientRect(); mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  raggio.setFromCamera(mouse, camera);
+  const colpi = raggio.intersectObjects(TUTTE.filter(m => m.visible && m.parent && m.parent.visible !== false), false).filter(h => h.object.userData.voce);
+  if (!colpi.length) return scelta && scegli(null);
+  const pieno = colpi.find(h => h.object.material.opacity > .5) || colpi[0];
+  scegli(pieno.object.userData.voce, true);
+}
+(function elenco() {
+  const per = {}; for (const v of VOCI.values()) (per[v.gr] = per[v.gr] || []).push(v);
+  $('parti').innerHTML = Object.keys(GRUPPI).filter(g => per[g]).map(g => '<h3>' + GRUPPI[g][IT ? 0 : 1] + '</h3><div class="gruppo">'
+    + per[g].map(v => '<button aria-pressed="false" data-k="' + v.chiave.replace(/"/g, '&quot;') + '"><i style="background:#' + MAT[v.mat]().color.getHexString() + '"></i>' + v.nome + '</button>').join('') + '</div>').join('');
+  $('parti').onclick = ev => { const b = ev.target.closest('button'); if (b) { fermaTour(); scegli(b.dataset.k); } };
+  $('tutto').textContent = t('tutto'); $('tutto').onclick = () => scegli(null);
+})();
+const S2 = P.STAB, cm = x => (x / 10).toLocaleString(NUM, { maximumFractionDigits: 1 });
+$('tabella').innerHTML = t('righe')(cm, P, S2).map(([a, b]) => `<tr><th>${a}</th><td>${b}</td></tr>`).join('');
+for (const [id, k] of [['tasto', 'tasto'], ['sbaglia', 'sbaglia'], ['ricarica', 'ricarica'], ['ricaricaAlto', 'ricaricaAlto'], ['suona', 'suona'], ['foto', 'foto']]) $(id).textContent = t(k);
+$('esploso').setAttribute('aria-label', t('esplosoLbl'));
+
+ricomincia();
+// ---------- dimostrazione automatica: parte da sola, si ferma appena tocchi il modello o un pulsante
+const TAPPE = [
+  { d: 6, cam: [0.25, 0.20, 600], txt: t('TAPPE')[0] },
+  { d: 3, cam: [0.35, 0.18, 560], txt: t('TAPPE')[1], fa: () => { try { sveglia(); } catch (e) {} } },
+  { d: 9, cam: [-0.25, 0.12, 520], txt: t('TAPPE')[2], fa: () => { if (fase === 'pronta') $('tasto').click(); } },
+  { d: 4, cam: [-0.6, 0.10, 480], txt: t('TAPPE')[3], fa: () => { if (!cupMeta && fase === 'prendi') $('cup').click(); } },
+  { d: 3, cam: [-0.6, 0.12, 520], txt: t('TAPPE')[4], fa: () => { if (cupMeta) $('cup').click(); } },
+  { d: 9, cam: [0.15, 0.85, 430], txt: t('TAPPE')[5], fa: () => { if (RIC) RIC.t = 0; } },
+  { d: 8, cam: [1.1, 0.25, 520], txt: t('TAPPE')[6], fa: () => { if (!trasparente) $('dentro').click(); } },
+  { d: 8, cam: [0.6, 0.30, 700], txt: t('TAPPE')[7], fa: () => { if (scelta) scegli(null); if (trasparente) $('dentro').click(); if (esplosoMeta < .5) $('smonta').click(); } },
+  { d: 5, cam: [-0.62, 0.26, 640], txt: t('TAPPE')[8], fa: () => { if (esplosoMeta > .5) $('smonta').click(); } },
+];
+const tour = { on: false, t: 0, i: -1, dosi: 0 };
+function avviaTour(on) {
+  tour.on = on; tour.t = 0; tour.i = -1;
+  if (on) { if (scelta) scegli(null); if (esplosoMeta) $('smonta').click(); }
+  $('tour').setAttribute('aria-pressed', on ? 'true' : 'false'); $('tour').textContent = on ? t('tourOn') : t('tourOff');
+  $('didascalia').classList.toggle('on', on);
+}
+function aggiornaTour(dt) {
+  if (!tour.on) return;
+  tour.t -= dt;
+  if (tour.t <= 0) {
+    tour.i = (tour.i + 1) % TAPPE.length; const tp = TAPPE[tour.i]; tour.t = tp.d;
+    if (tour.i === 0 && dose >= 10) ricomincia();
+    $('didascalia').textContent = tp.txt; if (tp.fa) tp.fa();
+  }
+  const [a, e, d] = TAPPE[tour.i].cam, k = Math.min(1, dt * .9);
+  az += (a - az) * k; el += (e - el) * k; dist += (d - dist) * k;
+}
+$('tour').onclick = () => avviaTour(!tour.on);
+function fermaTour() { if (tour.on) avviaTour(false); }
+cv.addEventListener('pointerdown', fermaTour); cv.addEventListener('wheel', fermaTour, { passive: true });
+document.querySelectorAll('.comandi button, .comandi input').forEach(b => { if (b.id !== 'tour') b.addEventListener('pointerdown', fermaTour); });
+let toccato = false; ['pointerdown', 'keydown', 'wheel'].forEach(ev => addEventListener(ev, () => { toccato = true; }, { once: true, capture: true }));
+$('tour').textContent = t('tourOff'); $('tour').setAttribute('aria-pressed', 'false');
+setTimeout(() => { if (!toccato) avviaTour(true); }, 2500);
+let prima = performance.now(), resto = 0;
+function ciclo(ora) {
+  const dt = Math.min(.05, (ora - prima) / 1000); prima = ora; resto += dt;
+  esploso = verso(esploso, esplosoMeta, .7 * dt); $('esploso').value = Math.round(esploso * 100);
+  if (esploso > 0) resto = 0;   // smontata: la fisica si ferma
+  let n = 0; while (resto >= world.timestep && n < 10) { passo(world.timestep); resto -= world.timestep; n++; }
+  if (n === 10) resto = 0;
+  if (avvisoT > 0 && (avvisoT -= dt) <= 0 && !tour.on && !scelta) $('didascalia').classList.remove('on');
+  logica(dt); suoni(); aggiornaRicarica(dt); aggiornaTour(dt); disegna(); posaCamera(dt); renderer.render(scene, camera); requestAnimationFrame(ciclo);
+}
+window.__v8 = { scegli, VOCI, tocca, get scelta() { return scelta; }, avanza(sec) { const h = world.timestep; let t = 0, k = 0; while (t < sec) { passo(h); t += h; if (++k % 5 === 0) logica(5 * h); } disegna(); }, get scosse() { return scosse; }, FORME, get fase() { return fase; }, get dose() { return dose; }, pillole: () => pillole, lati, sulPiatto, nelBicchiere, world };
+requestAnimationFrame(ciclo);
