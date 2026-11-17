@@ -22,9 +22,10 @@ for k in ("2m",):
     pezzi = {}
     ric = {}
     if M.ruote == 2:   # ricarica dall'alto: vaschetta e sportellini girano attorno ai loro perni
-        P["16_vaschetta_alta"] = P["16_vaschetta_alta"].translate([0, 0, -s.RA["zp"]])
+        for sd, nn in ((-1, "sx"), (1, "dx")): P["16_fondo_" + nn] = P["16_fondo_" + nn].translate([0, -sd * s.RA["yp"], -s.RA["zp"]])
         for sd, nn in ((-1, "sx"), (1, "dx")): P["19_sportello_" + nn] = P["19_sportello_" + nn].translate([0, -sd * s.RA["yh"], -s.RA["zh"]])
-        ric = dict(zp=s.RA["zp"], yh=s.RA["yh"], zh=s.RA["zh"], tilt={"-1": [[0, 0], [5, 16], [10, 32], [15, 34], [20, 34], [25, 36], [30, 36], [35, 34], [40, 30], [45, 16], [50, 0], [55, 0], [60, 0], [65, 0], [70, 0], [75, 0], [80, 0]], "1": [[0, 0], [5, 16], [10, 32], [15, 34], [20, 34], [25, 36], [30, 36], [35, 34], [40, 30], [45, 16], [50, 0], [55, 0], [60, 0], [65, 0], [70, 0], [75, 0], [80, 0]]})
+        tab = [[0, 0], [5, 10], [10, 20], [15, 28], [20, 34], [25, 38], [28, 40], [30, 42], [34, 42], [35, 0], [80, 0]]   # da ricarica_check_v10.py
+        ric = dict(zp=s.RA["zp"], yp=s.RA["yp"], yh=s.RA["yh"], zh=s.RA["zh"], fondi=True, tilt={"-1": tab, "1": tab})
     for n, m in P.items():
         if n.startswith("10_"): m = m.translate([0, 0, -M.Z_A])            # le ruote girano attorno al loro asse
         pezzi[n] = dati(m)

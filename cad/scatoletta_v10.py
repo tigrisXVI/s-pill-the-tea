@@ -62,7 +62,7 @@ G_FERMO = 0.5     # I-4: gioco tra cella e fermo (una cella da 100 g si piega di
 # si pesano qui; poi, CHIUDENDO lo sportellino, il suo dito inclina la vaschetta e le pillole scivolano nello scivolo
 # della ruota giusta, che le porta nello scomparto in alto davanti (54 gradi). Niente motori in piu'.
 ANG_RICARICA = 54.0
-RA = dict(x0=29.4, x1=35.3, hy=8.4, zb=197.4, zt=201.2, zp=199.0, yh=9.6, zh=207.0, z_sciv=192.8, rho=12.0)   # motorino della ruota sinistra davanti in alto, della destra dietro in alto        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
+RA = dict(x0=29.6, x1=37.7, w=0.8, hy=23.2, zb=193.2, zt=203.5, yi=4.5, yp=22.0, zp=193.7, leva=9.3, yh=23.6, zh=207.0, rho=9.5)   # v1.0: canaletta 6,5 mm, due fondi   # motorino della ruota sinistra davanti in alto, della destra dietro in alto        # dove il pignone tocca la corona (gradi, da +X verso +Z): angolo dietro in alto
 
 MODELLI = {
     "2m": dict(nome="Due ruote, due motorini", R_I=23.0, ruote=2, labbri=False),
@@ -337,43 +337,66 @@ class Modello:
         return scatola(37.9, 49.9, -23.5, 23.5, 192.5, 198.5)
 
     def vaschetta_alta(self, alfa=0.0):
-        """Vaschetta sul perno (y=0, z=zp, all'altezza del fondo): una vite sotto (chiglia) la tiene dritta; alfa > 0 la inclina verso sinistra."""
-        x0, x1, hy, zb, zt, zp = RA["x0"], RA["x1"], RA["hy"], RA["zb"], RA["zt"], RA["zp"]
-        v = math.tan(math.radians(6.0)) * hy                                      # fondo a V di 6 gradi: le pillole restano al centro
-        sez = CrossSection([ccw([(-hy, zb), (hy, zb), (hy, zb + 1.2 + v), (0, zb + 1.2), (-hy, zb + 1.2 + v)])])
-        fondo = Manifold.extrude(sez, x1 - x0).translate([0, 0, x0]).transform([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
-        m = fondo + scatola(x0, x0 + 1.2, -hy, hy, zb, zt) + scatola(x1 - 1.2, x1, -hy, hy, zb, zt)       # pareti davanti e dietro (ai lati e' aperta)
-        m += cil_x(2.2, x1 - 1.2, x1, 0, zp)                                                              # occhiello del perno, all'altezza del fondo
-        m += scatola(x0 + 2.0, x1 - 2.0, -0.8, 0.8, zb - 3.4, zb + 0.01) + cil_x(1.1, x0 + 2.0, x1 - 2.0, 0, zb - 3.4)   # chiglia: ci si avvita una vite dell'hard disk, la vaschetta torna dritta da sola
-        m -= cil_x(1.2, x1 - 2, x1 + 1, 0, zp)
-        return m.translate([0, 0, -zp]).rotate([alfa, 0, 0]).translate([0, 0, zp]) if alfa else m
+        """v1.0 (I-1, versione stretta): DUE FONDI ribaltabili, uno per lato, dentro una canaletta larga 6,5 mm appesa alla cella alta.
+        Le pillole entrano di taglio dallo sportellino e stanno in piedi sul fondo. Ogni fondo gira attorno a un filo d'acciaio
+        all'estremita' esterna (y = +-YP); una mollina di torsione lo tiene in piano contro due fermi. Una levetta sopra la cerniera:
+        quando lo sportellino si chiude, il dito la spinge verso il centro, il fondo si abbassa dalla parte interna e le pillole
+        scivolano verso il centro e cadono nello scomparto. alfa > 0 apre il fondo di sinistra, alfa < 0 quello di destra."""
+        m = Manifold()
+        for sd in (-1, 1):
+            a = -alfa if alfa * sd < 0 else 0.0                                                        # solo il fondo di quel lato
+            m += self.fondo(sd, a)
+        return m
+
+    def fondo(self, sd, a=0.0):
+        """Uno dei due fondi (sd = -1 sinistro, 1 destro), girato di a gradi attorno alla sua cerniera."""
+        x0, x1, w, zb, yp, zp, yi = RA["x0"], RA["x1"], RA["w"], RA["zb"], RA["yp"], RA["zp"], RA["yi"]
+        if True:
+            ya = sorted((sd * yi, sd * (yp - 0.4)))
+            f = scatola(x0 + w + 0.1, x1 - w - 0.1, ya[0], ya[1], zb, zb + 1.0)                        # fondo
+            f += cil_x(0.9, x0 + w + 0.1, x1 - w - 0.1, sd * yp, zp)                                   # cerniera (filo da 0,8)
+            yl = sorted((sd * (yp - 0.8), sd * (yp + 0.8)))
+            f += scatola(33.0, 34.2, yl[0], yl[1], zp, zp + RA["leva"])                                 # levetta
+            f -= cil_x(0.45, x0, x1, sd * yp, zp)
+            if a: f = f.translate([0, -sd * yp, -zp]).rotate([a, 0, 0]).translate([0, sd * yp, zp])
+            return f
 
     def staffa_alta(self):
-        m = scatola(35.9, 46.0, 16.5, 23.5, 198.5, 200.1) + scatola(35.9, 37.3, -2.6, 23.5, 199.0, 205.6)
-        return m + cil_x(1.0, RA["x1"] - 1.2, 35.91, 0, RA["zp"])                  # perno della vaschetta
+        """Canaletta fissa (pareti davanti e dietro, fondo fisso al centro) appesa all'estremita' libera della cella alta:
+        tutto quello che sta qui sopra viene pesato."""
+        x0, x1, w, hy, zb, zt, yp, zp, yi = RA["x0"], RA["x1"], RA["w"], RA["hy"], RA["zb"], RA["zt"], RA["yp"], RA["zp"], RA["yi"]
+        m = scatola(x0, x0 + w, -hy, hy, zb, zt) + scatola(x1 - w, x1, -hy, hy, zb, zt)                  # pareti lunghe
+        m += scatola(x0, x1, -0.8, 0.8, zb, zt) + scatola(x0, x1, -yi + 0.2, yi - 0.2, zb, zb + 1.0)     # tramezzo al centro e fondo fisso (coperto dal tetto)
+        for sd in (-1, 1):
+            ya = sorted((sd * (yp - 1.0), sd * hy))                                                      # orecchie per il filo delle cerniere
+            m += scatola(x0, x0 + w, ya[0], ya[1], zp - 1.2, zb + 0.01) + scatola(x1 - w, x1, ya[0], ya[1], zp - 1.2, zb + 0.01)
+            yf = sorted((sd * yi, sd * (yi + 1.0)))                                                      # fermi: il fondo ci arriva contro da sotto
+            m += scatola(x0, x0 + w + 0.6, yf[0], yf[1], zb + 1.01, zb + 1.4) + scatola(x1 - w - 0.6, x1, yf[0], yf[1], zb + 1.01, zb + 1.4)
+            m -= cil_x(0.45, x0 - 1, x1 + 1, sd * yp, zp)
+        m += scatola(x1 + 0.2, x1 + 1.6, -2.6, 23.5, 199.0, zt)                                          # piastra davanti, sopra la cella
+        m += scatola(x1 - 0.01, x1 + 0.21, -2.6, 2.6, 199.0, zt)                                         # la unisce alla canaletta
+        m += scatola(x1 + 0.2, 46.0, 16.5, 23.5, 198.5, 200.1)                                           # appoggio sull'estremita' libera della cella
+        return m
 
     def sportello_alto(self, s, theta=0.0):
         """Sportellino nel tetto (s=-1 sinistro, 1 destro), cerniera sul lato esterno. theta = gradi di apertura.
-        Il dito sotto la cerniera, quando lo chiudi, spinge giu' la vaschetta da quel lato: le pillole scivolano nello scivolo."""
+        Il dito sotto la cerniera, quando lo chiudi, spinge giu' il fondo di quel lato: le pillole scivolano verso l'esterno e cadono nello scomparto."""
         yh, zh = s * RA["yh"], RA["zh"]
-        y0, y1 = sorted((s * 0.9, s * 9.2))
-        m = scatola(28.4, 35.2, y0, y1, self.H - PARETE + 0.05, self.H - 0.05) + cil_x(0.8, 28.4, 35.2, yh, zh)
-        m += scatola(29.8, 33.8, *sorted((s * 1.4, s * 3.4)), self.H - 0.06, self.H + 1.2)            # linguetta per aprirlo
+        y0, y1 = sorted((s * (RA["yi"] + 0.2), s * (RA["yh"] - 0.8)))
+        m = scatola(RA["x0"] + 0.9, RA["x1"] - 0.9, y0, y1, self.H - PARETE + 0.05, self.H - 0.05) + cil_x(0.8, RA["x0"] + 0.9, RA["x1"] - 0.9, yh, zh)
+        m += scatola(31.6, 35.7, *sorted((s * (RA["yi"] + 0.6), s * (RA["yi"] + 2.6))), self.H - 0.06, self.H + 1.2)            # linguetta per aprirlo
         yd = sorted((yh - s * 0.1 - 0.5, yh - s * 0.1 + 0.5))
-        m += scatola(31.2, 32.4, yd[0], yd[1], zh - RA["rho"], zh)                                     # il dito
+        m += scatola(33.0, 34.2, yd[0], yd[1], zh - RA["rho"], zh)                                     # il dito
         if theta: m = m.translate([0, -yh, -zh]).rotate([-s * theta, 0, 0]).translate([0, yh, zh])
         return m
 
     def scivolo_alto(self, s):
-        """Scivolo dalla vaschetta allo scomparto in alto davanti della ruota (lato s): un tubo a pareti da 1,2 mm."""
-        zs = RA["z_sciv"]; zt0, zt1 = self.Z_TAS
-        def bocca(r0, r1, w, e):
-            return self.metti(ruota(scatola(r0, r1, -w, w, zt0 + e, zt1 - e), ANG_RICARICA), s)
-        ya = sorted((s * 6.0, s * 20.4)); yi = sorted((s * 7.2, s * 19.2))   # la vaschetta inclinata versa a |y| ~ 7
-        fuori = Manifold.batch_hull([scatola(29.4, 36.0, ya[0], ya[1], zs - 0.01, zs), bocca(self.R_CASS + 0.5, self.R_CASS + 0.51, 6.6, 0.4)])
-        dentro = Manifold.batch_hull([scatola(30.6, 34.8, yi[0], yi[1], zs - 0.02, zs + 1.0), bocca(self.R_CASS + 0.3, self.R_CASS + 0.52, 5.4, 1.6)])
-        dentro += bocca(self.R_CASS - 0.5, self.R_CASS + 1.0, 5.4, 1.6)                   # l'apertura in basso resta libera
-        return fuori - dentro
+        """Guida fissa davanti, sopra l'anello della cassetta: le pillole che cadono oltre il bordo dell'ingresso scivolano dentro."""
+        davanti = Manifold.extrude(CrossSection([ccw([(34.4, 175.0), (37.9, 178.5), (37.9, 179.5), (34.4, 176.0)])]), 14.0).translate([0, 0, 6.0])
+        davanti = davanti.transform([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0]])                         # (x, z, y) -> (x, y, z)
+        davanti += scatola(34.4, 37.9, 19.99, 25.3, 178.0, 179.5) - cil_y(self.R_CASS + 1.6, 19, 26, 0, self.Z_A)   # braccio che la attacca al fianco
+        davanti += scatola(29.6, 37.9, 5.55, 6.3, 178.6, 181.2)                                          # sponda interna: le pillole che scivolano verso il centro cadono nell'ingresso, non sull'anello
+        return davanti if s > 0 else davanti.mirror([0, 1, 0])
 
     # ---------------- motorini con pignone
     def motori(self):
@@ -611,11 +634,11 @@ class Modello:
                 m += self.metti(self._staffa_fermo_locale(), sd)
         if self.ruote == 2:   # ricarica dall'alto: fori degli sportellini, parete centrale tagliata, appoggio della cella alta
             for sd in (-1, 1):
-                ys = sorted((sd * 0.6, sd * 10.6))
-                m -= scatola(28.2, 35.4, ys[0], ys[1], self.H - PARETE - 1.0, self.H + 1)
+                ys = sorted((sd * (RA["yi"] - 0.3), sd * 24.5))
+                m -= scatola(RA["x0"] + 0.7, RA["x1"] - 0.7, ys[0], ys[1], self.H - PARETE - 1.0, self.H + 1)   # v1.0: 6,7 x 23,9 mm
             m -= scatola(27.6, self.X_HALF - 1.0, -1.2, 1.2, 186.0, self.H - PARETE + 0.01)
-            m += scatola(37.9, 46.0, self.Y_SX + PARETE - 0.01, -17.9, 186.5, 192.5)
-            m += scatola(39.0, 46.0, 17.0, self.Y_DX - PARETE + 0.01, 186.5, 192.5 - G_FERMO)   # v1.0 (I-4): fermo sotto l'estremita' libera della cella alta
+            m += scatola(37.9, 45.0, self.Y_SX + PARETE - 0.01, -17.9, 186.5, 192.5)
+            m += scatola(39.0, 45.0, 17.0, self.Y_DX - PARETE + 0.01, 186.5, 192.5 - G_FERMO)   # v1.0 (I-4): fermo sotto l'estremita' libera della cella alta
         cb = self.cella().bounding_box(); p = self.PIATTO
         m += scatola(cb[3] - 4.5, cb[3] - 0.5, cb[1] + 0.5, cb[4] - 0.5, self.Z_NICCHIA + PARETE - 0.01, cb[2] - G_FERMO)   # v1.0 (I-4): fermo sotto l'estremita' libera della cella della dose
         self._corpo = m
@@ -683,8 +706,8 @@ class Modello:
         L = [
             ("motorino davanti", "#c0392b", 0.8, [(m1[0], yw, m1[1]), (m1e[0], yw, m1e[1]), (m1e[0], 16, zc), (xc + 1, 16, zc), (xc - 1.5, 0.9, zf)], ["motore_1"]),
             ("motorino dietro", "#c0392b", 0.8, [(m2[0], -yw, m2[1]), (m2e[0], -yw, m2e[1]), (m2e[0], -19.5, zc), (xc + 1, -19.5, zc), (xc - 2.5, -0.9, zf)], ["motore_2"]),
-            ("display", "#2f6fd0", 0.8, [(46.4, 0, 191.5), (36.9, -16.5, 191.5), (36.9, -21.5, 191.5), (36.9, -21.5, zc), (xc + 1, -21.5, zc), (xc + 1, -14.6, zc), (xc + 0.5, -0.9, zf)], ["display"]),   # esce dal retro del display, sotto la cella della ricarica
-            ("cella alta (ricarica)", "#8e44ad", 0.8, [(44.0, -24.4, 196.0), (40.0, -24.4, 197.0), (40.0, -24.4, zc), (xc + 1, -24.4, zc), (xc + 1, -7.4, zc), (xc - 1.5, -0.9, zf)], ["cella_alta"]),
+            ("display", "#2f6fd0", 0.8, [(46.4, 0, 191.5), (46.2, -24.3, 191.5), (46.2, -24.3, 199.4), (42.6, -8.8, 199.4), (42.6, -8.8, zc), (28.6, -8.8, zc), (28.6, -15.6, zc), (xc + 1, -15.6, zc), (xc + 0.5, -0.9, zf)], ["display"]),   # v1.0: sotto la cella, poi sopra la canaletta della ricarica
+            ("cella alta (ricarica)", "#8e44ad", 0.8, [(44.0, -24.4, 196.0), (44.0, -24.4, 199.4), (41.0, -6.6, 199.4), (41.0, -6.6, zc), (28.6, -6.6, zc), (28.6, -14.8, zc), (xc + 1, -14.8, zc), (xc - 1.5, -0.9, zf)], ["cella_alta"]),
             ("tasto", "#e0b400", 0.8, [(-10.5, 6, self.H - PARETE - 10.7), (-14, 7.4, self.H - PARETE - 7), (xc + 1, 7.4, zc), (xc + 2.5, 0.9, zf)], ["interruttore"]),
             ("servo", "#e67e22", 0.9, [(self.PIATTO["x1"] + 6.2, 10.8, 53.0), (self.PIATTO["x1"] + 6.2, 17.5, 53.0), (-29.5, 17.5, 53.0), (-31.6, 5.0, zd + 2.0)], ["servo", "schede"]),
             ("sensore di umidita'", "#27ae60", 0.7, [(15.0, -8.0, zc + 0.2), (15.0, -13.8, zc), (xc + 3.5, -13.8, zc), (xc - 1.0, -0.9, zf)], ["sensore_umidita"]),
@@ -731,7 +754,7 @@ class Modello:
                 P["13_fermo_" + n] = self.fermo(s)
                 P["18_scivolo_" + n] = self.scivolo_alto(s)
                 P["19_sportello_" + n] = self.sportello_alto(s)
-            P["16_vaschetta_alta"] = self.vaschetta_alta()
+            P["16_fondo_sx"] = self.fondo(-1); P["16_fondo_dx"] = self.fondo(1)
             P["17_staffa_alta"] = self.staffa_alta()
         else:
             P["9_cassetta"] = self.metti(self.cassetta_locale(), 0)

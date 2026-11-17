@@ -41,7 +41,12 @@
   {
    "cosa": "filo d'acciaio da 0,8 mm (graffette)",
    "quanti": "circa 50 cm",
-   "dove": "cerniere degli sportellini (I-6)"
+   "dove": "cerniere degli sportellini (I-6) e dei fondi della ricarica (I-1)"
+  },
+  {
+   "cosa": "molla a torsione piccola (filo 0,3-0,4 mm, gamba 6-8 mm)",
+   "quanti": 2,
+   "dove": "ritorno dei fondi della ricarica dall'alto (I-1)"
   },
   {
    "cosa": "modulo AHT20 (umidita' e temperatura, I2C)",
@@ -321,13 +326,103 @@
    "tempo_stimato_min": 0
   },
   {
-   "pezzo": "16_vaschetta_alta",
-   "volume_cm3": 0.26,
-   "massa_g_petg": 0.3,
+   "pezzo": "16_fondo_dx",
+   "volume_cm3": 0.13,
+   "massa_g_petg": 0.2,
    "ingombro_mm": [
+    10.2,
+    6.3,
+    18.4
+   ],
+   "supporti_cm2": 0.04,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "16_fondo_sx",
+   "volume_cm3": 0.13,
+   "massa_g_petg": 0.2,
+   "ingombro_mm": [
+    10.2,
+    6.3,
+    18.4
+   ],
+   "supporti_cm2": 0.04,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "17_staffa_alta",
+   "volume_cm3": 1.17,
+   "massa_g_petg": 1.5,
+   "ingombro_mm": [
+    11.0,
+    16.4,
+    46.7
+   ],
+   "supporti_cm2": 0.72,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 2
+  },
+  {
+   "pezzo": "18_scivolo_dx",
+   "volume_cm3": 0.09,
+   "massa_g_petg": 0.1,
+   "ingombro_mm": [
+    6.2,
     8.3,
-    5.9,
-    16.8
+    19.8
+   ],
+   "supporti_cm2": 0.07,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "18_scivolo_sx",
+   "volume_cm3": 0.09,
+   "massa_g_petg": 0.1,
+   "ingombro_mm": [
+    6.2,
+    8.3,
+    19.8
+   ],
+   "supporti_cm2": 0.07,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "19_sportello_dx",
+   "volume_cm3": 0.16,
+   "massa_g_petg": 0.2,
+   "ingombro_mm": [
+    11.3,
+    19.7,
+    6.3
    ],
    "supporti_cm2": 0.11,
    "layer_mm": 0.12,
@@ -339,87 +434,15 @@
    "tempo_stimato_min": 0
   },
   {
-   "pezzo": "17_staffa_alta",
-   "volume_cm3": 0.35,
-   "massa_g_petg": 0.4,
-   "ingombro_mm": [
-    7.6,
-    11.9,
-    26.1
-   ],
-   "supporti_cm2": 0.03,
-   "layer_mm": 0.16,
-   "pareti": 4,
-   "riempimento": "100%",
-   "contatto_pillole": false,
-   "filamento": "PETG",
-   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
-   "tempo_stimato_min": 0
-  },
-  {
-   "pezzo": "18_scivolo_dx",
-   "volume_cm3": 0.67,
-   "massa_g_petg": 0.9,
-   "ingombro_mm": [
-    11.1,
-    14.4,
-    18.7
-   ],
-   "supporti_cm2": 0.0,
-   "layer_mm": 0.12,
-   "pareti": 3,
-   "riempimento": "25% gyroid",
-   "contatto_pillole": true,
-   "filamento": "PETG naturale",
-   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
-   "tempo_stimato_min": 1
-  },
-  {
-   "pezzo": "18_scivolo_sx",
-   "volume_cm3": 0.67,
-   "massa_g_petg": 0.9,
-   "ingombro_mm": [
-    11.1,
-    14.4,
-    18.7
-   ],
-   "supporti_cm2": 0.0,
-   "layer_mm": 0.12,
-   "pareti": 3,
-   "riempimento": "25% gyroid",
-   "contatto_pillole": true,
-   "filamento": "PETG naturale",
-   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
-   "tempo_stimato_min": 1
-  },
-  {
-   "pezzo": "19_sportello_dx",
-   "volume_cm3": 0.1,
-   "massa_g_petg": 0.1,
-   "ingombro_mm": [
-    13.8,
-    9.5,
-    6.8
-   ],
-   "supporti_cm2": 0.14,
-   "layer_mm": 0.12,
-   "pareti": 3,
-   "riempimento": "25% gyroid",
-   "contatto_pillole": true,
-   "filamento": "PETG naturale",
-   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
-   "tempo_stimato_min": 0
-  },
-  {
    "pezzo": "19_sportello_sx",
-   "volume_cm3": 0.1,
-   "massa_g_petg": 0.1,
+   "volume_cm3": 0.16,
+   "massa_g_petg": 0.2,
    "ingombro_mm": [
-    13.8,
-    9.5,
-    6.8
+    11.3,
+    19.7,
+    6.3
    ],
-   "supporti_cm2": 0.14,
+   "supporti_cm2": 0.11,
    "layer_mm": 0.12,
    "pareti": 3,
    "riempimento": "25% gyroid",
@@ -448,21 +471,21 @@
   },
   {
    "pezzo": "2_cappello",
-   "volume_cm3": 27.2,
-   "massa_g_petg": 34.5,
+   "volume_cm3": 26.96,
+   "massa_g_petg": 34.2,
    "ingombro_mm": [
     105.2,
     52.9,
     58.6
    ],
-   "supporti_cm2": 29.93,
+   "supporti_cm2": 29.78,
    "layer_mm": 0.2,
    "pareti": 3,
    "riempimento": "25% gyroid",
    "contatto_pillole": false,
    "filamento": "PETG, oppure ASA o PC",
    "nota": "PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10)",
-   "tempo_stimato_min": 49
+   "tempo_stimato_min": 48
   },
   {
    "pezzo": "3_piede",
@@ -626,14 +649,15 @@
     "12_tasto",
     "14_croce_dx",
     "14_croce_sx",
-    "18_scivolo_dx",
-    "18_scivolo_sx",
+    "19_sportello_sx",
+    "19_sportello_dx",
     "17_staffa_alta",
     "15_pignone_sx",
     "15_pignone_dx",
-    "19_sportello_sx",
-    "19_sportello_dx",
-    "16_vaschetta_alta",
+    "18_scivolo_dx",
+    "18_scivolo_sx",
+    "16_fondo_sx",
+    "16_fondo_dx",
     "10_tappo_mozzo_dx",
     "10_tappo_mozzo_sx",
     "10_sportellini_dx",
@@ -644,7 +668,7 @@
   ]
  ],
  "totale": {
-  "volume_cm3": 310.8,
+  "volume_cm3": 310.3,
   "massa_g": 394,
   "tempo_stimato_h": 9.9
  }

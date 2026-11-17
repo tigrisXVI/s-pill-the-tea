@@ -147,7 +147,8 @@ def main():
                ferramenta=[dict(cosa='spina cilindrica d\'acciaio 6 x 16 mm (ISO 2338)', quanti=2, dove='assi delle ruote (I-2)'),
                            dict(cosa='alesatore a mano 6 mm H7', quanti=1, dove='foro delle ruote (I-2)'),
                            dict(cosa='spina d\'acciaio 3 x 4 mm, o chiodo da 3 mm tagliato', quanti=2, dove='perni delle croci di Malta (I-3)'),
-                           dict(cosa='filo d\'acciaio da 0,8 mm (graffette)', quanti='circa 50 cm', dove='cerniere degli sportellini (I-6)'),
+                           dict(cosa='filo d\'acciaio da 0,8 mm (graffette)', quanti='circa 50 cm', dove='cerniere degli sportellini (I-6) e dei fondi della ricarica (I-1)'),
+                           dict(cosa='molla a torsione piccola (filo 0,3-0,4 mm, gamba 6-8 mm)', quanti=2, dove='ritorno dei fondi della ricarica dall\'alto (I-1)'),
                            dict(cosa='modulo AHT20 (umidita\' e temperatura, I2C)', quanti=1, dove='sotto il tetto, davanti a sinistra (I-9)')],
                pezzi=rows, piatti=elenco_piatti,
                totale=dict(volume_cm3=float(round(sum(r['volume_cm3'] for r in rows), 1)), massa_g=int(round(sum(r['massa_g_petg'] for r in rows))), tempo_stimato_h=round(sum(r['tempo_stimato_min'] for r in rows) / 60, 1)))

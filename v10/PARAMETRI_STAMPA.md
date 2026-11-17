@@ -36,7 +36,8 @@ Generati da `cad/esporta_v10.py` dal CAD parametrico (modello 2m (due ruote)).
 | spina cilindrica d'acciaio 6 x 16 mm (ISO 2338) | 2 | assi delle ruote (I-2) |
 | alesatore a mano 6 mm H7 | 1 | foro delle ruote (I-2) |
 | spina d'acciaio 3 x 4 mm, o chiodo da 3 mm tagliato | 2 | perni delle croci di Malta (I-3) |
-| filo d'acciaio da 0,8 mm (graffette) | circa 50 cm | cerniere degli sportellini (I-6) |
+| filo d'acciaio da 0,8 mm (graffette) | circa 50 cm | cerniere degli sportellini (I-6) e dei fondi della ricarica (I-1) |
+| molla a torsione piccola (filo 0,3-0,4 mm, gamba 6-8 mm) | 2 | ritorno dei fondi della ricarica dall'alto (I-1) |
 | modulo AHT20 (umidita' e temperatura, I2C) | 1 | sotto il tetto, davanti a sinistra (I-9) |
 
 ## Pezzi
@@ -58,14 +59,15 @@ Generati da `cad/esporta_v10.py` dal CAD parametrico (modello 2m (due ruote)).
 | 14_croce_sx | 1.11 | 1.4 | 26.0 × 26.0 × 4.2 | 0.16 | 4 | 100% | 0.0 | no | 2 | ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14); foro del perno 3,0 mm: spina d'acciaio 3 x 4 a pressione (I-3) |
 | 15_pignone_dx | 0.14 | 0.2 | 12.0 × 11.7 × 2.0 | 0.16 | 4 | 100% | 0.0 | no | 0 | ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14) |
 | 15_pignone_sx | 0.14 | 0.2 | 12.0 × 11.7 × 2.0 | 0.16 | 4 | 100% | 0.0 | no | 0 | ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14) |
-| 16_vaschetta_alta | 0.26 | 0.3 | 8.3 × 5.9 × 16.8 | 0.12 | 3 | 25% gyroid | 0.11 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
-| 17_staffa_alta | 0.35 | 0.4 | 7.6 × 11.9 × 26.1 | 0.16 | 4 | 100% | 0.03 | no | 0 | ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14) |
-| 18_scivolo_dx | 0.67 | 0.9 | 11.1 × 14.4 × 18.7 | 0.12 | 3 | 25% gyroid | 0.0 | sì | 1 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
-| 18_scivolo_sx | 0.67 | 0.9 | 11.1 × 14.4 × 18.7 | 0.12 | 3 | 25% gyroid | 0.0 | sì | 1 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
-| 19_sportello_dx | 0.1 | 0.1 | 13.8 × 9.5 × 6.8 | 0.12 | 3 | 25% gyroid | 0.14 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
-| 19_sportello_sx | 0.1 | 0.1 | 13.8 × 9.5 × 6.8 | 0.12 | 3 | 25% gyroid | 0.14 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
+| 16_fondo_dx | 0.13 | 0.2 | 10.2 × 6.3 × 18.4 | 0.12 | 3 | 25% gyroid | 0.04 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
+| 16_fondo_sx | 0.13 | 0.2 | 10.2 × 6.3 × 18.4 | 0.12 | 3 | 25% gyroid | 0.04 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
+| 17_staffa_alta | 1.17 | 1.5 | 11.0 × 16.4 × 46.7 | 0.16 | 4 | 100% | 0.72 | no | 2 | ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14) |
+| 18_scivolo_dx | 0.09 | 0.1 | 6.2 × 8.3 × 19.8 | 0.12 | 3 | 25% gyroid | 0.07 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
+| 18_scivolo_sx | 0.09 | 0.1 | 6.2 × 8.3 × 19.8 | 0.12 | 3 | 25% gyroid | 0.07 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
+| 19_sportello_dx | 0.16 | 0.2 | 11.3 × 19.7 × 6.3 | 0.12 | 3 | 25% gyroid | 0.11 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
+| 19_sportello_sx | 0.16 | 0.2 | 11.3 × 19.7 × 6.3 | 0.12 | 3 | 25% gyroid | 0.11 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
 | 1_guscio | 60.34 | 76.6 | 106.3 × 52.9 × 143.6 | 0.2 | 3 | 25% gyroid | 68.89 | no | 108 | PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
-| 2_cappello | 27.2 | 34.5 | 105.2 × 52.9 × 58.6 | 0.2 | 3 | 25% gyroid | 29.93 | no | 49 | PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
+| 2_cappello | 26.96 | 34.2 | 105.2 × 52.9 × 58.6 | 0.2 | 3 | 25% gyroid | 29.78 | no | 48 | PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
 | 3_piede | 41.48 | 52.7 | 119.2 × 110.0 × 8.4 | 0.2 | 2 | 15% gyroid | 0.0 | no | 74 | solo regge la piastra d'acciaio: 2 pareti e 15% bastano (I-11) |
 | 4_imbuto | 4.65 | 5.9 | 26.4 × 44.9 × 28.4 | 0.12 | 3 | 25% gyroid | 2.0 | sì | 10 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
 | 5_piattino | 1.46 | 1.8 | 6.7 × 29.2 × 31.9 | 0.12 | 3 | 25% gyroid | 1.08 | sì | 3 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
@@ -79,10 +81,10 @@ Generati da `cad/esporta_v10.py` dal CAD parametrico (modello 2m (due ruote)).
 - **piatto_1.3mf**: 3_piede, 9_cassetta_dx
 - **piatto_2.3mf**: 9_cassetta_sx, 10_ruota_sx
 - **piatto_3.3mf**: 10_ruota_dx, 10_spazzole_sx, 10_spazzole_dx, 1_guscio
-- **piatto_4.3mf**: 2_cappello, 4_imbuto, 6_staffa_cella, 7_bicchierino, 5_piattino, 12_tasto, 14_croce_dx, 14_croce_sx, 18_scivolo_dx, 18_scivolo_sx, 17_staffa_alta, 15_pignone_sx, 15_pignone_dx, 19_sportello_sx, 19_sportello_dx, 16_vaschetta_alta, 10_tappo_mozzo_dx, 10_tappo_mozzo_sx, 10_sportellini_dx, 10_sportellini_sx, 13_fermo_sx, 13_fermo_dx
+- **piatto_4.3mf**: 2_cappello, 4_imbuto, 6_staffa_cella, 7_bicchierino, 5_piattino, 12_tasto, 14_croce_dx, 14_croce_sx, 19_sportello_sx, 19_sportello_dx, 17_staffa_alta, 15_pignone_sx, 15_pignone_dx, 18_scivolo_dx, 18_scivolo_sx, 16_fondo_sx, 16_fondo_dx, 10_tappo_mozzo_dx, 10_tappo_mozzo_sx, 10_sportellini_dx, 10_sportellini_sx, 13_fermo_sx, 13_fermo_dx
 
 ## Totale
 
-310.8 cm³, circa 394 g di PETG, circa 9.9 h di stampa.
+310.3 cm³, circa 394 g di PETG, circa 9.9 h di stampa.
 
 I tempi sono stime dal volume, non uscite di uno slicer: vanno verificati nello slicer con la propria stampante. Filamento ed elettricità non sono conteggiati nel costo del progetto.
