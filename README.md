@@ -12,6 +12,25 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 > ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
 
+## Novità della v1.0: le correzioni del rapporto R&D
+
+La v1.0 è la v0.9 con i problemi trovati nel [rapporto R&D](rd/) corretti. Modello in `cad/scatoletta_v10.py`; i controlli in `cad/controlli_v10.py` passano tutti (nessuna interferenza, croce, ricarica, cavi, stabilità). File di stampa in `v10/` (`v10/PARAMETRI_STAMPA.md`). Visore: [modello 3D v1.0](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v10.html).
+
+| | Problema nella v0.9 | Correzione nella v1.0 |
+|---|---|---|
+| I-2 | Asse stampato con 0,3 mm di gioco: le lamelle toccano l'anello (93% di probabilità) | Spina d'acciaio 6 × 16 mm nella cassetta, foro della ruota alesato a 6,0 H7; lamelle a 0,3 mm |
+| I-3 | A motore bloccato i denti del pignone arrivano a 36–83 MPa | Limite di corrente nel firmware (`firmware/v10/limite_coppia.h`): massimo 10 MPa; perno della croce d'acciaio |
+| I-4 | Un dito sulla vaschetta può rompere le celle da 100 g | Fermi sotto le estremità libere delle due celle, a 0,5 mm |
+| I-5 | Una dose di 5 farmaci copre il 119% della vaschetta pesata | Vaschetta 30 × 24 mm (prima 24 × 22), pareti da 6 mm |
+| I-6, I-12 | Sportellini a 0,05 mm, lamelle da 0,76 e dentini da 1 mm: troppo fini per la stampa | Sportellini da 1,6 mm a uno strato (0,2) dai divisori, lamelle da 1,2, dentini da 1,2, cerniere in filo d'acciaio |
+| I-7, I-13 | La scatoletta non sa se una pillola ci sta né se si può caricare | App 3.4.0: misure della pillola, elenco dei farmaci da non caricare (dabigatran), avviso per quelli sensibili all'umidità |
+| I-8, I-10, I-11, I-14 | Parametri di stampa generici | PETG naturale e ugello d'acciaio per i pezzi a contatto; guscio in ASA o PC se sta al sole; piede con 2 pareti; PETG con almeno 45 MPa |
+| I-9, I-15 | Il gel di silice si satura prima del previsto | Sensore di umidità AHT20 sotto il tetto (`firmware/v10/umidita.h`) e gel nuovo a ogni ricarica, almeno ogni 7 giorni |
+
+Il piede è 2 mm più largo (110 mm) per restare sopra 40 gradi di stabilità di lato con i pezzi nuovi.
+
+**Ancora aperto: I-1, ricarica dall'alto più grande.** Oggi passa solo il 9% delle pillole (5 su 59). Un'apertura 12 × 23 mm non entra nella scatola attuale: sotto il tetto davanti c'è il motorino della ruota sinistra, e ogni altro posto per il motorino urta l'altra ruota o esce dal guscio. Le pillole che non passano si caricano dalla cassetta, e l'app lo dice.
+
 ## Novità della v0.9
 
 - **Croce di Malta.** Il meccanismo dei vecchi proiettori e degli orologi prende il posto di corona e pignone. Dietro ogni ruota ci sono 15 fessure, una sotto ogni divisorio. Il motorino gira un ingranaggio da 24 denti con un perno: a ogni giro il perno entra in una fessura e fa avanzare la ruota di uno scomparto esatto (24 gradi). Per il resto del giro un disco di blocco tiene ferma la ruota, anche senza corrente e anche se qualcuno prova a girarla a mano. `cad/croce_check.py` simula un giro intero dell'ingranaggio: nessun urto, 24,0 gradi esatti, ruota bloccata a riposo. Il perno dell'ingranaggio è una vite recuperata da un hard disk.

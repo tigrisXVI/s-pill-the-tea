@@ -1,0 +1,651 @@
+{
+ "versione": "v1.0",
+ "modello": "2m (due ruote)",
+ "stampante": {
+  "tipo": "FDM a filo, piano almeno 250 x 210 mm",
+  "ugello_mm": 0.4,
+  "ugello_materiale": "acciaio inox o temprato per i pezzi a contatto con le pillole"
+ },
+ "materiale": {
+  "nome": "PETG",
+  "requisito": "scheda tecnica con almeno 45 MPa di trazione nel piano XY (I-14): le schede trovate vanno da 31,9 a 68,4 MPa",
+  "densita_g_cm3": 1.27,
+  "ugello_C": "230-250",
+  "piano_C": "70-80",
+  "ventola": "30-50%",
+  "essiccazione": "65 C per 6-8 h se il filo ha preso umidita'"
+ },
+ "regole_generali": [
+  "nessun gioco funzionale sotto 0,3 mm nel piano e sotto 2 strati in verticale (rapporto R&D, sezione 7); unica eccezione voluta: 0,2 mm tra divisori e sportellini (I-6)",
+  "compensazione dei fori XY dal campione di prova T2",
+  "smusso 0,4 mm sul primo strato dei pezzi che scorrono",
+  "perni caricati: in acciaio, non stampati in verticale",
+  "pezzi a contatto con le pillole: PETG naturale (senza colore), strati da 0,12, ugello d'acciaio (I-8)"
+ ],
+ "ferramenta": [
+  {
+   "cosa": "spina cilindrica d'acciaio 6 x 16 mm (ISO 2338)",
+   "quanti": 2,
+   "dove": "assi delle ruote (I-2)"
+  },
+  {
+   "cosa": "alesatore a mano 6 mm H7",
+   "quanti": 1,
+   "dove": "foro delle ruote (I-2)"
+  },
+  {
+   "cosa": "spina d'acciaio 3 x 4 mm, o chiodo da 3 mm tagliato",
+   "quanti": 2,
+   "dove": "perni delle croci di Malta (I-3)"
+  },
+  {
+   "cosa": "filo d'acciaio da 0,8 mm (graffette)",
+   "quanti": "circa 50 cm",
+   "dove": "cerniere degli sportellini (I-6)"
+  },
+  {
+   "cosa": "modulo AHT20 (umidita' e temperatura, I2C)",
+   "quanti": 1,
+   "dove": "sotto il tetto, davanti a sinistra (I-9)"
+  }
+ ],
+ "pezzi": [
+  {
+   "pezzo": "10_ruota_dx",
+   "volume_cm3": 32.54,
+   "massa_g_petg": 41.3,
+   "ingombro_mm": [
+    98.4,
+    98.9,
+    15.8
+   ],
+   "supporti_cm2": 11.96,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8); foro centrale stampato a 5,8 mm: ALESARLO a 6,0 H7 (alesatore a mano) prima di montare la ruota (I-2)",
+   "tempo_stimato_min": 72
+  },
+  {
+   "pezzo": "10_ruota_sx",
+   "volume_cm3": 32.54,
+   "massa_g_petg": 41.3,
+   "ingombro_mm": [
+    98.4,
+    98.9,
+    15.8
+   ],
+   "supporti_cm2": 11.96,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8); foro centrale stampato a 5,8 mm: ALESARLO a 6,0 H7 (alesatore a mano) prima di montare la ruota (I-2)",
+   "tempo_stimato_min": 72
+  },
+  {
+   "pezzo": "10_spazzole_dx",
+   "volume_cm3": 0.54,
+   "massa_g_petg": 0.7,
+   "ingombro_mm": [
+    93.1,
+    93.6,
+    12.6
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 1
+  },
+  {
+   "pezzo": "10_spazzole_sx",
+   "volume_cm3": 0.54,
+   "massa_g_petg": 0.7,
+   "ingombro_mm": [
+    93.1,
+    93.6,
+    12.6
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 1
+  },
+  {
+   "pezzo": "10_sportellini_dx",
+   "volume_cm3": 7.6,
+   "massa_g_petg": 9.6,
+   "ingombro_mm": [
+    92.3,
+    3.4,
+    93.4
+   ],
+   "supporti_cm2": 5.4,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8); cerniere con filo d'acciaio da 0,8 mm (graffetta) (I-6)",
+   "tempo_stimato_min": 16
+  },
+  {
+   "pezzo": "10_sportellini_sx",
+   "volume_cm3": 7.6,
+   "massa_g_petg": 9.6,
+   "ingombro_mm": [
+    92.3,
+    3.4,
+    93.4
+   ],
+   "supporti_cm2": 5.4,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8); cerniere con filo d'acciaio da 0,8 mm (graffetta) (I-6)",
+   "tempo_stimato_min": 16
+  },
+  {
+   "pezzo": "10_tappo_mozzo_dx",
+   "volume_cm3": 2.21,
+   "massa_g_petg": 2.8,
+   "ingombro_mm": [
+    45.2,
+    4.4,
+    45.2
+   ],
+   "supporti_cm2": 1.92,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 4
+  },
+  {
+   "pezzo": "10_tappo_mozzo_sx",
+   "volume_cm3": 2.21,
+   "massa_g_petg": 2.8,
+   "ingombro_mm": [
+    45.2,
+    4.4,
+    45.2
+   ],
+   "supporti_cm2": 1.92,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 4
+  },
+  {
+   "pezzo": "12_tasto",
+   "volume_cm3": 2.23,
+   "massa_g_petg": 2.8,
+   "ingombro_mm": [
+    9.1,
+    26.0,
+    26.0
+   ],
+   "supporti_cm2": 0.89,
+   "layer_mm": 0.2,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "",
+   "tempo_stimato_min": 4
+  },
+  {
+   "pezzo": "13_fermo_dx",
+   "volume_cm3": 0.05,
+   "massa_g_petg": 0.1,
+   "ingombro_mm": [
+    8.1,
+    1.7,
+    9.5
+   ],
+   "supporti_cm2": 0.04,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "13_fermo_sx",
+   "volume_cm3": 0.05,
+   "massa_g_petg": 0.1,
+   "ingombro_mm": [
+    8.1,
+    1.7,
+    9.5
+   ],
+   "supporti_cm2": 0.04,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "14_croce_dx",
+   "volume_cm3": 1.11,
+   "massa_g_petg": 1.4,
+   "ingombro_mm": [
+    26.0,
+    26.0,
+    4.2
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14); foro del perno 3,0 mm: spina d'acciaio 3 x 4 a pressione (I-3)",
+   "tempo_stimato_min": 2
+  },
+  {
+   "pezzo": "14_croce_sx",
+   "volume_cm3": 1.11,
+   "massa_g_petg": 1.4,
+   "ingombro_mm": [
+    26.0,
+    26.0,
+    4.2
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14); foro del perno 3,0 mm: spina d'acciaio 3 x 4 a pressione (I-3)",
+   "tempo_stimato_min": 2
+  },
+  {
+   "pezzo": "15_pignone_dx",
+   "volume_cm3": 0.14,
+   "massa_g_petg": 0.2,
+   "ingombro_mm": [
+    12.0,
+    11.7,
+    2.0
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "15_pignone_sx",
+   "volume_cm3": 0.14,
+   "massa_g_petg": 0.2,
+   "ingombro_mm": [
+    12.0,
+    11.7,
+    2.0
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "16_vaschetta_alta",
+   "volume_cm3": 0.26,
+   "massa_g_petg": 0.3,
+   "ingombro_mm": [
+    8.3,
+    5.9,
+    16.8
+   ],
+   "supporti_cm2": 0.11,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "17_staffa_alta",
+   "volume_cm3": 0.35,
+   "massa_g_petg": 0.4,
+   "ingombro_mm": [
+    7.6,
+    11.9,
+    26.1
+   ],
+   "supporti_cm2": 0.03,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "18_scivolo_dx",
+   "volume_cm3": 0.67,
+   "massa_g_petg": 0.9,
+   "ingombro_mm": [
+    11.1,
+    14.4,
+    18.7
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 1
+  },
+  {
+   "pezzo": "18_scivolo_sx",
+   "volume_cm3": 0.67,
+   "massa_g_petg": 0.9,
+   "ingombro_mm": [
+    11.1,
+    14.4,
+    18.7
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 1
+  },
+  {
+   "pezzo": "19_sportello_dx",
+   "volume_cm3": 0.1,
+   "massa_g_petg": 0.1,
+   "ingombro_mm": [
+    13.8,
+    9.5,
+    6.8
+   ],
+   "supporti_cm2": 0.14,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "19_sportello_sx",
+   "volume_cm3": 0.1,
+   "massa_g_petg": 0.1,
+   "ingombro_mm": [
+    13.8,
+    9.5,
+    6.8
+   ],
+   "supporti_cm2": 0.14,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "1_guscio",
+   "volume_cm3": 60.34,
+   "massa_g_petg": 76.6,
+   "ingombro_mm": [
+    106.3,
+    52.9,
+    143.6
+   ],
+   "supporti_cm2": 68.89,
+   "layer_mm": 0.2,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": false,
+   "filamento": "PETG, oppure ASA o PC",
+   "nota": "PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10)",
+   "tempo_stimato_min": 108
+  },
+  {
+   "pezzo": "2_cappello",
+   "volume_cm3": 27.2,
+   "massa_g_petg": 34.5,
+   "ingombro_mm": [
+    105.2,
+    52.9,
+    58.6
+   ],
+   "supporti_cm2": 29.93,
+   "layer_mm": 0.2,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": false,
+   "filamento": "PETG, oppure ASA o PC",
+   "nota": "PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10)",
+   "tempo_stimato_min": 49
+  },
+  {
+   "pezzo": "3_piede",
+   "volume_cm3": 41.48,
+   "massa_g_petg": 52.7,
+   "ingombro_mm": [
+    119.2,
+    110.0,
+    8.4
+   ],
+   "supporti_cm2": 0.0,
+   "layer_mm": 0.2,
+   "pareti": 2,
+   "riempimento": "15% gyroid",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "solo regge la piastra d'acciaio: 2 pareti e 15% bastano (I-11)",
+   "tempo_stimato_min": 74
+  },
+  {
+   "pezzo": "4_imbuto",
+   "volume_cm3": 4.65,
+   "massa_g_petg": 5.9,
+   "ingombro_mm": [
+    26.4,
+    44.9,
+    28.4
+   ],
+   "supporti_cm2": 2.0,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 10
+  },
+  {
+   "pezzo": "5_piattino",
+   "volume_cm3": 1.46,
+   "massa_g_petg": 1.8,
+   "ingombro_mm": [
+    6.7,
+    29.2,
+    31.9
+   ],
+   "supporti_cm2": 1.08,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 3
+  },
+  {
+   "pezzo": "6_staffa_cella",
+   "volume_cm3": 0.26,
+   "massa_g_petg": 0.3,
+   "ingombro_mm": [
+    5.2,
+    38.6,
+    6.0
+   ],
+   "supporti_cm2": 0.11,
+   "layer_mm": 0.16,
+   "pareti": 4,
+   "riempimento": "100%",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "ingranaggio: piano, denti nel piano XY; PETG con almeno 45 MPa nel piano (I-14)",
+   "tempo_stimato_min": 0
+  },
+  {
+   "pezzo": "7_bicchierino",
+   "volume_cm3": 15.52,
+   "massa_g_petg": 19.7,
+   "ingombro_mm": [
+    72.4,
+    34.0,
+    27.4
+   ],
+   "supporti_cm2": 8.7,
+   "layer_mm": 0.12,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": true,
+   "filamento": "PETG naturale",
+   "nota": "ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8)",
+   "tempo_stimato_min": 34
+  },
+  {
+   "pezzo": "9_cassetta_dx",
+   "volume_cm3": 33.56,
+   "massa_g_petg": 42.6,
+   "ingombro_mm": [
+    104.0,
+    104.0,
+    21.1
+   ],
+   "supporti_cm2": 15.71,
+   "layer_mm": 0.2,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "foro della torretta 6,0 mm: la spina d'acciaio 6 x 16 entra a pressione (se balla, una goccia di colla epossidica) (I-2)",
+   "tempo_stimato_min": 60
+  },
+  {
+   "pezzo": "9_cassetta_sx",
+   "volume_cm3": 33.56,
+   "massa_g_petg": 42.6,
+   "ingombro_mm": [
+    104.0,
+    104.0,
+    21.1
+   ],
+   "supporti_cm2": 15.71,
+   "layer_mm": 0.2,
+   "pareti": 3,
+   "riempimento": "25% gyroid",
+   "contatto_pillole": false,
+   "filamento": "PETG",
+   "nota": "foro della torretta 6,0 mm: la spina d'acciaio 6 x 16 entra a pressione (se balla, una goccia di colla epossidica) (I-2)",
+   "tempo_stimato_min": 60
+  }
+ ],
+ "piatti": [
+  [
+   "piatto_1.3mf",
+   [
+    "3_piede",
+    "9_cassetta_dx"
+   ]
+  ],
+  [
+   "piatto_2.3mf",
+   [
+    "9_cassetta_sx",
+    "10_ruota_sx"
+   ]
+  ],
+  [
+   "piatto_3.3mf",
+   [
+    "10_ruota_dx",
+    "10_spazzole_sx",
+    "10_spazzole_dx",
+    "1_guscio"
+   ]
+  ],
+  [
+   "piatto_4.3mf",
+   [
+    "2_cappello",
+    "4_imbuto",
+    "6_staffa_cella",
+    "7_bicchierino",
+    "5_piattino",
+    "12_tasto",
+    "14_croce_dx",
+    "14_croce_sx",
+    "18_scivolo_dx",
+    "18_scivolo_sx",
+    "17_staffa_alta",
+    "15_pignone_sx",
+    "15_pignone_dx",
+    "19_sportello_sx",
+    "19_sportello_dx",
+    "16_vaschetta_alta",
+    "10_tappo_mozzo_dx",
+    "10_tappo_mozzo_sx",
+    "10_sportellini_dx",
+    "10_sportellini_sx",
+    "13_fermo_sx",
+    "13_fermo_dx"
+   ]
+  ]
+ ],
+ "totale": {
+  "volume_cm3": 310.8,
+  "massa_g": 394,
+  "tempo_stimato_h": 9.9
+ }
+}

@@ -195,7 +195,7 @@ def controlla(k):
     senza = [(g, m) for g, m in masse if m is not C["piastra_acciaio"]]; t2 = sum(g for g, _ in senza); cz2 = sum(g * cg(m)[2] for g, m in senza) / t2
     lato2 = math.degrees(math.atan2(pd["y"] - abs(cy), cz2))
     print(f"   peso circa {tot:.0f} g (di cui piastra d'acciaio {masse[-1][0] if False else 7.85 * C['piastra_acciaio'].volume() / 1000:.0f} g), baricentro a {cz:.0f} mm d'altezza")
-    print(f"   si ribalta di lato solo se inclinata di {lato:.0f} gradi (senza piastra {lato2:.0f}), in avanti {avanti:.0f}, indietro {dietro:.0f}")
+    print(f"   si ribalta di lato solo se inclinata di {lato:.1f} gradi (senza piastra {lato2:.0f}), in avanti {avanti:.0f}, indietro {dietro:.0f}")
     ok &= min(lato, avanti, dietro) >= 40
     x, y, z = M.misure()
     print(f"   misure: corpo {x:.0f} x {y:.0f} x {z:.0f} mm ({x * y * z / 1e6:.2f} litri), piede {pd['x1'] - pd['x0']:.0f} x {2 * pd['y']:.0f} mm")
