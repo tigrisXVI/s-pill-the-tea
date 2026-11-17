@@ -25,5 +25,5 @@ out['axis'] = dict(hole_r=3.3, axis_r=3.0, hub_len=PROF)
 out['tray'] = M.PIATTO; out['cup'] = M.CUP
 out['funnel_out'] = dict(y=13.0, x=2*(M.APRE+2.0))
 out['H'] = round(M.H,1); out['X_HALF']=M.X_HALF; out['Y']=(M.Y_SX, M.Y_DX)
-json.dump(out, open('os.path.join(os.path.dirname(__file__), 'rd_cad.json')','w'), indent=1)
+json.dump(out, open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rd_cad.json'), 'w'), indent=1)
 print(json.dumps(out, indent=1)[:3500])
