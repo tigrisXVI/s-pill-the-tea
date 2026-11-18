@@ -1,0 +1,183 @@
+{
+ "cad": {
+  "L": 105.2,
+  "W": 64.2,
+  "H": 217.6,
+  "litri": 1.47,
+  "piede": [
+   122.19999999999999,
+   112.0
+  ],
+  "petg_cm3": 341.1,
+  "petg_g": 433,
+  "stampa_h": 10.8,
+  "pezzi": 29,
+  "croce": {
+   "C": 50.606,
+   "R_perno": 10.522,
+   "ang": [
+    126.0,
+    126.0
+   ]
+  },
+  "pignone": [
+   -21.2,
+   55.75
+  ],
+  "stepper": [
+   -26.85,
+   61.41
+  ]
+ },
+ "pillole": {
+  "N": 59,
+  "scomparto": 55,
+  "uscita": 57,
+  "ricarica": 36,
+  "ricarica_dipende": 3,
+  "non_passano_uscita": [
+   "Calcium/D3 chewable 17 mm",
+   "Calcium 1 g chewable 18 mm"
+  ]
+ },
+ "motore": {
+  "I_bobina_mA": 82,
+  "coppia_pullin_mNm": 29.4,
+  "coppia_utile_mNm": 24.1,
+  "coppia_max_ipotesi_mNm": 51.4,
+  "rapporto_croce_max": 0.262,
+  "coppia_ruota_Nmm": 3.31,
+  "coppia_motore_serve_mNm": 0.4,
+  "margine": 60,
+  "finecorsa_croce_Nmm": [
+   18.9,
+   13.0,
+   24.8
+  ],
+  "finecorsa_motore_mNm": [
+   11.4,
+   7.8,
+   14.9
+  ],
+  "finecorsa_quota": [
+   47,
+   32,
+   62
+  ],
+  "dente_uso": {
+   "Ft_N": 4.8,
+   "sigma_MPa": 12.0
+  },
+  "dente_max": {
+   "Ft_N": 10.3,
+   "sigma_MPa": 25.6
+  },
+  "perno_max": {
+   "F_N": 10.6,
+   "sigma_MPa": 5.2
+  },
+  "secondi_per_scomparto": {
+   "300": 16.3,
+   "500": 9.8
+  },
+  "passi_per_scomparto": 4891,
+  "passi_ritorno_finecorsa": 815
+ },
+ "finecorsa": {
+  "spinta_nominale_mm": 0.27,
+  "P_non_scatta": 0.241,
+  "P_a_fine_corsa": 0.425,
+  "oltre_medio_mm": 0.11
+ },
+ "ingranamento": {
+  "interasse_nominale": 17.1,
+  "interasse_spinto_in_fondo": 16.76,
+  "interferenza_mm": 0.24,
+  "con_foro_9_4": 17.0
+ },
+ "lamelle": {
+  "media_mm": 0.225,
+  "p1_mm": -0.002,
+  "P_tocca": 0.0106
+ },
+ "bilancia": {
+  "3.3": {
+   "uV_per_g": 33.0,
+   "rumore_mg": 1.52
+  },
+  "4.3": {
+   "uV_per_g": 43.0,
+   "rumore_mg": 1.16
+  },
+  "deriva_zero_mg_per_10C": 50.0
+ },
+ "corrente_mA": {
+  "esp32_wifi_picco": 350,
+  "esp32_medio": 100,
+  "stepper_in_moto": 164,
+  "servo_in_moto": 250,
+  "servo_bloccato": 650,
+  "cicalino": 30,
+  "oled": 20,
+  "hx711": 2,
+  "uln_led": 12,
+  "picco_un_motore": 1214,
+  "picco_due_motori": 1378,
+  "riposo": 122
+ },
+ "gpio": {
+  "stepper": 8,
+  "servo": 1,
+  "hx711": 2,
+  "i2c_oled": 2,
+  "cicalino": 1,
+  "tasto": 1,
+  "finecorsa": 2,
+  "hall_bicchiere": 1,
+  "totale": 18,
+  "sicuri_supermini": 12,
+  "generali_supermini": 19
+ },
+ "termica": {
+  "potenza_motore_W": 0.67,
+  "potenza_uln_W": 0.15,
+  "salita_motore_continua_K": 40,
+  "t_motore_continuo_C": 65,
+  "PETG_Tg_C": 80,
+  "PETG_HDT_C": 70,
+  "secondi_al_giorno": 130,
+  "energia_giorno_J": 88.0,
+  "crescita_ruota_20_40C_mm": 0.064
+ },
+ "umidita": {
+  "0.05": {
+   "acqua_g_giorno": 0.012,
+   "giorni_4g_gel": 82.2
+  },
+  "0.5": {
+   "acqua_g_giorno": 0.122,
+   "giorni_4g_gel": 8.2
+  },
+  "2.0": {
+   "acqua_g_giorno": 0.487,
+   "giorni_4g_gel": 2.1
+  }
+ },
+ "stabilita": {
+  "angoli": {
+   "lato": 41.1,
+   "avanti": 46.4,
+   "dietro": 40.8
+  },
+  "peso_g": 767,
+  "forza_in_cima_per_ribaltarla_di_lato_N": 1.94,
+  "forza_in_cima_indietro_N": 1.94,
+  "forza_tasto_N": 50
+ },
+ "strutture": {
+  "aletta_sigma_MPa": 3.8,
+  "vite_M25_precarico_N": 200.0,
+  "piastra_forza_denti_N": 11.0,
+  "piastra_momento_Nmm": 88.0
+ }
+}

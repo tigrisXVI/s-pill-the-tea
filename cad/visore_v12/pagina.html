@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Blistra pill box v1.2: an open-source medication dispenser with Geneva drives driven by 28BYJ-48 steppers, a top refill and a dose check by weight. Interactive 3D model with real pill physics: X-ray view, section cut, working gears and every internal part.">
+<meta property="og:title" content="Blistra pill box v1.2 – interactive 3D model">
+<meta property="og:description" content="An open-source medication dispenser you can take apart in your browser: X-ray, section cut, working Geneva drive, every board and sensor.">
+<title>Blistra pill box v1.2 – interactive 3D model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#eef4f6; --stage-a:#ffffff; --stage-b:#dce8ee; --ink:#10233a; --soft:#5a6c7d; --line:#d3e0e7;
+    --panel:rgba(255,255,255,.82); --chip:#f2f7f9; --accent:#0e9f7a; --accent-soft:#d6f2e9; --on-accent:#ffffff;
+    --warn:#e2702d; --shadow:0 10px 30px rgba(16,35,58,.10), 0 1px 3px rgba(16,35,58,.08);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0c141c; --stage-a:#1a2836; --stage-b:#0c141c; --ink:#e7eff4; --soft:#97a9b8; --line:#26384a;
+    --panel:rgba(18,28,39,.86); --chip:#18283a; --accent:#3dd6aa; --accent-soft:#163b33; --on-accent:#06261d; --shadow:0 10px 30px rgba(0,0,0,.4);
+  } }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); }
+  body { font:15px/1.5 Manrope, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color:inherit; }
+  button, input, select { font:inherit; color:inherit; }
+  button { cursor:pointer; touch-action:manipulation; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+
+  /* barra in alto */
+  .barra { display:flex; align-items:center; gap:14px; padding:12px 18px; }
+  .marchio { display:flex; align-items:center; gap:10px; min-width:0; }
+  .logo { width:30px; height:30px; border-radius:9px; background:conic-gradient(from 200deg, var(--accent), #6fd3ff, var(--accent)); flex:none; position:relative; }
+  .logo::after { content:""; position:absolute; inset:8px; border-radius:50%; background:var(--bg); }
+  h1 { font-size:1.05rem; margin:0; font-weight:800; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .barra .versioni { margin-left:auto; display:flex; gap:10px; align-items:center; color:var(--soft); font-size:.86rem; }
+  .barra select { background:var(--chip); border:1px solid var(--line); border-radius:10px; padding:6px 8px; }
+  #lingua { background:var(--chip); border:1px solid var(--line); border-radius:10px; padding:6px 12px; }
+
+  /* palco 3D */
+  .palco { position:relative; height:calc(100dvh - 58px); min-height:520px; margin:0 12px 12px; border-radius:22px; overflow:hidden;
+    background:radial-gradient(110% 80% at 40% 30%, var(--stage-a), var(--stage-b)); border:1px solid var(--line); }
+  #scena { position:absolute; inset:0; touch-action:none; }
+  #scena canvas { display:block; width:100%; height:100%; }
+  .vetro { background:var(--panel); backdrop-filter:blur(14px) saturate(1.3); -webkit-backdrop-filter:blur(14px) saturate(1.3); border:1px solid var(--line); box-shadow:var(--shadow); }
+
+  .modi { position:absolute; left:14px; top:14px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; max-width:calc(100% - 420px); z-index:2; }
+  .segmenti { display:inline-flex; padding:4px; border-radius:14px; gap:2px; }
+  .segmenti button { border:0; background:transparent; padding:8px 13px; border-radius:10px; font-weight:600; font-size:.9rem; color:var(--soft); }
+  .segmenti button[aria-pressed="true"] { background:var(--accent); color:var(--on-accent); }
+  .segmenti button:hover:not([aria-pressed="true"]) { color:var(--ink); background:var(--chip); }
+  .esplodi { display:inline-flex; align-items:center; gap:10px; padding:8px 14px; border-radius:14px; font-weight:600; font-size:.9rem; color:var(--soft); }
+  .esplodi input { width:120px; accent-color:var(--accent); }
+  .sezione { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:14px; font-size:.88rem; }
+  .sezione input { width:170px; accent-color:var(--accent); }
+  .sezione .segmenti { padding:0; box-shadow:none; border:0; background:none; }
+  .sezione .segmenti button { padding:5px 10px; }
+
+  .viste { position:absolute; left:14px; bottom:14px; display:flex; gap:6px; padding:5px; border-radius:14px; z-index:2; }
+  .viste button { border:0; background:transparent; padding:7px 11px; border-radius:10px; font-size:.84rem; font-weight:600; color:var(--soft); }
+  .viste button:hover { background:var(--chip); color:var(--ink); }
+
+  #stato { position:absolute; left:14px; bottom:66px; max-width:calc(100% - 420px); font-size:.84rem; color:var(--soft); padding:6px 12px; border-radius:12px; pointer-events:none; z-index:2; }
+  #didascalia { position:absolute; left:50%; transform:translateX(-50%); bottom:16px; max-width:min(620px, calc(100% - 460px)); font-size:.95rem; line-height:1.4; color:#fff;
+    background:rgba(12,24,38,.84); padding:10px 16px; border-radius:14px; opacity:0; transition:opacity .35s; pointer-events:none; z-index:3; }
+  #didascalia.on { opacity:1; }
+  #etichetta { position:absolute; pointer-events:none; z-index:4; padding:5px 10px; border-radius:10px; font-size:.82rem; font-weight:600; background:var(--ink); color:var(--bg); white-space:nowrap; transform:translate(14px, 10px); opacity:0; transition:opacity .12s; }
+  #etichetta.on { opacity:.94; }
+
+  /* pannello a destra */
+  .area { position:relative; }
+  .pannello { position:absolute; right:26px; top:14px; bottom:26px; width:380px; border-radius:20px; display:flex; flex-direction:column; overflow:hidden; z-index:2; }
+  .schede { display:grid; grid-template-columns:repeat(4, 1fr); gap:2px; padding:6px; border-bottom:1px solid var(--line); }
+  .schede button { border:0; background:transparent; padding:9px 4px; border-radius:11px; font-weight:700; font-size:.86rem; color:var(--soft); }
+  .schede button[aria-selected="true"] { background:var(--accent-soft); color:var(--ink); }
+  .corpo { overflow:auto; padding:14px 16px 18px; flex:1; overscroll-behavior:contain; }
+  .corpo h2 { font-size:1.02rem; margin:4px 0 6px; font-weight:800; }
+  .corpo h3 { font-size:.86rem; margin:16px 0 6px; color:var(--soft); font-weight:700; }
+  .corpo p { margin:0 0 10px; color:var(--soft); font-size:.9rem; }
+
+  .azione { width:100%; border:0; border-radius:14px; padding:13px; font-weight:800; background:var(--accent); color:var(--on-accent); font-size:1rem; }
+  .griglia { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .tasto { border:1px solid var(--line); background:var(--chip); border-radius:12px; padding:10px; font-size:.86rem; font-weight:600; text-align:left; line-height:1.3; }
+  .tasto:hover { border-color:var(--accent); }
+  .tasto[aria-pressed="true"] { border-color:var(--accent); background:var(--accent-soft); }
+  .tutta { grid-column:1 / -1; }
+
+  /* pezzi */
+  .cerca { width:100%; border:1px solid var(--line); background:var(--chip); border-radius:12px; padding:9px 12px; }
+  .interruttore { display:flex; align-items:center; gap:10px; font-size:.88rem; color:var(--soft); margin:10px 0 2px; }
+  .interruttore input { accent-color:var(--accent); width:18px; height:18px; }
+  .gruppo-tit { display:flex; align-items:center; justify-content:space-between; margin:14px 0 6px; }
+  .gruppo-tit h3 { margin:0; }
+  .occhio { border:1px solid var(--line); background:transparent; border-radius:9px; padding:3px 9px; font-size:.78rem; font-weight:700; color:var(--soft); }
+  .occhio[aria-pressed="false"] { color:var(--warn); border-color:var(--warn); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chips button { border:1px solid var(--line); background:var(--chip); padding:6px 10px; border-radius:999px; font-size:.82rem; display:inline-flex; align-items:center; gap:7px; text-align:left; line-height:1.25; }
+  .chips button i { width:11px; height:11px; border-radius:4px; flex:none; border:1px solid rgba(0,0,0,.15); }
+  .chips button:hover { border-color:var(--accent); }
+  .chips button[aria-pressed="true"] { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+  .chips button.spento { opacity:.45; }
+  #scheda { border-radius:14px; background:var(--accent-soft); padding:12px 14px; margin-bottom:12px; }
+  #scheda b { display:block; font-size:.98rem; margin-bottom:2px; }
+  #scheda span { color:var(--soft); font-size:.84rem; }
+  #scheda button { margin-top:8px; border:0; background:var(--accent); color:var(--on-accent); border-radius:10px; padding:6px 12px; font-weight:700; font-size:.84rem; }
+
+  /* ingranaggi */
+  .quadrante { display:flex; gap:14px; align-items:center; margin:10px 0 6px; }
+  #disco { width:132px; height:132px; flex:none; }
+  .letture { display:grid; gap:6px; font-size:.86rem; flex:1; }
+  .letture div { display:flex; justify-content:space-between; gap:8px; border-bottom:1px dashed var(--line); padding-bottom:4px; }
+  .letture b { font-variant-numeric:tabular-nums; }
+  #fase { display:inline-block; margin:6px 0 4px; padding:5px 11px; border-radius:999px; font-weight:700; font-size:.84rem; }
+  #fase.va { background:var(--accent); color:var(--on-accent); }
+  #fase.ferma { background:var(--chip); color:var(--soft); border:1px solid var(--line); }
+  .riga { display:flex; align-items:center; gap:10px; margin-top:10px; font-size:.86rem; color:var(--soft); }
+  .riga input[type=range] { flex:1; accent-color:var(--accent); }
+  .corpo .segmenti { background:var(--chip); border:1px solid var(--line); }
+
+  table { border-collapse:collapse; width:100%; font-size:.86rem; }
+  th, td { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--soft); font-weight:600; width:40%; }
+  ol { padding-left:20px; font-size:.88rem; color:var(--soft); }
+  ol li { margin-bottom:8px; }
+  .nota { font-size:.8rem; color:var(--soft); border-top:1px solid var(--line); padding-top:10px; margin-top:12px; }
+
+  @media (max-width: 860px) {
+    .barra { padding:10px 12px; } .barra .versioni span { display:none; }
+    .palco { height:62dvh; min-height:400px; margin:0 8px; border-radius:18px; }
+    .modi { max-width:calc(100% - 20px); left:10px; top:10px; }
+    .esplodi input { width:80px; }
+    #stato { max-width:calc(100% - 20px); bottom:60px; left:10px; }
+    .viste { left:10px; bottom:10px; }
+    #didascalia { max-width:calc(100% - 24px); bottom:100px; }
+    .pannello { position:static; width:auto; margin:10px 8px 20px; border-radius:18px; }
+    .corpo { overflow:visible; }
+  }
+  @media (prefers-reduced-motion: reduce) { #didascalia, #etichetta { transition:none; } }
+</style>
+</head>
+<body>
+<div class="barra">
+  <div class="marchio"><div class="logo" aria-hidden="true"></div><h1 data-t="h1"></h1></div>
+  <div class="versioni">
+    <span data-t="altre"></span>
+    <select id="versioni" aria-label="Version">
+      <option value="v12.html" selected>v1.2</option><option value="v10.html">v1.0</option><option value="v8.html">v0.9</option><option value="v7.html">v0.7</option><option value="v6.html">v0.6</option><option value="it.html">v0.5</option>
+    </select>
+    <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a>
+    <button id="lingua" lang=""></button>
+  </div>
+</div>
+
+<div class="area">
+<div class="palco">
+  <div id="scena"></div>
+  <div class="modi">
+    <div class="segmenti vetro" role="group" id="modi">
+      <button data-modo="normale" aria-pressed="true" data-t="mNormale"></button>
+      <button data-modo="raggi" aria-pressed="false" data-t="mRaggi"></button>
+      <button data-modo="sezione" aria-pressed="false" data-t="mSezione"></button>
+    </div>
+    <label class="esplodi vetro"><span data-t="esplosoLbl"></span><input id="esploso" type="range" min="0" max="100" value="0"></label>
+    <div class="sezione vetro" id="pannelloSezione" hidden>
+      <div class="segmenti" role="group" id="assi">
+        <button data-asse="x" aria-pressed="true" data-t="aFronte"></button>
+        <button data-asse="y" aria-pressed="false" data-t="aLato"></button>
+        <button data-asse="z" aria-pressed="false" data-t="aAlto"></button>
+      </div>
+      <input id="taglio" type="range" min="0" max="100" value="55" aria-label="Section">
+    </div>
+  </div>
+  <div id="stato" class="vetro" aria-live="polite"></div>
+  <div class="viste vetro" role="group" id="viste">
+    <button data-vista="fronte" data-t="vFronte"></button>
+    <button data-vista="lato" data-t="vLato"></button>
+    <button data-vista="dietro" data-t="vDietro"></button>
+    <button data-vista="sopra" data-t="vSopra"></button>
+    <button data-vista="reset" data-t="vReset"></button>
+  </div>
+  <div id="didascalia" aria-live="polite"></div>
+  <div id="etichetta"></div>
+</div>
+
+  <aside class="pannello vetro">
+    <div class="schede" role="tablist">
+      <button role="tab" data-scheda="usa" aria-selected="true" data-t="sUsa"></button>
+      <button role="tab" data-scheda="pezzi" aria-selected="false" data-t="sPezzi"></button>
+      <button role="tab" data-scheda="ingr" aria-selected="false" data-t="sIngr"></button>
+      <button role="tab" data-scheda="info" aria-selected="false" data-t="sInfo"></button>
+    </div>
+
+    <div class="corpo" data-pagina="usa">
+      <h2 data-t="usaTit"></h2>
+      <p data-t="intro"></p>
+      <button class="azione" id="tasto"></button>
+      <div class="griglia">
+        <button class="tasto tutta" id="tour" aria-pressed="false"></button>
+        <button class="tasto" id="cup" aria-pressed="false"></button>
+        <button class="tasto" id="sbaglia"></button>
+        <button class="tasto" id="sx" aria-pressed="false"></button>
+        <button class="tasto" id="dx" aria-pressed="false"></button>
+        <button class="tasto" id="ricaricaAlto"></button>
+        <button class="tasto" id="ricarica"></button>
+        <button class="tasto" id="mini" aria-pressed="false"></button>
+        <button class="tasto" id="suona"></button>
+        <button class="tasto" id="smonta" aria-pressed="false"></button>
+        <button class="tasto" id="foto"></button>
+      </div>
+    </div>
+
+    <div class="corpo" data-pagina="pezzi" hidden>
+      <div id="scheda" hidden><b id="schedaNome"></b><span id="schedaGr"></span><br><button id="tutto"></button></div>
+      <h2 data-t="partiTit"></h2>
+      <p data-t="partiAiuto"></p>
+      <input class="cerca" id="cerca" type="search" autocomplete="off">
+      <label class="interruttore"><input type="checkbox" id="contesto" checked> <span data-t="contesto"></span></label>
+      <div id="parti"></div>
+    </div>
+
+    <div class="corpo" data-pagina="ingr" hidden>
+      <h2 data-t="ingTit"></h2>
+      <p id="ingSpiega"></p>
+      <div class="segmenti" role="group" id="ingLato">
+        <button data-lato="0" aria-pressed="true" data-t="sinistra"></button>
+        <button data-lato="1" aria-pressed="false" data-t="destra"></button>
+        <button data-lato="2" aria-pressed="false" data-t="entrambe"></button>
+      </div>
+      <div class="quadrante">
+        <canvas id="disco" width="264" height="264" aria-hidden="true"></canvas>
+        <div class="letture">
+          <div><span data-t="lMotore"></span><b id="lMotore"></b></div>
+          <div><span data-t="lCroce"></span><b id="lCroce"></b></div>
+          <div><span data-t="lRuota"></span><b id="lRuota"></b></div>
+          <div><span data-t="lScomp"></span><b id="lScomp"></b></div>
+        </div>
+      </div>
+      <span id="fase" class="ferma"></span>
+      <div class="griglia">
+        <button class="tasto" id="ingPlay" aria-pressed="true"></button>
+        <button class="tasto" id="ingPasso"></button>
+      </div>
+      <label class="riga"><span data-t="velocita"></span><input id="ingVel" type="range" min="5" max="300" value="60"></label>
+      <label class="interruttore"><input type="checkbox" id="ingGuscio" checked> <span data-t="ingGuscio"></span></label>
+      <p class="nota" id="ingNota"></p>
+    </div>
+
+    <div class="corpo" data-pagina="info" hidden>
+      <h2 data-t="misureTit"></h2>
+      <table><tbody id="tabella"></tbody></table>
+      <h2 style="margin-top:18px" data-t="comeTit"></h2>
+{{COME}}
+    </div>
+  </aside>
+</div>
+
+<script type="module">{{SCRIPT}}</script>
+</body>
+</html>
