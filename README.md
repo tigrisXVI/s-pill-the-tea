@@ -14,7 +14,7 @@ Un portapillole motorizzato open source per chi fa fatica ad aprire blister e sc
 
 ## Novità della v1.2: i pezzi veri
 
-La v1.2 è la v1.0 adattata ai componenti comprati: stepper 28BYJ-48 con ULN2003, servo SG90, OLED 0,96", una sola cella di carico, cassette fissate con una vite M2,5, zero delle ruote con un pulsantino finecorsa. Modello in `cad/scatoletta_v12.py`, controlli in `cad/controlli_v12.py` (tutti verdi), file di stampa e ferramenta in [`v12/`](v12/LEGGIMI.md).
+La v1.2 è la v1.0 adattata ai componenti comprati: stepper 28BYJ-48 con ULN2003, servo SG90, OLED 0,96", una sola cella di carico, cassette fissate con una vite M2,5, zero delle ruote con un pulsantino finecorsa. Modello in `cad/scatoletta_v12.py`, controlli in `cad/controlli_v12.py` (tutti verdi), file di stampa e ferramenta in [`v12/`](v12/LEGGIMI.md). Visore: [modello 3D v1.2](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v12.html).
 
 ## Novità della v1.0: le correzioni del rapporto R&D
 
