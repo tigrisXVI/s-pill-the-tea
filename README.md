@@ -1,12 +1,12 @@
-# Scatoletta Blistra
+# S-pill the tea
 
 *The little box that remembers, so tired hands don't have to.*
 
-> *Scatoletta* is Italian for "little box". Blistra is the family app it belongs to.
+> We call it **S-pill the tea**, because when the time comes it spills exactly the right pills. Blistra is the family app it belongs to.
 
 Every morning, in kitchens everywhere, someone sits down in front of a row of blister packs and loses a small, quiet battle. The foil will not tear. A pill slips through fingers stiffened by arthritis and rolls beneath the table. A lid refuses to open; a Tuesday compartment is mistaken for a Wednesday one; the noon dose is simply forgotten somewhere between lunch and the evening news. None of it makes headlines. All of it matters.
 
-**Scatoletta Blistra is an open-source, motorised pill box built to end that battle gently.**
+**S-pill the tea is an open-source, motorised pill box built to end that battle gently.**
 
 When the hour comes, it chimes, glows, and writes it on its screen: *It's time.* One press of a large, round button — the kind you could find in the dark — and the pills for that moment, and only those, fall into a small cup that slides out and rests in the palm of a hand. No foil to pierce. No tiny lids to pry open. No guessing which day it is.
 
@@ -33,7 +33,7 @@ It is made for the people we owe the most to: older adults, people living with a
 
 ### Why not just buy one?
 
-Commercial carousel dispensers do exist. A typical wireless model sells for around €150, holds 28 compartments, sounds its alarms and locks with a metal key. They are good products — but they still ask the user to tip a tray of pills into an unsteady palm, and they cannot be opened, repaired or adapted by the people who use them. Scatoletta Blistra asks a different question: *what if the box did the hardest part itself, and anyone were free to build it?*
+Commercial carousel dispensers do exist. A typical wireless model sells for around €150, holds 28 compartments, sounds its alarms and locks with a metal key. They are good products — but they still ask the user to tip a tray of pills into an unsteady palm, and they cannot be opened, repaired or adapted by the people who use them. S-pill the tea asks a different question: *what if the box did the hardest part itself, and anyone were free to build it?*
 
 ## New in v1.2: the real parts
 
@@ -175,4 +175,4 @@ Print tests, photos, measurements, corrections and ideas are all welcome: open a
 
 ## Credits
 
-Scatoletta Blistra is an independent project by Giuseppe Vasco, who conceived it, set its requirements and made every design decision across its iterations. He used Claude as an AI programming assistant to write and check much of the code, CAD scripts and documentation.
+S-pill the tea is an independent project by Giuseppe Vasco, who conceived it, set its requirements and made every design decision across its iterations. He used Claude as an AI programming assistant to write and check much of the code, CAD scripts and documentation.
