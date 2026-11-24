@@ -35,6 +35,10 @@ It is made for the people we owe the most to: older adults, people living with a
 
 Commercial carousel dispensers do exist. A typical wireless model sells for around €150, holds 28 compartments, sounds its alarms and locks with a metal key. They are good products — but they still ask the user to tip a tray of pills into an unsteady palm, and they cannot be opened, repaired or adapted by the people who use them. S-pill the tea asks a different question: *what if the box did the hardest part itself, and anyone were free to build it?*
 
+## New in v1.3: narrower, with wheels that stand out
+
+v1.3 is v1.2 with **half-turn symmetry**: the left wheel has its stepper and top refill at the back, the right wheel at the front. The steppers face the centre and each motor body sits above the other wheel, so the shell is back to 52.9 mm wide (v1.2 was 64.2 mm) and the cassettes stand out 2 mm from the sides with a rim. The display moves to the front, below the wheels. The wheel axles and Geneva-drive pins can be cut from the steel guide rods of old DVD drives: their holes are printed at 2.8 mm and drilled to size. Model in `cad/spill_v13.py`, checks in `cad/controlli_v13.py` (all green), print files and a test rig in [`v13/`](v13/LEGGIMI.md). Viewer: [3D model v1.3](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v13.html).
+
 ## New in v1.2: the real parts
 
 v1.2 is v1.0 adapted to the components actually purchased: 28BYJ-48 stepper motors with ULN2003 drivers, an SG90 servo, a 0.96" OLED display, a single load cell, cassettes held in place by one M2.5 screw, and wheel homing with a small limit-switch button. Model in `cad/spill_v12.py`, checks in `cad/controlli_v12.py` (all green), print files and hardware in [`v12/`](v12/LEGGIMI.md). Viewer: [3D model v1.2](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v12.html).
