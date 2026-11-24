@@ -1,6 +1,6 @@
 # Firmware della v0.8: cosa deve fare
 
-Il firmware in `scatoletta_blistra/` è ancora quello della v0.5 (un carosello). Queste sono le regole per quello della v0.8 (due ruote), da scrivere quando arrivano i pezzi.
+Il firmware in `spill_the_tea/` è ancora quello della v0.5 (un carosello). Queste sono le regole per quello della v0.8 (due ruote), da scrivere quando arrivano i pezzi.
 
 ## 1. Sapere sempre dove sono le ruote
 
@@ -35,7 +35,7 @@ Ogni fermo è un dente girato da un micro servo (90 gradi: chiuso / aperto).
 
 ## Campi di stato che l'app v3.3.8 legge già
 
-La scatoletta li scrive in `status` del suo documento Firestore:
+La S-pill li scrive in `status` del suo documento Firestore:
 
 - `locks: { sx: "closed"|"open", dx: ... }`: "open" mostra l'avviso "cassetta sbloccata".
 - `wheels: { sx: "ok"|"check", dx: ... }`: "check" quando la ruota non trova il magnete entro un giro (homing fallito).

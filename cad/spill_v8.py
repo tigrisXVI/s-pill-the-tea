@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v0.8 - la piu' compatta (prova), in due modelli da confrontare:
+S-pill the tea v0.8 - la piu' compatta (prova), in due modelli da confrontare:
 
   "2m"  due ruote sottili (Ø ~10 cm), ognuna con il suo motorino N20     -> la piu' piccola
   "1m"  una ruota doppia (Ø ~13 cm), tasche sui due lati, un solo motorino -> un pezzo e un motore in meno
@@ -22,8 +22,8 @@ Assi: X davanti, Y destra-sinistra (asse delle ruote), Z in alto. mm.
 import math, os
 import trimesh
 from manifold3d import Manifold, CrossSection
-from scatoletta_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
-import scatoletta_v5 as v5
+from spill_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
+import spill_v5 as v5
 
 N = 15; PASSO = 360.0 / N
 BAIONETTA = (90.0, 210.0, 330.0)

@@ -1,7 +1,7 @@
 """Controlli della v1.0 (dalla v0.8/v0.9): interferenze, movimenti, percorso delle pillole, stabilita'."""
 import itertools, math, sys
-import scatoletta_v10 as s8
-from scatoletta_v3 import scatola, cil
+import spill_v10 as s8
+from spill_v3 import scatola, cil
 inter = lambda a, b: (a ^ b).volume()
 
 def controlla(k):

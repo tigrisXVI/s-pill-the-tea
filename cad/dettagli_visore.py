@@ -1,11 +1,11 @@
-"""Pezzi dettagliati SOLO per il visore 3D (i controlli usano le scatole semplici di scatoletta_v8).
+"""Pezzi dettagliati SOLO per il visore 3D (i controlli usano le scatole semplici di spill_v8).
 Ogni pezzo e' diviso per materiale: il nome finisce con __<materiale del visore> (pcb, nero, ottone, metallo...).
 Schede con chip, piedini e connettori; motorini N20 con riduttore e contatti; celle di carico con i fori e l'estensimetro;
 viti con la filettatura vera (elica) e la testa Torx; magneti al neodimio."""
 import math
 from manifold3d import Manifold, CrossSection
-from scatoletta_v3 import cil, scatola, cil_x, cil_y
-import scatoletta_v8 as s8
+from spill_v3 import cil, scatola, cil_x, cil_y
+import spill_v8 as s8
 
 def _star(r_out, r_in, n=6, seg=4):
     pts = []

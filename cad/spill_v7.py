@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v0.7 - "due ruote" (prova, dall'idea di Giuseppe)
+S-pill the tea v0.7 - "due ruote" (prova, dall'idea di Giuseppe)
 
 Due ruote in piedi, una a destra e una a sinistra, ognuna con 14 scomparti + 1 chiuso e il suo motorino
 28BYJ-48. Le dosi si alternano: lun mattina dalla ruota di sinistra, lun mezzogiorno da quella di destra...
@@ -15,8 +15,8 @@ Assi: X verso chi usa la scatola (davanti), Y destra-sinistra (asse delle ruote)
 import math, os
 import trimesh
 from manifold3d import Manifold, CrossSection
-from scatoletta_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, prisma_xz, a_mesh
-import scatoletta_v5 as v5
+from spill_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, prisma_xz, a_mesh
+import spill_v5 as v5
 
 # ---------------------------------------------------------------- ruota (coordinate locali: asse Z, tasche in XY)
 N = 15; PASSO = 360.0 / N          # 14 dosi + 1 chiuso, 24 gradi

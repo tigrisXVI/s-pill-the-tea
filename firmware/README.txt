@@ -5,7 +5,7 @@ S-PILL THE TEA v0.5 - ESP32 PROGRAM
 2. Library Manager: "ArduinoJson" by Benoit Blanchon (version 7), "U8g2" (display), "Adafruit NeoPixel" (lights),
    "ESP32Servo" (door). The load cell (HX711) is read directly by the program.
    No display, lights or servo? Set USA_DISPLAY, USA_LUCI or USA_SERVO to 0 in config.h.
-3. Copy scatoletta_blistra/config.example.h to scatoletta_blistra/config.h, open it and enter your Wi-Fi, dose times (up to 4)
+3. Copy spill_the_tea/config.example.h to spill_the_tea/config.h, open it and enter your Wi-Fi, dose times (up to 4)
    and, if you use Blistra, your family circle's details.
    DO NOT publish config.h once you have written your passwords in it.
 4. Upload the program and open the Serial Monitor at 115200 baud.

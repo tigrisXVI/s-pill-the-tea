@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v1.0 (dalla v0.9, modello "2m"): le correzioni del rapporto R&D, in breve
+S-pill the tea v1.0 (dalla v0.9, modello "2m"): le correzioni del rapporto R&D, in breve
   I-2 asse d'acciaio da 6 mm, foro della ruota alesato; lamelle a 0,3 mm dall'anello
   I-3 perno della croce d'acciaio (3 mm); I-4 fermi di sovraccarico sotto le due celle
   I-5 vaschetta pesata 30 x 24 mm, pareti da 6; I-6 e I-12 sportellini da 1,6 mm, gioco di uno strato, dentini da 1,4
   I-9 sensore di umidita' AHT20 vicino alle cassette
 Testo della v0.8 qui sotto, per i pezzi non cambiati:
 
-Scatoletta Blistra v0.8 - la piu' compatta (prova), in due modelli da confrontare:
+S-pill the tea v0.8 - la piu' compatta (prova), in due modelli da confrontare:
 
   "2m"  due ruote sottili (Ø ~10 cm), ognuna con il suo motorino N20     -> la piu' piccola
   "1m"  una ruota doppia (Ø ~13 cm), tasche sui due lati, un solo motorino -> un pezzo e un motore in meno
@@ -29,8 +29,8 @@ Assi: X davanti, Y destra-sinistra (asse delle ruote), Z in alto. mm.
 import math, os
 import trimesh
 from manifold3d import Manifold, CrossSection
-from scatoletta_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
-import scatoletta_v5 as v5
+from spill_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
+import spill_v5 as v5
 
 N = 15; PASSO = 360.0 / N
 BAIONETTA = (90.0, 210.0, 330.0)

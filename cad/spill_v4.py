@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v0.4 - modello 3D parametrico (prototipo)
+S-pill the tea v0.4 - modello 3D parametrico (prototipo)
 
-Parte dalla v0.3 (scatoletta_v3.py: carosello, rampa, piastra pesata, scivolo restano uguali) e aggiunge:
+Parte dalla v0.3 (spill_v3.py: carosello, rampa, piastra pesata, scivolo restano uguali) e aggiunge:
   - una console inclinata a 45 gradi accanto allo scivolo, con display OLED da 1,3", tasto grande da 30 mm
     e una barra di 8 luci colorate dietro una pelle sottile
   - lo sportello motorizzato: un micro servo (tipo SG90) sul coperchio lo alza con una leva; si richiude
@@ -10,15 +10,15 @@ Parte dalla v0.3 (scatoletta_v3.py: carosello, rampa, piastra pesata, scivolo re
   - un interruttore di accensione incassato, dietro, protetto da un collare
 
     pip install manifold3d trimesh numpy
-    python3 scatoletta_v4.py
+    python3 spill_v4.py
 
 Misure in millimetri. Z verso l'alto, lo sportello e lo scivolo sono sul lato +X.
 """
 import math, os
 import numpy as np
 import trimesh
-import scatoletta_v3 as v3
-from scatoletta_v3 import *
+import spill_v3 as v3
+from spill_v3 import *
 
 # ---------------------------------------------------------------- console
 ANG_CONS = -62.0                      # dove sta la console, in gradi (lo scivolo e' a 0)

@@ -1,4 +1,4 @@
-// ascolta_motore.h - Scatoletta Blistra v0.9: il motore che si ascolta
+// ascolta_motore.h - S-pill the tea v0.9: il motore che si ascolta
 //
 // Hardware: una resistenza da 0,5 ohm sul ritorno a massa del driver DRV8833 (gira un motorino alla volta),
 // un filtro RC (1 kohm + 22 nF) e un ingresso analogico dell'ESP32-S3 letto a 40 kHz (ADC continuo). Costo: pochi centesimi.

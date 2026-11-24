@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Scatoletta Blistra: portapillole open source che separa le dosi della settimana, le pesa e le fa cadere in un bicchierino quando premi il tasto. Modello 3D interattivo.">
-<meta property="og:title" content="Scatoletta Blistra v0.5">
-<meta property="og:description" content="Scatoletta Blistra: portapillole open source che separa le dosi della settimana, le pesa e le fa cadere in un bicchierino quando premi il tasto. Modello 3D interattivo.">
-<meta property="og:image" content="https://tigrisxvi.github.io/scatoletta-blistra/immagini/v5_chiusa.png">
+<meta name="description" content="S-pill the tea: portapillole open source che separa le dosi della settimana, le pesa e le fa cadere in un bicchierino quando premi il tasto. Modello 3D interattivo.">
+<meta property="og:title" content="S-pill the tea v0.5">
+<meta property="og:description" content="S-pill the tea: portapillole open source che separa le dosi della settimana, le pesa e le fa cadere in un bicchierino quando premi il tasto. Modello 3D interattivo.">
+<meta property="og:image" content="https://tigrisxvi.github.io/s-pill-the-tea/immagini/v5_chiusa.png">
 <meta property="og:type" content="website">
-<title>Scatoletta Blistra v0.5 – modello 3D</title>
+<title>S-pill the tea v0.5 – modello 3D</title>
 <style>
   :root { --bg:#eef0f3; --ink:#1c2430; --soft:#5b6675; --card:#ffffff; --line:#d5dae1; --on:#1f6f5c; }
   @media (prefers-color-scheme: dark) { :root { --bg:#141a22; --ink:#eef1f5; --soft:#9aa6b6; --card:#1e2631; --line:#313c4a; --on:#58c9a6; } }
@@ -40,10 +40,10 @@
 </head>
 <body>
 <main>
-  <h1>Scatoletta Blistra v0.5</h1>
-  <p class="sotto"><a href="index.html">English</a> · <a href="v8.html">La più compatta (v0.8)</a> · <a href="v7.html">Prova a due ruote (v0.7)</a> · <a href="v6.html">Prova a due piani (v0.6)</a> · <a href="https://github.com/tigrisxvi/scatoletta-blistra">GitHub</a></p>
+  <h1>S-pill the tea v0.5</h1>
+  <p class="sotto"><a href="index.html">English</a> · <a href="v8.html">La più compatta (v0.8)</a> · <a href="v7.html">Prova a due ruote (v0.7)</a> · <a href="v6.html">Prova a due piani (v0.6)</a> · <a href="https://github.com/tigrisxvi/s-pill-the-tea">GitHub</a></p>
   <p class="sotto">28 scomparti: 4 dosi al giorno per una settimana. Tutto chiuso in un guscio con il coperchio a cofanetto: davanti display e tasto grande, sotto il bicchierino dove cadono le pillole. Trascina per girarla, pizzica (o rotella) per avvicinarti.</p>
-  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D…</div><noscript><img src="../immagini/v5_chiusa.png" alt="La scatoletta chiusa: guscio bianco, cofanetto verde, display e tasto rosso davanti, bicchierino sotto" style="width:100%;height:100%;object-fit:contain"></noscript></div>
+  <div id="scena"><div id="stato" aria-live="polite">Carico il modello 3D…</div><noscript><img src="../immagini/v5_chiusa.png" alt="La S-pill chiusa: guscio bianco, cofanetto verde, display e tasto rosso davanti, bicchierino sotto" style="width:100%;height:100%;object-fit:contain"></noscript></div>
   <div class="comandi">
     <button class="primo" id="avanti">Avanti di una dose</button>
     <button id="sportello" aria-pressed="false">Premi il tasto grande</button>
@@ -70,8 +70,8 @@
     <li>Il fondo azzurro è fermo. Lungo il giro sale di 10 mm, come una rampa a chiocciola, e pende verso il bordo.</li>
     <li>Il motore gira il mozzo. Le 29 palette girano con lui ma sono libere di scorrere su e giù: appoggiano sul fondo e salgono con lui.</li>
     <li>Ogni paletta spinge la dose del suo scomparto su per la rampa fino al ripiano arancione, largo esattamente uno scomparto.</li>
-    <li>Il ripiano è una piastra appoggiata su un sensore di peso: la scatoletta pesa la dose e la confronta con quella prevista.</li>
-    <li>All'ora della dose la scatoletta suona, la barra di luci lampeggia gialla e il display dice che è ora. La persona preme il tasto grande: un piccolo servo alza lo sportello, e la sua gonna libera il varco nella parete. La piastra vibra e le pillole scendono dallo scivolo e cadono nel bicchierino.</li>
+    <li>Il ripiano è una piastra appoggiata su un sensore di peso: la S-pill pesa la dose e la confronta con quella prevista.</li>
+    <li>All'ora della dose la S-pill suona, la barra di luci lampeggia gialla e il display dice che è ora. La persona preme il tasto grande: un piccolo servo alza lo sportello, e la sua gonna libera il varco nella parete. La piastra vibra e le pillole scendono dallo scivolo e cadono nel bicchierino.</li>
     <li>Ripesa: se la piastra è vuota la dose è erogata. Il servo abbassa la leva e lo sportello si richiude per il suo peso, quindi non può schiacciare le dita. Il carosello gira solo a sportello chiuso.</li>
   </ol>
   <p class="sotto" style="margin-top:8px">Prova: aggiungi qualche pillola, premi «Avanti di una dose» fino al suo scomparto, poi «Premi il tasto grande»: le pillole scendono e cadono nel bicchierino. «Guarda dentro» mostra il meccanismo, «Mostra l'elettronica» le schede, le viti e i cavi, «Apri il cofanetto» è come si ricarica.</p>
@@ -97,7 +97,7 @@ const box = document.getElementById('scena');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
 catch (e) {
-  box.innerHTML = '<img src="../immagini/v5_chiusa.png" alt="La scatoletta chiusa: guscio bianco, cofanetto verde, display e tasto rosso davanti, bicchierino sotto" style="width:100%;height:100%;object-fit:contain"><p style="position:absolute;left:10px;top:8px;margin:0;font-size:.85rem">Il tuo browser non riesce a mostrare il 3D (WebGL spento). Ecco una foto del modello.</p>';
+  box.innerHTML = '<img src="../immagini/v5_chiusa.png" alt="La S-pill chiusa: guscio bianco, cofanetto verde, display e tasto rosso davanti, bicchierino sotto" style="width:100%;height:100%;object-fit:contain"><p style="position:absolute;left:10px;top:8px;margin:0;font-size:.85rem">Il tuo browser non riesce a mostrare il 3D (WebGL spento). Ecco una foto del modello.</p>';
   throw e;
 }
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));

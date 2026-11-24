@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v0.6 - "a due piani" (prova)
+S-pill the tea v0.6 - "a due piani" (prova)
 
 Idea: invece di un carosello largo con 28 scomparti, due caroselli piu' piccoli uno sopra l'altro,
 sullo stesso albero, ognuno con 14 scomparti + 1 di riposo. Ingombro in pianta quasi dimezzato.
@@ -23,8 +23,8 @@ import math, os
 import numpy as np
 import trimesh
 from manifold3d import Manifold, CrossSection
-import scatoletta_v5 as v5
-from scatoletta_v3 import cil, scatola, cil_x, cil_y, ruota, settore, ccw, prisma_xz, a_mesh
+import spill_v5 as v5
+from spill_v3 import cil, scatola, cil_x, cil_y, ruota, settore, ccw, prisma_xz, a_mesh
 
 # ---------------------------------------------------------------- misure principali
 N = 15                       # scomparti per piano: 14 dosi + 1 di riposo

@@ -4,7 +4,7 @@ STL (pezzi orientati per la stampa e assieme), STEP (pezzi e assieme con i nomi)
 import os, sys, json, math, time
 import numpy as np, trimesh
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scatoletta_v8 import Modello, genera, stampa, a_mesh, VERSI
+from spill_v8 import Modello, genera, stampa, a_mesh, VERSI
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(QUI, '..', 'v9')

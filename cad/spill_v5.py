@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v0.5 - il "cofanetto" (prototipo)
+S-pill the tea v0.5 - il "cofanetto" (prototipo)
 
 Il meccanismo e' quello della v0.4 (carosello, rampa, piastra pesata, sportello alzato dal servo).
 Cambia tutto l'esterno:
@@ -13,14 +13,14 @@ Cambia tutto l'esterno:
   - lo sportello si alza di 35 gradi invece di 70: bastano per scoprire il varco e il cofanetto resta basso
 
     pip install manifold3d trimesh numpy
-    python3 scatoletta_v5.py
+    python3 spill_v5.py
 
 Misure in millimetri. Z in alto, il davanti (nicchia e fascia) e' verso +X.
 """
 import math, os
 import trimesh
-import scatoletta_v4 as v4
-from scatoletta_v4 import *
+import spill_v4 as v4
+from spill_v4 import *
 
 # ---------------------------------------------------------------- guscio
 PARETE_G = 2.4

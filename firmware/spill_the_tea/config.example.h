@@ -1,4 +1,4 @@
-// Scatoletta Blistra v0.3 - impostazioni
+// S-pill the tea v0.3 - impostazioni
 // Questo e' l'unico file da modificare prima di caricare il programma.
 // NON pubblicarlo online dopo averci scritto le password.
 
@@ -9,16 +9,16 @@
 #define WIFI_PASSWORD   "PASSWORD-DELLA-RETE"
 
 // ---- Collegamento a Blistra -------------------------------------------------
-// 0 = la scatoletta lavora da sola con gli orari scritti qui sotto.
+// 0 = la S-pill lavora da sola con gli orari scritti qui sotto.
 // 1 = legge persona, orari e pesi da Blistra e segna le dosi nella cerchia.
 #define USA_BLISTRA     0
 
-// Un account Blistra creato apposta per la scatoletta, entrato nella cerchia con il codice invito.
-#define BLISTRA_EMAIL     "scatoletta@esempio.it"
-#define BLISTRA_PASSWORD  "password-dell-account-scatoletta"
-// In Blistra: Cerchia > Scatoletta > Imposta > "Dati per il programma".
+// Un account Blistra creato apposta per la S-pill, entrato nella cerchia con il codice invito.
+#define BLISTRA_EMAIL     "spill@esempio.it"
+#define BLISTRA_PASSWORD  "password-dell-account-spill"
+// In Blistra: Cerchia > S-pill > Imposta > "Dati per il programma".
 #define BLISTRA_CERCHIA   "ID-DELLA-CERCHIA"
-#define BLISTRA_SCATOLA   "ID-DELLA-SCATOLETTA"
+#define BLISTRA_SCATOLA   "ID-DELLA-S-PILL"
 #define FIREBASE_API_KEY  "LA-TUA-API-KEY"
 #define FIREBASE_PROGETTO "blistra-64e03"
 
@@ -29,7 +29,7 @@
 #define ORA_DOSE_2      "13:00"
 #define ORA_DOSE_3      "17:00"
 #define ORA_DOSE_4      "21:00"
-#define MINUTI_DI_ATTESA 90       // poi la dose e' "non presa" e la scatoletta torna a riposo
+#define MINUTI_DI_ATTESA 90       // poi la dose e' "non presa" e la S-pill torna a riposo
 #define FUSO_ORARIO     "CET-1CEST,M3.5.0,M10.5.0/3"
 
 // ---- Piedini (vedi lo schema nelle schede tecniche) -------------------------------

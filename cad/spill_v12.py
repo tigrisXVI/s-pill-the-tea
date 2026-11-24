@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v1.2 (dalla v1.0, modello "2m"), adattata ai pezzi che ci sono davvero:
+S-pill the tea v1.2 (dalla v1.0, modello "2m"), adattata ai pezzi che ci sono davvero:
 
   - 2 stepper 28BYJ-48 con 2 driver ULN2003 al posto dei motorini N20 e del DRV8833.
     Le due croci di Malta stanno a 126 gradi (dietro in alto) per tutte e due le ruote. Il pignone da 10 denti
@@ -24,10 +24,10 @@ Assi: X davanti, Y destra-sinistra (asse delle ruote), Z in alto. mm.
 """
 import math, os
 from manifold3d import Manifold, CrossSection
-import scatoletta_v10 as s10
-import scatoletta_v5 as v5
-from scatoletta_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
-from scatoletta_v10 import (N, PASSO, PARETE, R_SPIG, R_TOP, MOD, Z_PIGN_G, Z_CROCE, R_LOCK, D_ASSE, Z_TORRE,
+import spill_v10 as s10
+import spill_v5 as v5
+from spill_v3 import cil, scatola, cil_x, cil_y, ruota, ccw, a_mesh
+from spill_v10 import (N, PASSO, PARETE, R_SPIG, R_TOP, MOD, Z_PIGN_G, Z_CROCE, R_LOCK, D_ASSE, Z_TORRE,
                             G_FERMO, ANG_FERMO, ingranaggio, stampa, VERSI)
 
 # il modello v1.2 si registra nelle tabelle della v1.0 con una chiave sua (la v1.0 non cambia)

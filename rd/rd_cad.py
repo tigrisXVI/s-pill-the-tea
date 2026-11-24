@@ -1,6 +1,6 @@
 import sys, math, json
 import os; sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cad'))
-from scatoletta_v8 import *
+from spill_v8 import *
 M = Modello('2m')
 P = M.pezzi()
 out = {}

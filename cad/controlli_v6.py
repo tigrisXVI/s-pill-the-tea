@@ -1,6 +1,6 @@
 """Controlli geometrici della v0.6 a due piani."""
 import itertools
-import scatoletta_v6 as s
+import spill_v6 as s
 P = {n: f() for n, f in s.PEZZI.items()}
 C = {n: f() for n, f in s.COMPONENTI.items()}
 inter = lambda a, b: (a ^ b).volume()

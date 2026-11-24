@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scatoletta Blistra v0.3 - modello 3D parametrico (prototipo)
+S-pill the tea v0.3 - modello 3D parametrico (prototipo)
 
 Cosa cambia rispetto alla v0.2:
   - 29 scomparti: 4 dosi al giorno x 7 giorni + 1 di riposo; pillola piu' grande prevista: Augmentin 875 (22 mm)
@@ -11,7 +11,7 @@ Cosa cambia rispetto alla v0.2:
   - lo sportello e' incernierato verso il centro: aprendolo, la gonna si alza e libera il varco
 
     pip install manifold3d trimesh numpy
-    python3 scatoletta_v3.py
+    python3 spill_v3.py
 
 Misure in millimetri. Z verso l'alto, lo sportello e lo scivolo sono sul lato +X.
 """

@@ -1,8 +1,8 @@
 """Scrive docs/modello-3d/modello_v12.js: la v1.2 per il visore."""
 import base64, json, os
 import numpy as np
-import scatoletta_v10 as s10
-import scatoletta_v12 as s
+import spill_v10 as s10
+import spill_v12 as s
 for _n in ("MODELLI", "PASSO", "PROF", "MOD", "Z_PIGNONE", "SP_DIV", "N", "stampa", "a_mesh"):
     if not hasattr(s, _n): setattr(s, _n, getattr(s10, _n))
 

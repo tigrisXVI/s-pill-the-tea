@@ -1,6 +1,6 @@
 # Blistra v0.9 – file di stampa e parametri
 
-Generati da `cad/esporta_v9.py` dal CAD parametrico (`cad/scatoletta_v3.py`, modello 2m (due ruote)).
+Generati da `cad/esporta_v9.py` dal CAD parametrico (`cad/spill_v3.py`, modello 2m (due ruote)).
 
 ## Cartelle
 

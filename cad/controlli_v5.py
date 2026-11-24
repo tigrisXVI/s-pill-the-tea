@@ -1,6 +1,6 @@
 """Controlli geometrici della v0.5 (cofanetto)."""
 import itertools
-import scatoletta_v5 as s
+import spill_v5 as s
 P = {n: f() for n, f in s.PEZZI.items()}
 fissi = ["1_base", "2_fondo_a_rampa", "3_piastra_pesata", "3b_tappini_x2", "6_scivolo", "7_coperchio", "8_sportello", "10_guscio", "11_cofanetto", "12_bicchierino"]
 inter = lambda a, b: (a ^ b).volume()

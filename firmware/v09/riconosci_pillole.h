@@ -1,9 +1,9 @@
-// riconosci_pillole.h - Scatoletta Blistra v0.9
+// riconosci_pillole.h - S-pill the tea v0.9
 //
 // La bilancia sotto il piattino non dice solo "c'e' qualcosa": capisce QUALI pillole ci sono.
 //
 // Idea: ogni tipo di pillola ha un peso medio e una variabilita' (le compresse non sono identiche).
-// La scatoletta li IMPARA: ogni volta che pesa una pillola di cui sa il tipo, aggiorna media e varianza
+// La S-pill li IMPARA: ogni volta che pesa una pillola di cui sa il tipo, aggiorna media e varianza
 // (algoritmo di Welford, numericamente stabile, poca memoria). Impara anche quanto "balla" la bilancia a vuoto.
 //
 // Quando cade una dose, il peso misurato W viene confrontato con tutte le combinazioni plausibili
@@ -75,7 +75,7 @@ class Riconoscitore {
     return d > Z_MAX * s;            // separati di almeno 4 deviazioni standard
   }
 
-  // ENTRATA -> USCITA. Quando la scatoletta e' stata ricaricata dall'alto, ogni scomparto e' stato pesato in entrata (W_in).
+  // ENTRATA -> USCITA. Quando la S-pill e' stata ricaricata dall'alto, ogni scomparto e' stato pesato in entrata (W_in).
   // All'uscita le pillole sono LE STESSE: la variabilita' delle compresse sparisce e resta solo il rumore della bilancia
   // (due misure: sqrt(2) volte). Cosi' si vede anche una pillola minuscola rimasta incastrata nello scomparto.
   struct Uscita { bool ok; float z; int tipo_probabile; int8_t quante; };   // tipo_probabile: la pillola che manca (-) o avanza (+)

@@ -1,4 +1,4 @@
-"""Scatoletta Blistra v0.5: elettronica, viti, perni e cavi (solo ingombri, per i controlli, le immagini e il visore).
+"""S-pill the tea v0.5: elettronica, viti, perni e cavi (solo ingombri, per i controlli, le immagini e il visore).
 
 Le schede stanno nel vano sotto il fondo (alto 22 mm), appoggiate su biadesivo spesso. Le misure sono quelle
 dei moduli piu' comuni; se il tuo e' diverso controlla che entri.
@@ -6,8 +6,8 @@ dei moduli piu' comuni; se il tuo e' diverso controlla che entri.
     python3 elettronica_v5.py      -> controlla che niente si tocchi e scrive stl/componenti
 """
 import math, os
-import scatoletta_v5 as s
-from scatoletta_v5 import cil, cil_x, cil_y, scatola, ruota, sul_fronte, Manifold
+import spill_v5 as s
+from spill_v5 import cil, cil_x, cil_y, scatola, ruota, sul_fronte, Manifold
 
 Z0 = 2.4                      # pavimento del vano
 PAD = 3.5                     # biadesivo spesso sotto le schede

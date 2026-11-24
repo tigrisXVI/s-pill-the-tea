@@ -1,6 +1,6 @@
 """Controlli geometrici della v0.3: interferenze tra pezzi fermi, carosello in rotazione, sportello in apertura."""
 import math, itertools
-import scatoletta_v3 as s
+import spill_v3 as s
 P = {n: f() for n, f in s.PEZZI.items()}
 fissi = ["1_base", "2_fondo_a_rampa", "3_piastra_pesata", "3b_tappini_x2", "6_scivolo_vaschetta", "7_coperchio", "8_sportello"]
 inter = lambda a, b: (a ^ b).volume()

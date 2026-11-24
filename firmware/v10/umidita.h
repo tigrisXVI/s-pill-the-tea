@@ -1,4 +1,4 @@
-// umidita.h - Scatoletta Blistra v1.0 (I-9, I-15): quanto e' asciutta l'aria vicino alle pillole, e quando cambiare il gel.
+// umidita.h - S-pill the tea v1.0 (I-9, I-15): quanto e' asciutta l'aria vicino alle pillole, e quando cambiare il gel.
 //
 // Sensore AHT20 (I2C, indirizzo 0x38) attaccato sotto il tetto. Misura l'aria intorno alle cassette, non dentro uno
 // scomparto: e' un'indicazione, non la misura esatta di ogni scomparto (la prova T7 dice quanto differiscono).

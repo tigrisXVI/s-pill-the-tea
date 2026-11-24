@@ -1,7 +1,7 @@
 """Scrive docs/modello-3d/modello.js: le forme dei pezzi per il visore 3D nel browser."""
 import base64, json, math, os, re
 import numpy as np
-import scatoletta_v5 as s
+import spill_v5 as s
 
 qui = os.path.dirname(os.path.abspath(__file__)); out = os.path.join(qui, "..", "docs", "modello-3d", "modello.js")
 Q = 0.01

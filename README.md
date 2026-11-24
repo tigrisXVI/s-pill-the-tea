@@ -16,7 +16,7 @@ It is made for the people we owe the most to: older adults, people living with a
 
 ![The box, closed](docs/immagini/v5_chiusa.png)
 
-**Interactive 3D model:** https://tigrisxvi.github.io/scatoletta-blistra/ (English and Italian)
+**Interactive 3D model:** https://tigrisxvi.github.io/s-pill-the-tea/ (English and Italian)
 
 **Blistra app:** https://tigrisxvi.github.io/blistra/ (try it without an account in demo mode)
 
@@ -37,11 +37,11 @@ Commercial carousel dispensers do exist. A typical wireless model sells for arou
 
 ## New in v1.2: the real parts
 
-v1.2 is v1.0 adapted to the components actually purchased: 28BYJ-48 stepper motors with ULN2003 drivers, an SG90 servo, a 0.96" OLED display, a single load cell, cassettes held in place by one M2.5 screw, and wheel homing with a small limit-switch button. Model in `cad/scatoletta_v12.py`, checks in `cad/controlli_v12.py` (all green), print files and hardware in [`v12/`](v12/LEGGIMI.md). Viewer: [3D model v1.2](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v12.html).
+v1.2 is v1.0 adapted to the components actually purchased: 28BYJ-48 stepper motors with ULN2003 drivers, an SG90 servo, a 0.96" OLED display, a single load cell, cassettes held in place by one M2.5 screw, and wheel homing with a small limit-switch button. Model in `cad/spill_v12.py`, checks in `cad/controlli_v12.py` (all green), print files and hardware in [`v12/`](v12/LEGGIMI.md). Viewer: [3D model v1.2](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v12.html).
 
 ## New in v1.0: fixes from the R&D report
 
-v1.0 is v0.9 with the problems found in the [R&D report](rd/) corrected. Model in `cad/scatoletta_v10.py`; the checks in `cad/controlli_v10.py` all pass (no interference; Geneva drive, refilling, cabling and stability all OK). Print files in `v10/` (`v10/PARAMETRI_STAMPA.md`). Viewer: [3D model v1.0](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v10.html).
+v1.0 is v0.9 with the problems found in the [R&D report](rd/) corrected. Model in `cad/spill_v10.py`; the checks in `cad/controlli_v10.py` all pass (no interference; Geneva drive, refilling, cabling and stability all OK). Print files in `v10/` (`v10/PARAMETRI_STAMPA.md`). Viewer: [3D model v1.0](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v10.html).
 
 | | Problem in v0.9 | Fix in v1.0 |
 |---|---|---|
@@ -92,15 +92,15 @@ The wheels are driven by a gear on their rim, with the N20 motor tucked into the
 
 **Stability:** almost all the weight is in the base (10 cm wide), which holds a 104 × 76 × 6 mm iron plate (about 370 g out of 680). Centre of gravity 5.2 cm above the table: it tips over only when tilted 44° sideways, 50° forwards or 47° backwards. Underneath, four rubber feet.
 
-1.2 mm walls, 1 mm cassettes. Body 10.5 × 5 × 20.4 cm (1.08 l), base 11.9 × 10 cm, one compartment 4.3 cm³. Model in `cad/scatoletta_v8.py`, checks in `cad/controlli_v8.py` (no interference), parts in `v8/2m/`, viewer: [3D model v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Not yet printed.
+1.2 mm walls, 1 mm cassettes. Body 10.5 × 5 × 20.4 cm (1.08 l), base 11.9 × 10 cm, one compartment 4.3 cm³. Model in `cad/spill_v8.py`, checks in `cad/controlli_v8.py` (no interference), parts in `v8/2m/`, viewer: [3D model v0.8](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v8.html). Not yet printed.
 
 ## Under test: v0.7 with two wheels
 
-Two upright wheels holding 14 doses each, each with its own motor, in cassettes that slide out sideways. The compartment that reaches the bottom empties itself: no doors and no servos. Scale under the cup. **11 × 8 × 17.5 cm (1.5 litres), one third of v0.5.** Model in `cad/scatoletta_v7.py`, checks in `cad/controlli_v7.py`, parts in `v7/stl/`, viewer: [3D model v0.7](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v7.html). Not yet printed or simulated.
+Two upright wheels holding 14 doses each, each with its own motor, in cassettes that slide out sideways. The compartment that reaches the bottom empties itself: no doors and no servos. Scale under the cup. **11 × 8 × 17.5 cm (1.5 litres), one third of v0.5.** Model in `cad/spill_v7.py`, checks in `cad/controlli_v7.py`, parts in `v7/stl/`, viewer: [3D model v0.7](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v7.html). Not yet printed or simulated.
 
 ## Under test: v0.6 on two levels
 
-Two 14-compartment carousels stacked one above the other: the footprint is almost halved (about 18 × 12 cm instead of 24.5 × 17.5). Cone-shaped floors, two guillotine doors, scale under the cup. Model in `cad/scatoletta_v6.py`, checks in `cad/controlli_v6.py`, parts in `v6/stl/`, viewer: [3D model v0.6](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v6.html). Not yet printed or simulated.
+Two 14-compartment carousels stacked one above the other: the footprint is almost halved (about 18 × 12 cm instead of 24.5 × 17.5). Cone-shaped floors, two guillotine doors, scale under the cup. Model in `cad/spill_v6.py`, checks in `cad/controlli_v6.py`, parts in `v6/stl/`, viewer: [3D model v0.6](https://tigrisxvi.github.io/s-pill-the-tea/modello-3d/v6.html). Not yet printed or simulated.
 
 ## What it looks like (v0.5)
 
@@ -120,7 +120,7 @@ Two 14-compartment carousels stacked one above the other: the footprint is almos
 
 Size: 245 × 175 × 103 mm (the shell fits a printer with a 256 mm bed).
 
-v0.5 reuses the mechanism of v0.3 and v0.4 (`cad/scatoletta_v3.py`, `cad/scatoletta_v4.py`) and draws the exterior in `cad/scatoletta_v5.py`. The PDF datasheets still describe v0.3: carousel, ramp, plate and chute have not changed.
+v0.5 reuses the mechanism of v0.3 and v0.4 (`cad/spill_v3.py`, `cad/spill_v4.py`) and draws the exterior in `cad/spill_v5.py`. The PDF datasheets still describe v0.3: carousel, ramp, plate and chute have not changed.
 
 ## What's in the project
 

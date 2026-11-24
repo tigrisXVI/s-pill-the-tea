@@ -1,4 +1,4 @@
-// limite_coppia.h - Scatoletta Blistra v1.0 (I-3): il motorino non puo' piu' spingere fino a rompere i denti.
+// limite_coppia.h - S-pill the tea v1.0 (I-3): il motorino non puo' piu' spingere fino a rompere i denti.
 //
 // Con la stessa resistenza da 0,5 ohm della v0.9 (ascolta_motore.h) il firmware sa quanta corrente tira il motorino.
 // In un motore a spazzole la coppia cresce con la corrente: C = Cs * (I - I0) / (Is - I0).

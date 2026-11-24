@@ -1,6 +1,6 @@
 """Controlli geometrici della v0.7 a due ruote."""
 import itertools, math
-import scatoletta_v7 as s
+import spill_v7 as s
 P = {n: f() for n, f in s.PEZZI.items()}
 C = {n: f() for n, f in s.COMPONENTI.items()}
 inter = lambda a, b: (a ^ b).volume()

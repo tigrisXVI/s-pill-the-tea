@@ -1,5 +1,5 @@
 /*
-  Scatoletta Blistra - programma per ESP32 (prototipo v0.5)
+  S-pill the tea - programma per ESP32 (prototipo v0.5)
 
   Cosa fa
   - Fino a 4 dosi al giorno, 28 scomparti (7 giorni x 4) + 1 di riposo.
@@ -65,7 +65,7 @@ String esito = "";              // all | partial | untouched  (ultima dose)
 String statoDettaglio = "";     // partial | misload  (mostrato in Blistra)
 
 String orari[4] = { ORA_DOSE_1, ORA_DOSE_2, ORA_DOSE_3, ORA_DOSE_4 };
-String personaId = "", nomeScatola = "Scatoletta";
+String personaId = "", nomeScatola = "S-pill";
 String gettone = "";
 unsigned long gettonePresoAlle = 0, ultimoContatto = 0, ultimaConfig = 0;
 String ultimoEvento = "accesa";
@@ -575,11 +575,11 @@ void setup() {
   pinMode(PIN_HX711_DOUT, INPUT); pinMode(PIN_HX711_SCK, OUTPUT); digitalWrite(PIN_HX711_SCK, LOW);
   ledcAttach(PIN_VIBRO, 20000, 8); ledcWrite(PIN_VIBRO, 0);
 
-  memoria.begin("scatoletta", false);
+  memoria.begin("spill", false);
   ultimaDoseFatta = memoria.getLong("ultima", -1);
   scala = memoria.getFloat("scala", 0); tara = memoria.getLong("tara", 0);
 
-  Serial.printf("\nScatoletta Blistra %s\n", VERSIONE);
+  Serial.printf("\nS-pill the tea %s\n", VERSIONE);
   if (scala <= 0) Serial.println("Bilancia da tarare: svuota il ripiano, 't', poi metti un peso noto e scrivi 'c' e i grammi (es. c7.5).");
   bip(1568, 100);
   collegaWifi();

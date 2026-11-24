@@ -1,6 +1,6 @@
 """Controllo della ricarica dall'alto: chiudendo lo sportellino, il dito inclina la vaschetta pesata abbastanza
 da far scivolare le pillole; a sportellini chiusi e aperti la vaschetta e' libera (si puo' pesare)."""
-import scatoletta_v8 as s8
+import spill_v8 as s8
 inter = lambda a, b: (a ^ b).volume()
 
 def inclinazione(M, s, theta, vas):

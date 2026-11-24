@@ -1,7 +1,7 @@
 """Scrive docs/modello-3d/modello_v7.js: i pezzi della v0.7 a due ruote per il visore."""
 import base64, json, os
 import numpy as np
-import scatoletta_v7 as s
+import spill_v7 as s
 
 Q = 0.01
 qui = os.path.dirname(os.path.abspath(__file__)); out = os.path.join(qui, "..", "docs", "modello-3d", "modello_v7.js")

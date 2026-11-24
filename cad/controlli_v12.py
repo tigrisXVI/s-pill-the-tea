@@ -1,9 +1,9 @@
 """Controlli della v1.2 (dalla v1.0): interferenze, croce di Malta, stepper e finecorsa, ricarica, cassette che si sfilano
 (vite M2,5), percorso delle pillole, cavi, stampa, robustezza, stabilita'."""
 import itertools, math, sys
-import scatoletta_v12 as s12
-import scatoletta_v10 as s10
-from scatoletta_v3 import scatola, cil
+import spill_v12 as s12
+import spill_v10 as s10
+from spill_v3 import scatola, cil
 import croce_check_v10 as croce_check            # usa s10.ANG_CROCE[M.k]: la v1.2 ci ha messo la sua chiave
 import ricarica_check_v10 as ricarica_check
 inter = lambda a, b: (a ^ b).volume()

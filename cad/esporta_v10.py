@@ -4,7 +4,7 @@ STL (pezzi orientati per la stampa e assieme), STEP (pezzi e assieme con i nomi)
 import os, sys, json, math, time
 import numpy as np, trimesh
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scatoletta_v10 import Modello, genera, stampa, a_mesh, VERSI
+from spill_v10 import Modello, genera, stampa, a_mesh, VERSI
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(QUI, '..', 'v10')
@@ -125,7 +125,7 @@ def main():
         if n.startswith('9_cassetta'): nota = 'foro della torretta 6,0 mm: la spina d\'acciaio 6 x 16 entra a pressione (se balla, una goccia di colla epossidica) (I-2)'
         if n.startswith('14_'): nota += '; foro del perno 3,0 mm: spina d\'acciaio 3 x 4 a pressione (I-3)'
         if n.startswith('10_sportellini'): nota += '; cerniere con filo d\'acciaio da 0,8 mm (graffetta) (I-6)'
-        if guscio: nota = 'PETG va bene in casa; se la scatoletta puo\' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10)'
+        if guscio: nota = 'PETG va bene in casa; se la S-pill puo\' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10)'
         if piede: nota = 'solo regge la piastra d\'acciaio: 2 pareti e 15% bastano (I-11)'
         return dict(layer_mm=0.12 if fine else (0.16 if mecc else 0.2), pareti=2 if piede else (3 if not mecc else 4),
                     riempimento='15% gyroid' if piede else ('100%' if mecc else '25% gyroid'),

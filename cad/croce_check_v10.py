@@ -1,5 +1,5 @@
 """Controllo della croce di Malta: un giro intero dell'ingranaggio fa avanzare la ruota di uno scomparto, senza urti."""
-import math, scatoletta_v10 as s8
+import math, spill_v10 as s8
 inter = lambda a, b: (a ^ b).volume()
 
 def angolo_ruota(M, i, phi):

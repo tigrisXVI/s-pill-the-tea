@@ -1,6 +1,6 @@
-# Scatoletta Blistra v1.2
+# S-pill the tea v1.2
 
-La v1.0 adattata ai pezzi che ho davvero. Modello in `cad/scatoletta_v12.py` (sottoclasse della v1.0), controlli in `cad/controlli_v12.py`: tutti verdi (interferenze, croce di Malta, stepper e finecorsa, ricarica, cassette che si sfilano, cavi, stabilità).
+La v1.0 adattata ai pezzi che ho davvero. Modello in `cad/spill_v12.py` (sottoclasse della v1.0), controlli in `cad/controlli_v12.py`: tutti verdi (interferenze, croce di Malta, stepper e finecorsa, ricarica, cassette che si sfilano, cavi, stabilità).
 
 **Da stampare:** `blistra_v12_stampa.zip` (pezzi già orientati per la stampa). Parametri di stampa come nella v1.0 (`v10/PARAMETRI_STAMPA.md`).
 

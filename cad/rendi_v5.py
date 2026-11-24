@@ -1,4 +1,4 @@
-"""Immagini della v0.5 con Blender: python3 rendi_v5.py (dopo scatoletta_v5.py)."""
+"""Immagini della v0.5 con Blender: python3 rendi_v5.py (dopo spill_v5.py)."""
 import bpy, bmesh, os, math, glob, mathutils
 from mathutils import Vector, Matrix
 qui = os.path.dirname(os.path.abspath(__file__))

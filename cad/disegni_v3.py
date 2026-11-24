@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Schede tecniche della Scatoletta Blistra v0.3, ricavate dai solidi veri (sezioni, pianta, tabelle)."""
+"""Schede tecniche della S-pill the tea v0.3, ricavate dai solidi veri (sezioni, pianta, tabelle)."""
 import math, os, sys, json, glob
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import matplotlib
@@ -9,7 +9,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.patches import PathPatch, Rectangle, FancyBboxPatch
 from matplotlib.path import Path
 import matplotlib.image as mpimg
-import scatoletta_v3 as s
+import spill_v3 as s
 
 QUI = os.path.dirname(os.path.abspath(__file__)); RADICE = os.path.join(QUI, "..")
 BLU, INK, GRIGIO, ARANCIO = "#13294B", "#16202E", "#536072", "#E8962A"
@@ -18,7 +18,7 @@ COL = {"1_base": "#C9D2DC", "2_fondo_a_rampa": "#6FA6CC", "3_piastra_pesata": "#
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8})
 S = {n: f() for n, f in s.PEZZI.items()}
 A4 = (11.69, 8.27)
-PIEDE = "Scatoletta Blistra, prototipo v0.3. Misure in millimetri. Controllato solo al computer: da provare con una stampa."
+PIEDE = "S-pill the tea, prototipo v0.3. Misure in millimetri. Controllato solo al computer: da provare con una stampa."
 
 def patch(polys, **kw):
     polys = [p for p in polys if len(p) >= 3]
@@ -85,7 +85,7 @@ def risultati_sim():
 def genera(percorso):
     with PdfPages(percorso) as pdf:
         # ---------- 1. copertina e misure
-        fig = pagina("Scatoletta Blistra v0.3: schede tecniche", "28 scomparti (4 dosi al giorno per 7 giorni) + 1 di riposo. Rampa fissa, palette che salgono, ripiano pesato e vibrante, scivolo.")
+        fig = pagina("S-pill the tea v0.3: schede tecniche", "28 scomparti (4 dosi al giorno per 7 giorni) + 1 di riposo. Rampa fissa, palette che salgono, ripiano pesato e vibrante, scivolo.")
         img = mpimg.imread(os.path.join(RADICE, "docs", "immagini", "v3_aperta.png"))
         ax = fig.add_axes([0.03, 0.08, 0.55, 0.80]); ax.imshow(img); ax.axis("off")
         testo(fig, 0.61, 0.86, [
@@ -233,7 +233,7 @@ def genera(percorso):
                  ["Cavetti Dupont, filo sottile, termorestringente", "", "Collegamenti", "", "3 €"]]
         tabella(fig, [0.04, 0.24, 0.92, 0.64], righe, [0.36, 0.08, 0.22, 0.24, 0.08], fs=7.6, alt=1.62)
         testo(fig, 0.04, 0.2, [
-            "# Totale indicativo: 35-55 € di elettronica, piu' il filamento (circa 10-15 € a scatoletta).",
+            "# Totale indicativo: 35-55 € di elettronica, piu' il filamento (circa 10-15 € a S-pill).",
             "Rispetto alla v0.1 non serve piu' il sensore a infrarossi TCRT5000: la conferma arriva dal peso.",
             "Limite: una minicompressa da 2 mm pesa circa 10 mg, al limite di quello che una cella da 100 g riesce a distinguere."], fs=8.5, inter=0.033)
         pdf.savefig(fig); plt.close(fig)
@@ -287,7 +287,7 @@ def genera(percorso):
             "",
             "# Ogni settimana",
             "Togli il coperchio, riempi gli scomparti come dice Blistra (Ricarica guidata), richiudi e tieni premuto il pulsante:",
-            "la scatoletta pesa gli scomparti uno a uno (circa 2 minuti) e in Blistra vedi quali sono giusti e quali da controllare.",
+            "la S-pill pesa gli scomparti uno a uno (circa 2 minuti) e in Blistra vedi quali sono giusti e quali da controllare.",
             "",
             "# Sicurezza",
             "Il carosello non gira mai a sportello aperto. Prototipo non certificato: non sostituisce il controllo di chi assiste la persona."], fs=8.5, inter=0.031)

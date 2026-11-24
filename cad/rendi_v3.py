@@ -44,4 +44,4 @@ guarda((0.30, -0.20, 0.30), (0.03, 0, 0.03)); scatta("v3_interno.png")
 for n, (o, k) in ogg.items(): o.hide_render = False; o.location.z = ALZA[k] / 1000
 guarda((0.62, -0.48, 0.42), (0.02, 0, 0.11)); cam.data.lens = 50; scatta("v3_esploso.png")
 for n, (o, k) in ogg.items(): o.location.z = 0
-bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, "scatoletta_v3.blend"))
+bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, "spill_v3.blend"))

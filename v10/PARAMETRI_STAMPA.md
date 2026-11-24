@@ -66,8 +66,8 @@ Generati da `cad/esporta_v10.py` dal CAD parametrico (modello 2m (due ruote)).
 | 18_scivolo_sx | 0.09 | 0.1 | 6.2 × 8.3 × 19.8 | 0.12 | 3 | 25% gyroid | 0.07 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
 | 19_sportello_dx | 0.16 | 0.2 | 11.3 × 19.7 × 6.3 | 0.12 | 3 | 25% gyroid | 0.11 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
 | 19_sportello_sx | 0.16 | 0.2 | 11.3 × 19.7 × 6.3 | 0.12 | 3 | 25% gyroid | 0.11 | sì | 0 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
-| 1_guscio | 60.34 | 76.6 | 106.3 × 52.9 × 143.6 | 0.2 | 3 | 25% gyroid | 68.89 | no | 108 | PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
-| 2_cappello | 26.96 | 34.2 | 105.2 × 52.9 × 58.6 | 0.2 | 3 | 25% gyroid | 29.78 | no | 48 | PETG va bene in casa; se la scatoletta puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
+| 1_guscio | 60.34 | 76.6 | 106.3 × 52.9 × 143.6 | 0.2 | 3 | 25% gyroid | 68.89 | no | 108 | PETG va bene in casa; se la S-pill puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
+| 2_cappello | 26.96 | 34.2 | 105.2 × 52.9 × 58.6 | 0.2 | 3 | 25% gyroid | 29.78 | no | 48 | PETG va bene in casa; se la S-pill puo' stare al sole o in auto, stampare guscio e cappello in ASA o PC (stampante chiusa) (I-10) |
 | 3_piede | 41.48 | 52.7 | 119.2 × 110.0 × 8.4 | 0.2 | 2 | 15% gyroid | 0.0 | no | 74 | solo regge la piastra d'acciaio: 2 pareti e 15% bastano (I-11) |
 | 4_imbuto | 4.65 | 5.9 | 26.4 × 44.9 × 28.4 | 0.12 | 3 | 25% gyroid | 2.0 | sì | 10 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |
 | 5_piattino | 1.46 | 1.8 | 6.7 × 29.2 × 31.9 | 0.12 | 3 | 25% gyroid | 1.08 | sì | 3 | ugello in acciaio, superfici lisce, lavare prima dell'uso (I-8) |

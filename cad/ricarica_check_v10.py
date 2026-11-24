@@ -1,7 +1,7 @@
 """Controllo della ricarica dall'alto v1.0 (canaletta stretta, due fondi): chiudendo lo sportellino, il dito abbassa il fondo
 di quel lato abbastanza da far scivolare le pillole (almeno 40 gradi, attrito fino a 0,84) ma non tanto da toccare la cassetta;
 a sportellini chiusi e aperti i fondi sono liberi (si pesa)."""
-import scatoletta_v10 as s8
+import spill_v10 as s8
 inter = lambda a, b: (a ^ b).volume()
 
 def inclinazione(M, s, theta, fondi):

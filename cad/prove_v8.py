@@ -12,8 +12,8 @@
 Le STL vanno in v8/2m/prove/, gia' girate nel verso di stampa giusto.
 """
 import os, math
-import scatoletta_v8 as s8
-from scatoletta_v3 import cil, scatola
+import spill_v8 as s8
+from spill_v3 import cil, scatola
 
 qui = os.path.dirname(os.path.abspath(__file__)); out = os.path.join(qui, "..", "v8", "2m", "prove"); os.makedirs(out, exist_ok=True)
 for f in os.listdir(out): os.remove(os.path.join(out, f))

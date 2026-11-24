@@ -1,4 +1,4 @@
-// Pillole della scatoletta: si aggiungono negli scomparti, girano con il carosello e, quando lo sportello
+// Pillole della S-pill: si aggiungono negli scomparti, girano con il carosello e, quando lo sportello
 // e' aperto, cadono con una fisica semplice: gravita', attrito, rimbalzi, pareti di piastra, scivolo e bicchierino.
 // Le compresse sono trattate come dischi che strisciano (non rotolano): e' cosi' che si muovono le pillole vere
 // su piani poco inclinati. Misure in mm, tempo in secondi.

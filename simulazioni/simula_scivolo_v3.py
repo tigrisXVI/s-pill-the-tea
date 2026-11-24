@@ -1,5 +1,5 @@
 """
-Scatoletta Blistra v0.3 - 29 scomparti (4 dosi al giorno x 7 giorni + riposo), Ø circa 172 mm.
+S-pill the tea v0.3 - 29 scomparti (4 dosi al giorno x 7 giorni + riposo), Ø circa 172 mm.
 Simulazione fisica (Blender / Bullet) di UNA dose, dall'inizio alla fine:
   1. le pillole sono nello scomparto bersaglio, in basso;
   2. il carosello lo porta sul ripiano (le palette spingono su per la rampa);

@@ -4,7 +4,7 @@
 // Simulazione realistica:
 //  - ogni compressa vera pesa il suo peso medio +/- 3% (la Farmacopea ammette +/- 5-7,5%)
 //  - la bilancia (cella da 100 g + HX711, media di 10 letture) ha un rumore di 3 mg
-//  - prima la scatoletta impara: 20 pillole per tipo durante la ricarica + 50 letture a vuoto
+//  - prima la S-pill impara: 20 pillole per tipo durante la ricarica + 50 letture a vuoto
 //  - poi 20 000 dosi: 90% giuste, 5% con una pillola in meno, 3% con una in piu', 2% con una scambiata
 #include <cstdio>
 #include <random>
