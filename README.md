@@ -172,3 +172,7 @@ Print tests, photos, measurements, corrections and ideas are all welcome: open a
 - Documentation and images: [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt)
 
 © 2026 Giuseppe Vasco
+
+## Credits
+
+Scatoletta Blistra is an independent project by Giuseppe Vasco, who conceived it, set its requirements and made every design decision across its iterations. He used Claude as an AI programming assistant to write and check much of the code, CAD scripts and documentation.
