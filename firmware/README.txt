@@ -1,4 +1,4 @@
-SCATOLETTA BLISTRA v0.5 - ESP32 PROGRAM
+S-PILL THE TEA v0.5 - ESP32 PROGRAM
 (prototype: checked on the computer only, never tested on a real board)
 
 1. Arduino IDE 2 -> Boards Manager: "esp32" by Espressif (version 3.x) -> board "ESP32 Dev Module".
