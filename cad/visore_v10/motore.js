@@ -9,7 +9,7 @@ const LANG = (() => { const q = new URLSearchParams(location.search).get('lang')
   try { return localStorage.getItem('blistra-lang') === 'it' ? 'it' : 'en'; } catch (e) { return 'en'; } })();
 const IT = LANG === 'it', NUM = IT ? 'it-IT' : 'en-GB';
 const TX = {
-  en: { title: 'Blistra pill box v1.0 – interactive 3D model', h1: 'Blistra pill box v1.0 – interactive 3D model',
+  en: { title: 'S-pill the tea v1.0 – interactive 3D model', h1: 'S-pill the tea v1.0 – interactive 3D model',
     intro: 'Two pill wheels moved by Geneva drives, a weighed top refill, every printed part in PETG. The pills are simulated rigid bodies: they fall, roll and settle with gravity and friction. Drag to rotate, pinch or scroll to zoom, and tap any part to see what it is.',
     lingua: 'Italiano', carico: 'Loading the 3D model and the physics engine…', caricoFis: 'Loading the physics engine…', noWebgl: 'Your browser cannot show 3D graphics (WebGL is off).',
     tourOn: '❚❚ Stop the automatic demo', tourOff: '▶ Watch the automatic demo', tasto: 'Press the button',
@@ -32,7 +32,7 @@ const TX = {
       ['Wheels', '2 of ' + cm(P.ruota_d) + ' cm, Geneva drive with ' + P.N + ' slots, ' + P.Z_CROCE + '-tooth gear, ' + P.Z_PIGN_G + '-tooth pinion (module ' + P.MOD + ')'], ['Weight', 'about ' + S2.peso + ' g, centre of mass ' + cm(S2.cg) + ' cm above the table'],
       ['Tips over only past', S2.lato + '° sideways, ' + S2.avanti + '° forwards, ' + S2.dietro + '° backwards'], ['One compartment', S2.tasca.toLocaleString(NUM) + ' cm³'], ['Power', 'USB-C 5 V at the back (2 A supply)'],
       ['Internet', '2.4 GHz Wi-Fi of the ESP32-S3; antenna 15 mm from the nearest metal'], ['3D printing', P.STAMPA.length + ' parts in PETG (0.4 mm nozzle, 1.2 mm walls = 3 lines, 0.3–0.4 mm clearances); most print with few or no supports']],
-    TAPPE: ["Blistra pill box v1.0: two wheels with 15 compartments each, a week of doses. Every printed part is PETG.", "At dose time the box rings and the display lights up.",
+    TAPPE: ["S-pill the tea v1.0: two wheels with 15 compartments each, a week of doses. Every printed part is PETG.", "At dose time the box rings and the display lights up.",
       "The person presses the button: the Geneva drive advances the wheel by exactly one compartment, the pills fall onto the weighing tray and, if the weight is right, slide into the cup.",
       "The cup is taken: a magnet and a sensor tell the family that the dose was taken.", "The cup goes back in its place.",
       "Top refill: the pills for one compartment are weighed on a second scale. Closing the lid tips the floor and the pills slide into the wheel. On the way out they are weighed again: the weights must match.",
