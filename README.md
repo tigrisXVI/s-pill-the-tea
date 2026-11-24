@@ -1,150 +1,174 @@
 # Scatoletta Blistra
 
-Un portapillole motorizzato open source per chi fa fatica ad aprire blister e scomparti: anziani, persone con artrite o con poca forza nelle mani. All'ora della dose la scatoletta suona e lo scrive sul display; l'utente preme il tasto grande e le pillole di quella dose cadono in un bicchierino che si sfila e si prende in mano.
+*The little box that remembers, so tired hands don't have to.*
 
-![La scatoletta chiusa](docs/immagini/v5_chiusa.png)
+> *Scatoletta* is Italian for "little box". Blistra is the family app it belongs to.
 
-**Modello 3D interattivo:** https://tigrisxvi.github.io/scatoletta-blistra/ (in inglese e in italiano)
+Every morning, in kitchens everywhere, someone sits down in front of a row of blister packs and loses a small, quiet battle. The foil will not tear. A pill slips through fingers stiffened by arthritis and rolls beneath the table. A lid refuses to open; a Tuesday compartment is mistaken for a Wednesday one; the noon dose is simply forgotten somewhere between lunch and the evening news. None of it makes headlines. All of it matters.
 
-**App Blistra:** https://tigrisxvi.github.io/blistra/ (si prova senza account con la modalità demo)
+**Scatoletta Blistra is an open-source, motorised pill box built to end that battle gently.**
 
-**Stato: prototipo v0.5, progettato e verificato solo al computer. Non è ancora stato stampato né provato su una scheda vera.**
+When the hour comes, it chimes, glows, and writes it on its screen: *It's time.* One press of a large, round button — the kind you could find in the dark — and the pills for that moment, and only those, fall into a small cup that slides out and rests in the palm of a hand. No foil to pierce. No tiny lids to pry open. No guessing which day it is.
 
-> ⚠️ Non è un dispositivo medico certificato. Non usarlo come unico promemoria per farmaci importanti. Chi lo costruisce lo fa sotto la propria responsabilità.
+On their way out, the pills cross a scale. The box weighs every dose, so it knows whether the right amount really left the wheel; if something is wrong, it says so instead of staying silent. And if the family wishes, it tells the [Blistra app](https://tigrisxvi.github.io/blistra/) that the morning dose has been taken — or, more importantly, that it hasn't.
 
-## Novità della v1.2: i pezzi veri
+It is made for the people we owe the most to: older adults, people living with arthritis or tremor, anyone whose hands have grown weaker than their will to stay independent.
 
-La v1.2 è la v1.0 adattata ai componenti comprati: stepper 28BYJ-48 con ULN2003, servo SG90, OLED 0,96", una sola cella di carico, cassette fissate con una vite M2,5, zero delle ruote con un pulsantino finecorsa. Modello in `cad/scatoletta_v12.py`, controlli in `cad/controlli_v12.py` (tutti verdi), file di stampa e ferramenta in [`v12/`](v12/LEGGIMI.md). Visore: [modello 3D v1.2](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v12.html).
+![The box, closed](docs/immagini/v5_chiusa.png)
 
-## Novità della v1.0: le correzioni del rapporto R&D
+**Interactive 3D model:** https://tigrisxvi.github.io/scatoletta-blistra/ (English and Italian)
 
-La v1.0 è la v0.9 con i problemi trovati nel [rapporto R&D](rd/) corretti. Modello in `cad/scatoletta_v10.py`; i controlli in `cad/controlli_v10.py` passano tutti (nessuna interferenza, croce, ricarica, cavi, stabilità). File di stampa in `v10/` (`v10/PARAMETRI_STAMPA.md`). Visore: [modello 3D v1.0](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v10.html).
+**Blistra app:** https://tigrisxvi.github.io/blistra/ (try it without an account in demo mode)
 
-| | Problema nella v0.9 | Correzione nella v1.0 |
+**Status: prototype v0.5, designed and verified on the computer only. It has not yet been printed or tested on real hardware.**
+
+> ⚠️ This is not a certified medical device. Do not use it as the only reminder for important medication. Anyone who builds it does so at their own risk.
+
+## What it believes in
+
+- **Made for tired hands.** Every choice starts from a person who can no longer press out a blister: one big button, a cup you can hold, no fine movements required.
+- **Honest about what it knows.** The scale can tell that the pills *fell*; it cannot tell that they were *swallowed*. The box never pretends otherwise.
+- **Open, all the way down.** Every model, every line of firmware, every simulation is published and free to study, rebuild and improve. A good idea for the elderly should not sit behind a patent or a price tag.
+- **Built from what is at hand.** Inexpensive hobby electronics, a single printing material, and parts rescued from old CD drives and hard disks: screws, magnets, limit switches, little LEDs given a second life.
+
+### Why not just buy one?
+
+Commercial carousel dispensers do exist. A typical wireless model sells for around €150, holds 28 compartments, sounds its alarms and locks with a metal key. They are good products — but they still ask the user to tip a tray of pills into an unsteady palm, and they cannot be opened, repaired or adapted by the people who use them. Scatoletta Blistra asks a different question: *what if the box did the hardest part itself, and anyone were free to build it?*
+
+## New in v1.2: the real parts
+
+v1.2 is v1.0 adapted to the components actually purchased: 28BYJ-48 stepper motors with ULN2003 drivers, an SG90 servo, a 0.96" OLED display, a single load cell, cassettes held in place by one M2.5 screw, and wheel homing with a small limit-switch button. Model in `cad/scatoletta_v12.py`, checks in `cad/controlli_v12.py` (all green), print files and hardware in [`v12/`](v12/LEGGIMI.md). Viewer: [3D model v1.2](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v12.html).
+
+## New in v1.0: fixes from the R&D report
+
+v1.0 is v0.9 with the problems found in the [R&D report](rd/) corrected. Model in `cad/scatoletta_v10.py`; the checks in `cad/controlli_v10.py` all pass (no interference; Geneva drive, refilling, cabling and stability all OK). Print files in `v10/` (`v10/PARAMETRI_STAMPA.md`). Viewer: [3D model v1.0](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v10.html).
+
+| | Problem in v0.9 | Fix in v1.0 |
 |---|---|---|
-| I-1 | La ricarica dall'alto fa passare solo 5 pillole su 59 | Vaschetta stretta appesa alla cella in alto: due fondi a leva che si inclinano a 42° quando si apre lo sportello e tornano giù con una piccola molla a torsione. Passano le pillole fino a 6,3 × 12 × 16,7 mm: 36 su 55 (prima 5) |
-| I-2 | Asse stampato con 0,3 mm di gioco: le lamelle toccano l'anello (93% di probabilità) | Spina d'acciaio 6 × 16 mm nella cassetta, foro della ruota alesato a 6,0 H7; lamelle a 0,3 mm |
-| I-3 | A motore bloccato i denti del pignone arrivano a 36–83 MPa | Limite di corrente nel firmware (`firmware/v10/limite_coppia.h`): massimo 10 MPa; perno della croce d'acciaio |
-| I-4 | Un dito sulla vaschetta può rompere le celle da 100 g | Fermi sotto le estremità libere delle due celle, a 0,5 mm |
-| I-5 | Una dose di 5 farmaci copre il 119% della vaschetta pesata | Vaschetta 30 × 24 mm (prima 24 × 22), pareti da 6 mm |
-| I-6, I-12 | Sportellini a 0,05 mm, lamelle da 0,76 e dentini da 1 mm: troppo fini per la stampa | Sportellini da 1,6 mm a uno strato (0,2) dai divisori, lamelle da 1,2, dentini da 1,2, cerniere in filo d'acciaio |
-| I-7, I-13 | La scatoletta non sa se una pillola ci sta né se si può caricare | App 3.4.1: misure della pillola, elenco dei farmaci da non caricare (dabigatran), avviso per quelli sensibili all'umidità |
-| I-8, I-10, I-11, I-14 | Parametri di stampa generici | PETG naturale e ugello d'acciaio per i pezzi a contatto; guscio in ASA o PC se sta al sole; piede con 2 pareti; PETG con almeno 45 MPa |
-| I-9, I-15 | Il gel di silice si satura prima del previsto | Sensore di umidità AHT20 sotto il tetto (`firmware/v10/umidita.h`) e gel nuovo a ogni ricarica, almeno ogni 7 giorni |
+| I-1 | Top refilling lets only 5 pills out of 59 through | A narrow tray hanging from the upper load cell: two lever-operated floors that tilt to 42° when the lid opens and return with a small torsion spring. Pills up to 6.3 × 12 × 16.7 mm now pass: 36 out of 55 (previously 5) |
+| I-2 | Printed axle with 0.3 mm of play: the wiper strips touch the ring (93% probability) | 6 × 16 mm steel pin in the cassette, wheel bore reamed to 6.0 H7; wiper strips at 0.3 mm |
+| I-3 | With the motor stalled, pinion teeth reach 36–83 MPa | Current limit in the firmware (`firmware/v10/limite_coppia.h`): 10 MPa maximum; steel Geneva-drive pin |
+| I-4 | A finger on the tray can break the 100 g load cells | Stops under the free ends of both cells, at 0.5 mm |
+| I-5 | A dose of 5 medicines covers 119% of the weighing tray | 30 × 24 mm tray (previously 24 × 22), 6 mm walls |
+| I-6, I-12 | 0.05 mm lids, 0.76 mm wiper strips and 1 mm latches: too fine to print | 1.6 mm single-layer (0.2) lids set off from the dividers, 1.2 mm wiper strips, 1.2 mm latches, steel-wire hinges |
+| I-7, I-13 | The box cannot tell whether a pill fits, or whether it may be loaded at all | App 3.4.1: pill dimensions, a list of medicines that must not be loaded (dabigatran), a warning for moisture-sensitive ones |
+| I-8, I-10, I-11, I-14 | Generic print settings | Natural PETG and a steel nozzle for parts in contact with pills; shell in ASA or PC if it sits in the sun; base with 2 walls; PETG of at least 45 MPa |
+| I-9, I-15 | Silica gel saturates sooner than expected | AHT20 humidity sensor under the roof (`firmware/v10/umidita.h`) and fresh gel at every refill, at least every 7 days |
 
-Il piede è 2 mm più largo (110 mm) per restare sopra 40 gradi di stabilità di lato con i pezzi nuovi.
+The base is 2 mm wider (110 mm) to keep more than 40 degrees of sideways stability with the new parts.
 
-## Novità della v0.9
+## New in v0.9
 
-- **Croce di Malta.** Il meccanismo dei vecchi proiettori e degli orologi prende il posto di corona e pignone. Dietro ogni ruota ci sono 15 fessure, una sotto ogni divisorio. Il motorino gira un ingranaggio da 24 denti con un perno: a ogni giro il perno entra in una fessura e fa avanzare la ruota di uno scomparto esatto (24 gradi). Per il resto del giro un disco di blocco tiene ferma la ruota, anche senza corrente e anche se qualcuno prova a girarla a mano. `cad/croce_check.py` simula un giro intero dell'ingranaggio: nessun urto, 24,0 gradi esatti, ruota bloccata a riposo. Il perno dell'ingranaggio è una vite recuperata da un hard disk.
-- **Ricarica dall'alto, pesata in entrata.** Nel tetto, davanti, ci sono due sportellini. Le pillole di uno scomparto cadono su una vaschetta appesa a una seconda cella di carico (canale B dello stesso HX711), che le pesa. Quando si richiude lo sportellino, il suo dito inclina la vaschetta di 30–36 gradi e le pillole scivolano nello scivolo fino allo scomparto in alto davanti (54 gradi). Niente motori in più. Una vite dell'hard disk avvitata nella chiglia tiene la vaschetta dritta. `cad/ricarica_check.py` controlla il movimento.
-- **Entrata → uscita.** All'uscita la bilancia di sotto ripesa la dose: sono le stesse pillole, quindi deve pesare uguale. Nelle prove simulate (`firmware/test`) ferma il 100% degli scomparti sbagliati, anche con una pillola da 40 mg, senza falsi allarmi.
-- **Tutto in PETG**, un solo materiale.
+- **Geneva drive (Maltese cross).** The mechanism of old film projectors and clocks replaces the ring gear and pinion. Behind each wheel there are 15 slots, one under each divider. The motor turns a 24-tooth gear carrying a pin: on every revolution the pin enters a slot and advances the wheel by exactly one compartment (24 degrees). For the rest of the revolution a locking disc holds the wheel still, even without power and even if someone tries to turn it by hand. `cad/croce_check.py` simulates a full revolution of the gear: no collisions, exactly 24.0 degrees, wheel locked at rest. The gear's pin is a screw salvaged from a hard disk.
+- **Refilling from the top, weighed on the way in.** In the front of the roof there are two small lids. The pills for one compartment drop onto a tray hanging from a second load cell (channel B of the same HX711), which weighs them. When the lid closes, its finger tilts the tray by 30–36 degrees and the pills slide down the chute into the upper front compartment (54 degrees). No extra motors. A hard-disk screw driven into the keel keeps the tray level. `cad/ricarica_check.py` checks the movement.
+- **In → out.** On the way out, the lower scale weighs the dose again: they are the same pills, so they must weigh the same. In simulated tests (`firmware/test`) it catches 100% of wrong compartments, even with a 40 mg pill, with no false alarms.
+- **All in PETG**, a single material.
 
-## In prova: v0.8, due ruote e due motorini (la più compatta)
+## Under test: v0.8, two wheels and two motors (the most compact)
 
-Le ruote sono mosse da un ingranaggio sul bordo, con il motorino N20 nell'angolo dove la ruota tonda lascia spazio. Le dosi cadono su un **piattino pesato** (cella di carico da 100 g) che un micro servo apre solo se il peso è quello impostato nell'app; sotto c'è il bicchierino, in una nicchia aperta come in una macchina del caffè, con un magnete nella base e un sensore di Hall nel piede. Corpo scuro e cappello colorato a righine con gli spigoli tondi; tasto tondo da 21 mm sul cappello. Davanti, dietro una griglia, un altoparlante da 20 mm con amplificatore MAX98357A: suona la sveglia e può dire «È ora delle pillole». Ruote con corona dentata vera (modulo 1) e pignoni da 20 denti. I fili di sopra corrono sotto il tetto e scendono in un canale nella parete centrale; corrente da una presa USB-C dietro; l'antenna Wi-Fi dell'ESP32-S3 è a 15 mm dal metallo più vicino. Il visore simula le pillole con la fisica vera (Rapier).
+The wheels are driven by a gear on their rim, with the N20 motor tucked into the corner that the round wheel leaves free. Doses fall onto a **weighing tray** (100 g load cell) that a micro servo opens only if the weight matches the one set in the app; beneath it sits the cup, in an open alcove like that of a coffee machine, with a magnet in its base and a Hall sensor in the foot. Dark body and a coloured, finely ribbed cap with rounded edges; a 21 mm round button on the cap. At the front, behind a grille, a 20 mm speaker with a MAX98357A amplifier: it sounds the alarm and can say "It's time for your pills". Wheels with a true ring gear (module 1) and 20-tooth pinions. The upper wires run under the roof and drop through a channel in the central wall; power comes from a USB-C socket at the back; the ESP32-S3's Wi-Fi antenna is 15 mm from the nearest metal. The viewer simulates the pills with real physics (Rapier).
 
-**Stampa 3D:** tutti i pezzi in un solo materiale, PETG con ugello da 0,4 mm; pareti da 1,2 mm (3 passate), giochi da 0,3–0,4 mm per le parti che si muovono, denti a modulo 1. `cad/controlli_v8.py` sceglie per ogni pezzo il verso di stampa con meno sbalzi (le STL in `v8/2m/stl/stampa/` sono già girate così): servono supporti soprattutto sotto il tetto della nicchia del corpo. Il piede si stampa capovolto; la piastra di ferro si incolla da sotto, poi quattro piedini di gomma.
+**3D printing:** every part in a single material, PETG with a 0.4 mm nozzle; 1.2 mm walls (3 perimeters), 0.3–0.4 mm clearances for moving parts, module-1 teeth. `cad/controlli_v8.py` picks for each part the print orientation with the fewest overhangs (the STLs in `v8/2m/stl/stampa/` are already oriented this way): supports are needed mainly under the roof of the body's alcove. The base is printed upside down; the iron plate is glued in from below, followed by four rubber feet.
 
-**Cassette e sportellini:** la cassetta (l'anello attorno alla ruota) è stampata opaca ed è aperta davanti. Ogni scomparto della ruota ha il suo sportellino trasparente (PETG trasparente), con una cerniera vicino al mozzo (perno: un pezzo di filo da 0,8 mm), due dentini che scattano sugli scivoli dei divisori e una linguetta per aprirlo con il dito. Gli sportellini girano con la ruota: le pillole non strisciano contro parti ferme, e per ricaricare si apre uno scomparto alla volta.
+**Cassettes and lids:** the cassette (the ring around the wheel) is printed opaque and open at the front. Each compartment of the wheel has its own transparent lid (clear PETG), with a hinge near the hub (pin: a piece of 0.8 mm wire), two latches that snap onto the ramps of the dividers and a tab to open it with a finger. The lids turn with the wheel: the pills never rub against stationary parts, and refilling happens one compartment at a time.
 
-**Posizione delle ruote:** ogni ruota ha un magnete da 3 × 1 mm nella corona, sotto lo scomparto chiuso, e un sensore di Hall (DRV5032) nella parete centrale, a 1,7 mm attraverso il fondo della cassetta. La scatola si azzera all'accensione e a ogni giro, e se una ruota salta un dente se ne accorge e non dà la dose. Cosa deve fare il firmware: `firmware/v08_cosa_deve_fare.md`.
+**Wheel position:** each wheel has a 3 × 1 mm magnet in its ring gear, under the closed compartment, and a Hall sensor (DRV5032) in the central wall, 1.7 mm away through the bottom of the cassette. The box homes itself at power-up and on every turn, and if a wheel skips a tooth it notices and withholds the dose. What the firmware must do: `firmware/v08_cosa_deve_fare.md`.
 
-**Senza corrente:** orologio DS3231 con pila a bottone nella camera dietro; la dose e la posizione delle ruote si salvano nella memoria dell'ESP32 a ogni passo. Una dose saltata per mancanza di corrente non esce mai da sola dopo.
+**Without power:** a DS3231 clock with a coin cell in the rear chamber; the dose and the wheel positions are saved to the ESP32's memory at every step. A dose missed because of a power cut is never released on its own afterwards.
 
-**Umidità:** nel mozzo di ogni ruota c'è una tasca per circa 2 g di gel di silice, chiusa da un tappo con feritoie; forellini da 1,2 mm portano l'aria secca in ogni scomparto (le pillole non ci passano). Gli sportellini chiudono direttamente sopra i divisori.
+**Humidity:** the hub of each wheel has a pocket for about 2 g of silica gel, closed by a slotted cap; 1.2 mm holes carry dry air into every compartment (pills cannot pass through them). The lids close directly on top of the dividers.
 
-**Fermo delle cassette, comandato dall'app:** per ogni cassetta un dente entra in una tacca della flangia e la blocca; lo gira di un quarto di giro un micro servo nascosto nell'angolo davanti in basso, sotto la ruota. Nell'app, nella ricarica guidata, il pulsante «Sblocca le cassette» apre i fermi per 2 minuti; quando la cassetta torna dentro (il sensore della ruota rivede il magnete) il fermo si richiude da solo. Il controllo verifica che, chiuso, la cassetta non esca.
+**App-controlled cassette lock:** for each cassette a tooth enters a notch in the flange and locks it; a micro servo hidden in the lower front corner, under the wheel, turns it a quarter of a turn. In the app's guided refill, the "Unlock cassettes" button releases the locks for 2 minutes; when the cassette goes back in (the wheel sensor sees the magnet again) the lock closes by itself. The checks verify that, when locked, the cassette cannot come out.
 
-**Pezzi di prova (prima della scatola intera):** `cad/prove_v8.py` crea in `v8/2m/prove/`:
-- *prova 1, spicchio di ruota*: un quarto di ruota con 3 scomparti, lamelle, sportellini e il pezzo di cassetta con l'uscita e l'asse. Metti pillole vere (anche minuscole) negli scomparti, gira avanti e indietro 20 volte: non deve passare niente tra ruota e anello, lo scomparto vicino all'uscita non si deve svuotare, e la ruota deve girare con le lamelle senza forzare.
-- *prova 2, piattino pesato*: piattino, staffa e una base per la cella di carico. Con cella, HX711 ed ESP32 pesa 10 volte una pillola da 90 mg e una da 12 mg: si vede quanto è precisa la bilancia.
+**Test pieces (before printing the whole box):** `cad/prove_v8.py` creates in `v8/2m/prove/`:
+- *test 1, wheel segment*: a quarter of a wheel with 3 compartments, wiper strips, lids, and the piece of cassette with the outlet and axle. Put real pills (tiny ones too) into the compartments and turn back and forth 20 times: nothing should slip between wheel and ring, the compartment next to the outlet must not empty itself, and the wheel must turn with its wiper strips without forcing.
+- *test 2, weighing tray*: tray, bracket and a base for the load cell. With the cell, an HX711 and an ESP32, weigh a 90 mg pill and a 12 mg pill 10 times each: this shows how precise the scale really is.
 
-**Ricarica guidata nell'app:** nell'app Blistra, nella scatoletta scegli il modello "v0.8": la ricarica guidata divide gli scomparti tra cassetta di sinistra (dispari) e di destra (pari), con il numero che trovi sul mozzo e le pillole da mettere.
+**Guided refill in the app:** in the Blistra app, choose the "v0.8" model for the box: the guided refill splits the compartments between the left cassette (odd numbers) and the right cassette (even numbers), showing the number printed on the hub and the pills to put in.
 
-**Robustezza:** la parte di sopra sta a sbalzo sulla nicchia del bicchierino e poggia sulla colonna dietro. `cad/controlli_v8.py` calcola le sezioni vere del corpo: con qualcuno che preme sul tasto con 5 kg, la colonna lavora a circa 1,2 MPa contro 15 MPa di resistenza tra gli strati di stampa del PETG (sicurezza 12 volte); la parete da 1,2 mm si imbarcherebbe solo a 4,1 MPa (3,4 volte); la cima si sposta di 0,2 mm. Gli angoli della nicchia hanno uno scivolo a 45° per tutta la larghezza e due squadrette ai lati.
+**Strength:** the upper part overhangs the cup's alcove and rests on the rear column. `cad/controlli_v8.py` computes the real cross-sections of the body: with someone pressing the button with 5 kg, the column works at about 1.2 MPa against 15 MPa of PETG inter-layer strength (12× safety factor); the 1.2 mm wall would buckle only at 4.1 MPa (3.4×); the top moves by 0.2 mm. The corners of the alcove have a 45° chamfer across the full width and two gussets at the sides.
 
-**Pillole piccole:** in punta a ogni divisorio della ruota c'è una lamella di PETG che arriva a 0,1 mm dall'anello fermo senza toccarlo (si incastra a pressione e si può limare): tra ruota e anello non passa niente e ogni scomparto resta chiuso finché non arriva sull'uscita. Le altre fessure lungo il percorso delle pillole sono di 0,6 mm o meno (gioco ruota-anello 0,3, ruota-coperchio 0,3, cassetta-imbuto 0,6, imbuto-piattino 0,4, piattino-paratia 0,6), così anche una pillola da 3 × 1,6 mm non si incastra.
+**Small pills:** at the tip of each divider there is a PETG wiper strip that comes within 0.1 mm of the stationary ring without touching it (it press-fits in place and can be filed): nothing passes between wheel and ring, and each compartment stays closed until it reaches the outlet. The other gaps along the pills' path are 0.6 mm or less (wheel–ring 0.3, wheel–cover 0.3, cassette–funnel 0.6, funnel–tray 0.4, tray–bulkhead 0.6), so even a 3 × 1.6 mm pill cannot get stuck.
 
-**Stabilità:** quasi tutto il peso è nel piede (10 cm di larghezza) con dentro una piastra di ferro da 104 × 76 × 6 mm (circa 370 g su 680). Baricentro a 5,2 cm da terra: si ribalta solo se inclinata di 44° di lato, 50° in avanti, 47° indietro. Sotto, quattro piedini di gomma.
+**Stability:** almost all the weight is in the base (10 cm wide), which holds a 104 × 76 × 6 mm iron plate (about 370 g out of 680). Centre of gravity 5.2 cm above the table: it tips over only when tilted 44° sideways, 50° forwards or 47° backwards. Underneath, four rubber feet.
 
-Pareti da 1,2 mm, cassette da 1 mm. Corpo 10,5 × 5 × 20,4 cm (1,08 l), piede 11,9 × 10 cm, uno scomparto 4,3 cm³. Modello in `cad/scatoletta_v8.py`, controlli in `cad/controlli_v8.py` (nessuna interferenza), pezzi in `v8/2m/`, visore: [modello 3D v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Non ancora stampata.
+1.2 mm walls, 1 mm cassettes. Body 10.5 × 5 × 20.4 cm (1.08 l), base 11.9 × 10 cm, one compartment 4.3 cm³. Model in `cad/scatoletta_v8.py`, checks in `cad/controlli_v8.py` (no interference), parts in `v8/2m/`, viewer: [3D model v0.8](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v8.html). Not yet printed.
 
-## In prova: v0.7 a due ruote
+## Under test: v0.7 with two wheels
 
-Due ruote in piedi da 14 dosi, ognuna con il suo motorino, in cassette che si sfilano di lato. Lo scomparto che arriva in basso si svuota da solo: niente sportelli e niente servi. Bilancia sotto il bicchierino. **11 × 8 × 17,5 cm (1,5 litri), un terzo della v0.5.** Modello in `cad/scatoletta_v7.py`, controlli in `cad/controlli_v7.py`, pezzi in `v7/stl/`, visore: [modello 3D v0.7](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v7.html). Non ancora stampata né simulata.
+Two upright wheels holding 14 doses each, each with its own motor, in cassettes that slide out sideways. The compartment that reaches the bottom empties itself: no doors and no servos. Scale under the cup. **11 × 8 × 17.5 cm (1.5 litres), one third of v0.5.** Model in `cad/scatoletta_v7.py`, checks in `cad/controlli_v7.py`, parts in `v7/stl/`, viewer: [3D model v0.7](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v7.html). Not yet printed or simulated.
 
-## In prova: v0.6 a due piani
+## Under test: v0.6 on two levels
 
-Due caroselli da 14 scomparti uno sopra l'altro: in pianta occupa quasi la metà (circa 18 × 12 cm invece di 24,5 × 17,5). Fondi a cono, due sportelli a ghigliottina, bilancia sotto il bicchierino. Modello in `cad/scatoletta_v6.py`, controlli in `cad/controlli_v6.py`, pezzi in `v6/stl/`, visore: [modello 3D v0.6](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v6.html). Non ancora stampata né simulata.
+Two 14-compartment carousels stacked one above the other: the footprint is almost halved (about 18 × 12 cm instead of 24.5 × 17.5). Cone-shaped floors, two guillotine doors, scale under the cup. Model in `cad/scatoletta_v6.py`, checks in `cad/controlli_v6.py`, parts in `v6/stl/`, viewer: [3D model v0.6](https://tigrisxvi.github.io/scatoletta-blistra/modello-3d/v6.html). Not yet printed or simulated.
 
-## Com'è fatta
+## What it looks like (v0.5)
 
-- **Un guscio unico** arrotondato nasconde il meccanismo. Sopra c'è un **cofanetto**, il coperchio colorato con la cerniera dietro: si apre per ricaricare.
-- **Davanti**, su una fascia inclinata: display da 1,3" con l'ora e la prossima dose, tasto grande da 30 mm e una linea di luce che traspare dalla plastica solo quando si accende (gialla: è ora; bianca: prendi le pillole; verde: presa; rossa: da controllare; blu: verifica).
-- **Sotto**, una nicchia con il **bicchierino** estraibile dove cadono le pillole.
-- **Sul fianco destro** l'interruttore, incassato perché non si spenga per sbaglio, e la presa USB-C.
+- **A single rounded shell** hides the mechanism. On top sits a **jewellery-box lid**, coloured and hinged at the back: it opens for refilling.
+- **At the front**, on a sloping band: a 1.3" display showing the time and the next dose, a large 30 mm button, and a line of light that shines through the plastic only when it switches on (yellow: it's time; white: take your pills; green: taken; red: needs checking; blue: verifying).
+- **Below**, an alcove holding the removable **cup** into which the pills fall.
+- **On the right side**, the power switch — recessed so it cannot be turned off by accident — and the USB-C socket.
 
-## Come funziona dentro
+## How it works inside
 
-- **29 scomparti** su un carosello: 4 dosi al giorno (mattina, pranzo, pomeriggio, sera) per 7 giorni, più uno scomparto di riposo sempre vuoto.
-- **Fondo a rampa fisso**: il pavimento sale a elica e sotto l'uscita ha un ripiano piano inclinato verso l'esterno. I setti del carosello flottano in verticale nel mozzo e seguono la rampa, così le pillole non si incastrano.
-- **Ripiano pesato e vibrante**: sotto l'uscita c'è una piastra su cella di carico (HX711) con un micro motore vibrante. La vibrazione fa scendere anche le compresse che con l'attrito resterebbero ferme; il peso conferma che la dose è uscita.
-- **Sportello motorizzato**: premendo il tasto un micro servo alza lo sportello di 35° con una leva e scopre l'apertura nella parete. Per chiudere, la leva scende e lo sportello si richiude per il suo peso: non spinge mai verso il basso, quindi non schiaccia le dita. Un sensore Hall impedisce al carosello di girare con lo sportello aperto.
-- **Scivolo**: le pillole scendono a 40° e cadono nel bicchierino.
-- **ESP32** con motore passo-passo 28BYJ-48 e cicalino. Si collega opzionalmente all'app web Blistra.
+- **29 compartments** on a carousel: 4 doses a day (morning, lunch, afternoon, evening) for 7 days, plus one rest compartment that always stays empty.
+- **Fixed ramp floor:** the floor rises in a helix and, under the outlet, becomes a flat shelf sloping outwards. The carousel's dividers float vertically in the hub and follow the ramp, so pills cannot get wedged.
+- **Weighed, vibrating shelf:** under the outlet there is a plate on a load cell (HX711) with a tiny vibration motor. The vibration coaxes down even the tablets that friction would otherwise hold back; the weight confirms that the dose has left.
+- **Motorised door:** when the button is pressed, a micro servo lifts the door by 35° with a lever, uncovering the opening in the wall. To close, the lever drops and the door falls shut under its own weight: it never pushes down, so it cannot pinch fingers. A Hall sensor prevents the carousel from turning while the door is open.
+- **Chute:** the pills slide down at 40° and fall into the cup.
+- **ESP32** with a 28BYJ-48 stepper motor and a buzzer. It can optionally connect to the Blistra web app.
 
-Misure: 245 × 175 × 103 mm (il guscio entra in una stampante con piatto da 256 mm).
+Size: 245 × 175 × 103 mm (the shell fits a printer with a 256 mm bed).
 
-La v0.5 riusa il meccanismo della v0.3 e della v0.4 (`cad/scatoletta_v3.py`, `cad/scatoletta_v4.py`) e disegna l'esterno in `cad/scatoletta_v5.py`. Le schede tecniche in PDF descrivono ancora la v0.3: carosello, rampa, piastra e scivolo non sono cambiati.
+v0.5 reuses the mechanism of v0.3 and v0.4 (`cad/scatoletta_v3.py`, `cad/scatoletta_v4.py`) and draws the exterior in `cad/scatoletta_v5.py`. The PDF datasheets still describe v0.3: carousel, ramp, plate and chute have not changed.
 
-## Cosa c'è nel progetto
+## What's in the project
 
-| Cartella | Contenuto |
+| Folder | Contents |
 |---|---|
-| `cad/` | Modello 3D parametrico in Python (manifold3d + trimesh), elettronica, viti e cavi (`elettronica_v5.py`), controlli di interferenza, render Blender, schede tecniche |
-| `stl/stampa/` | Pezzi pronti per la stampa 3D |
-| `stl/assieme/` | Pezzi nella posizione di montaggio |
-| `firmware/` | Programma ESP32 (Arduino IDE) e istruzioni di taratura |
-| `simulazioni/` | Simulazione fisica in Blender delle pillole che scendono, con i risultati |
-| `docs/` | Schede tecniche in PDF (misure, sensori, schema), immagini e il visore 3D (`docs/modello-3d/`, three.js con licenza MIT) |
+| `cad/` | Parametric 3D model in Python (manifold3d + trimesh), electronics, screws and cables (`elettronica_v5.py`), interference checks, Blender renders, datasheets |
+| `stl/stampa/` | Parts ready for 3D printing |
+| `stl/assieme/` | Parts in their assembled position |
+| `firmware/` | ESP32 program (Arduino IDE) and calibration instructions |
+| `simulazioni/` | Physics simulation in Blender of the pills falling, with results |
+| `docs/` | PDF datasheets (dimensions, sensors, wiring diagram), images and the 3D viewer (`docs/modello-3d/`, three.js under the MIT licence) |
 
-## Simulazioni
+## Simulations
 
-Simulazione a corpi rigidi della v0.3 (Blender/Bullet) con attrito realistico 0,35, vibrazione 50 Hz e 0,6 mm per 3 secondi, compresse dalle minicompresse da 2 mm fino a una compressa grande come un Augmentin:
+Rigid-body simulation of v0.3 (Blender/Bullet) with a realistic friction of 0.35 and a 50 Hz, 0.6 mm vibration for 3 seconds, with tablets ranging from 2 mm mini-tablets up to one as large as an Augmentin:
 
-- 238 dosi arrivate in fondo allo scivolo su 240 (le 2 mancate nel caso peggiore, attrito 0,5);
-- 80 su 80 con la geometria esatta della v0.3. Rampa e parte inclinata dello scivolo sono le stesse nella v0.5; il salto finale nel bicchierino (circa 2 cm) non è stato simulato.
+- 238 doses out of 240 reached the bottom of the chute (the 2 misses were in the worst case, friction 0.5);
+- 80 out of 80 with the exact v0.3 geometry. The ramp and the sloping part of the chute are the same in v0.5; the final drop into the cup (about 2 cm) was not simulated.
 
-Una simulazione non sostituisce la prova vera: servono test con un prototipo stampato.
+A simulation is no substitute for a real test: a printed prototype still has to be tried.
 
-## Costruirla
+## Building it
 
-1. Stampa i pezzi di `stl/stampa/` (PLA o PETG). Il guscio va stampato in bianco, così la luce traspare; il cofanetto del colore che preferisci.
-2. Componenti: ESP32 DevKit, motore 28BYJ-48 con driver ULN2003, cella di carico da 100 g con HX711, motorino vibrante 8×2 mm con MOSFET, 2 sensori Hall A3144 con magneti, cicalino, micro servo SG90, display OLED I2C da 1,3\" (SH1106), barra di 8 LED WS2812, pulsante arcade da 30 mm a profilo basso, interruttore a bilanciere KCD11, presa USB-C da pannello, 2 magneti al neodimio (4×2 e 6×3 mm), 2 perni da 2 mm (o pezzi di filamento) per le cerniere di sportello e cofanetto.
-   Le schede (ESP32, ULN2003, HX711, MOSFET) e il cicalino vanno nel vano sotto il fondo, incollate con biadesivo spesso 3–4 mm; i fili passano dai tre fori nella parete davanti. Nel visore 3D, «Mostra l'elettronica» fa vedere dove va ogni cosa.
-3. Viti:
+1. Print the parts in `stl/stampa/` (PLA or PETG). Print the shell in white so the light can shine through; the lid in whatever colour you like.
+2. Components: ESP32 DevKit, 28BYJ-48 motor with ULN2003 driver, 100 g load cell with HX711, 8×2 mm vibration motor with a MOSFET, 2 A3144 Hall sensors with magnets, buzzer, SG90 micro servo, 1.3" I2C OLED display (SH1106), 8-LED WS2812 strip, 30 mm low-profile arcade button, KCD11 rocker switch, panel-mount USB-C socket, 2 neodymium magnets (4×2 and 6×3 mm), 2 pins of 2 mm (or pieces of filament) for the door and lid hinges.
+   The boards (ESP32, ULN2003, HX711, MOSFET) and the buzzer go in the compartment under the floor, stuck down with 3–4 mm double-sided foam tape; the wires pass through the three holes in the front wall. In the 3D viewer, "Show electronics" shows where everything goes.
+3. Screws:
 
-   | Quante | Vite | Dove |
-   |---|---|---|
-   | 4 | M3×14 testa cilindrica | fondo sulla base |
-   | 2 + 2 dadi | M3×8 testa svasata + dadi M3 | motore sotto il fondo (testa a filo, sotto il mozzo) |
-   | 2 | M3×8 testa cilindrica | cella di carico sul fondo, da sotto |
-   | 2 | M3×6 testa bassa (2 mm) | piastra sulla cella; sopra vanno i tappini, incollati |
-   | 4 | M3×10 testa cilindrica | scivolo sulla base, da fuori |
-   | 2 | M2×6 | presa USB-C sul fianco |
-   | 2 + 1 | M2 del sacchetto del servo | servo sulla culla, leva sulla squadretta |
-4. Firmware: segui `firmware/LEGGIMI.txt`. Copia `config.example.h` in `config.h` e scrivi lì le tue password: `config.h` non va mai pubblicato.
+| Qty | Screw | Where |
+|---|---|---|
+| 4 | M3×14 socket head | floor onto the base |
+| 2 + 2 nuts | M3×8 countersunk + M3 nuts | motor under the floor (head flush, under the hub) |
+| 2 | M3×8 socket head | load cell onto the floor, from below |
+| 2 | M3×6 low head (2 mm) | plate onto the load cell; the caps go on top, glued |
+| 4 | M3×10 socket head | chute onto the base, from outside |
+| 2 | M2×6 | USB-C socket on the side |
+| 2 + 1 | M2 from the servo bag | servo onto its cradle, lever onto the horn |
 
-## Contribuire
+4. Firmware: follow `firmware/LEGGIMI.txt` (English version: `firmware/README.txt`). Copy `config.example.h` to `config.h` and write your passwords there: `config.h` must never be published.
 
-Prove di stampa, foto, misure, correzioni e idee sono benvenute: apri una issue o una pull request.
+## Contributing
 
-## Licenze
+Print tests, photos, measurements, corrections and ideas are all welcome: open an issue or a pull request. If you build one for someone you love, we would love to hear how it went.
 
-- Hardware (modelli 3D, STL, schede tecniche): [CERN-OHL-S-2.0](LICENSES/CERN-OHL-S-2.0.txt)
-- Software (firmware, script CAD e di simulazione): [MIT](LICENSES/MIT.txt)
-- Documentazione e immagini: [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt)
+## Licences
+
+- Hardware (3D models, STLs, datasheets): [CERN-OHL-S-2.0](LICENSES/CERN-OHL-S-2.0.txt)
+- Software (firmware, CAD and simulation scripts): [MIT](LICENSES/MIT.txt)
+- Documentation and images: [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt)
 
 © 2026 Giuseppe Vasco
